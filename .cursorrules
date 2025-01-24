@@ -1,0 +1,239 @@
+Below is an **updated set of “cursor rules”** tailored to **Next.js (web-only)** development in **TypeScript**, using **Next-Intl** for internationalization, **Supabase** for the backend, **Zod** for validation, and **TanStack React Query** + **Zustand** for state/data management. These guidelines retain the overall structure of your original rules while removing references to React Native, Expo, or cross-platform specifics.
+
+---
+
+# **Cursor Rules**
+
+## 1. **Coding Workflow**
+
+1. **Test-First Development (TDD)**  
+   - **Check for existing tests**: When creating or modifying a user-facing feature, first look for an **end-to-end (E2E)** or **unit/integration** test covering that feature.  
+   - **Create/update tests before coding**:  
+     - If no test exists, **create the test** (using Playwright, Jest, or a similar framework) **before** implementing or changing the feature.  
+     - Confirm with the team (or yourself) that the test accurately reflects the requirements. **Do not proceed** until the test is agreed upon.  
+   - **Implement the feature**: After the test is set, write or update the code.  
+   - **Type Check**: Run `npx tsc --noEmit` to ensure there are no TypeScript errors.  
+   - **Run Tests**: Execute the relevant test file (e.g., `npx playwright test tests/<test_file>`) until all tests pass.  
+   - **Formatting**: Run the code formatter before committing:
+     ```bash
+     npx prettier --write .
+     ```
+
+2. **Logging for Debugging**  
+   - Insert **logs** (e.g., `console.log`, `console.error`) at key logic points to aid in debugging.  
+   - Use a consistent logging convention (e.g., `console.info`, `console.warn`, or a custom logger) to filter logs in CI or production environments.  
+   - Remove or minimize debug logs in production-critical paths if they produce excessive noise.
+
+3. **Commit Process**  
+   - Ensure **all tests pass** and **type checks** are clear.  
+   - Use **descriptive commit messages** (e.g., `feat: add e2e test for payment flow`).
+
+---
+
+## 2. **Code Style and Structure**
+
+- **TypeScript**: All Next.js code should be in **.tsx** or **.ts** files.  
+- **Functional & Declarative**: Avoid classes; prefer functional components and pure functions.  
+- **Descriptive Naming**: Use clear names like `isLoading`, `hasError`, `fetchUsers`.  
+- **Modular**: Break down large components or utilities to avoid duplication.  
+- **Directory Names**: Use **lowercase with dashes** (e.g., `components/user-form`).  
+- **File Layout**: Each directory can contain:
+  - **index.ts / index.tsx** for exports.  
+  - **subcomponents** or **helpers** for logic separation.  
+  - **types.ts** (or `types/`) if multiple types or interfaces are needed.  
+
+### Example Folder Structure
+
+```
+/
+├── .next/
+├── node_modules/
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── font/
+│   │   │   └── font.ts
+│   │   ├── action.ts
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── loading.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── alert-dialog.tsx
+│   │   │   ├── avatar.tsx
+│   │   │   ├── breadcrumb.tsx
+│   │   │   ├── calendar.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── command.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── floating-dock.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── orbiting-circles.tsx
+│   │   │   ├── popover.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── separator.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── tabs.tsx
+│   │   │   └── toggle.tsx
+│   │   └── ThemeProvider.tsx
+│   └── lib/
+│       └── utils.ts
+├── .eslintrc.json
+├── .gitignore
+├── components.json
+├── next.config.mjs
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+
+---
+
+## 3. **TypeScript and Zod Usage**
+
+- **Interfaces Over Types**: For object shapes, favor `interface` (unless a union or intersection type is needed).  
+- **Zod for Validation**:  
+  - Use Zod schemas for form submissions, API payloads, and Supabase queries.  
+  - Generate derived TypeScript types via Zod’s `.infer`.  
+- **Avoid Enums**: Use literal types or mappings instead (`type UserRole = 'admin' | 'consultant' | 'student'`).  
+- **Functional Components**: Example:
+
+```tsx
+interface UserFormProps {
+  onSubmit: (values: UserFormData) => void;
+}
+
+export function UserForm({ onSubmit }: UserFormProps) {
+  // ...
+}
+```
+
+---
+
+## 4. **Syntax and Formatting**
+
+- **Prettier**: Run `npx prettier --write .` on every commit or via a pre-commit hook.  
+- **Function Keyword**: Use `function` for pure or utility functions; arrow functions for inline or callback usage.  
+- **JSX**: Keep it **declarative** and easy to read; break complex UI into subcomponents.  
+- **Conditional Logic**: Use concise if-statements or ternaries for simple conditions.
+
+---
+
+## 5. **UI and Styling**
+
+- **Tailwind CSS (or similar)**:  
+  - Keep class usage consistent and avoid inline styles unless necessary.  
+  - Use utility classes for quick styling but remain mindful of readability.
+- **Component Reusability**:  
+  - Factor out repeated elements (e.g., `Button`, `Modal`) into shared components.  
+  - Follow a consistent naming scheme (`<Button />`, `<UserCard />`).
+
+---
+
+## 6. **State Management and Data Fetching**
+
+- **Zustand** (Optional):  
+  - For lightweight global or shared state.  
+  - Keep store logic minimal and well-documented.  
+- **TanStack React Query**:  
+  - For server data fetching and caching.  
+  - Use `useQuery` for read operations and `useMutation` for write operations.  
+  - Keep queries small and relevant to the component’s domain.
+
+---
+
+## 7. **Internationalization with Next-Intl**
+
+- **Next-Intl**:  
+  - Configure Next.js to leverage [Next-Intl](https://github.com/amannn/next-intl) for translations.  
+  - Store translation messages in separate files (e.g., `en.json`, `fr.json`).  
+  - Use the `<useTranslations>` or `<TranslatedLink>` utilities to localize UI and routes.  
+- **Context**: Wrap top-level pages in `next-intl` providers so all components can consume translations.  
+- **Naming Keys**: Use descriptive keys like `dashboard.title` or `auth.loginLabel`.
+
+---
+
+## 8. **Error Handling and Validation**
+
+- **Guard Clauses**: Return early on invalid data or errors to avoid nested ifs.  
+- **Zod**: Validate any inbound data (e.g., form submissions). Provide user-friendly error messages.  
+- **Logging**: For severe errors, log with `console.error` or a custom logger.  
+- **User Feedback**: Display errors in the UI in a concise manner (`ErrorMessage` component).
+
+---
+
+## 9. **Performance Optimization**
+
+- **Next.js Built-Ins**:  
+  - Use **dynamic imports** for large or rarely used components.  
+  - Consider **ISR** (Incremental Static Regeneration) or **SSG** for content-heavy pages.  
+- **Caching**: Rely on React Query for caching responses to minimize repeated fetches.  
+- **Memoization**: Use `useMemo`, `useCallback`, or pure components to avoid needless re-renders.
+
+---
+
+## 10. **Project Structure and Environment**
+
+- **Single App**: Since you’re focusing on a single Next.js web app, keep everything under `src/` or `app/` directory as you prefer.  
+- **Env Variables**:  
+  - Store secrets in `.env.local` or environment variables in your hosting platform.  
+  - Do not commit `.env` files to version control.  
+- **Deployment**:  
+  - If deploying to Vercel, set environment variables in the project settings.  
+  - Ensure Supabase credentials are properly configured.
+
+---
+
+## 11. **Backend & Database (Supabase)**
+
+- **Supabase Client**:  
+  - Initialize once, e.g., in `lib/supabase-client.ts`.  
+  - For server-side usage, consider secure environment keys.  
+- **API Routes**:  
+  - Use Next.js API routes in `pages/api` or the new **Route Handlers** in the `app` directory.  
+  - Validate request bodies with Zod.  
+  - Handle errors gracefully—always return an appropriate HTTP status code.
+
+---
+
+## 12. **Testing and Quality Assurance**
+
+1. **Test Types**:  
+   - **Unit Tests**: For isolated logic (e.g., helper functions, small components).  
+   - **Integration Tests**: For combined flows within the UI.  
+   - **E2E Tests**: With Playwright or Cypress, simulating user behavior (booking flow, login, etc.).  
+
+2. **Flow**:  
+   - **Create/verify test** → **Implement feature** → **Type check** → **Run test** → **Format** → **Commit**.  
+   - Keep test coverage at or above your team’s threshold.
+
+3. **Debugging**:  
+   - Use a consistent naming convention for tests.  
+   - Leverage `console.info` or specialized logs to highlight test progress or known issues.
+
+---
+
+## 13. **Key Conventions**
+
+- **Commits**: Use conventional commits (`feat:`, `fix:`, `chore:`) or a clear standard.  
+- **Documentation**: Add JSDoc or inline comments for complex logic or edge cases.  
+- **Error Handling**: Keep it consistent. The same approach for logging, error boundaries, or user notifications.  
+- **Formatting**: Use Prettier + ESLint to maintain code consistency.
+
+---
+
+### **Summary**
+
+With these updated rules:
+
+- You’ll **start with tests** before feature implementation (TDD).  
+- Write **clean, modular TypeScript** code in Next.js (`.tsx` files).  
+- Use **Zod** for validation, **Supabase** for data, and **Next-Intl** for i18n.  
+- Keep your code **well-structured**, **logged** for debugging, and **formatted** via Prettier.  
+- Limit or remove references to React Native/Expo, focusing exclusively on **web** with Next.js.
+
+These guidelines ensure your development process is consistent, test-driven, and aligned with best practices for a **Next.js TypeScript web application** using **Next-Intl**.
