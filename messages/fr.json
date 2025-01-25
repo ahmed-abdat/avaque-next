@@ -1,16 +1,38 @@
 {
   "IndexPage": {
-    "title": "Exemple next-intl",
-    "description": "Bienvenue dans l'exemple d'internationalisation (i18n) de Next.js ! Cette démonstration met en valeur la puissance du Router App et montre comment gérer du contenu multilingue de manière transparente avec next-intl."
+    "title": "Page d'accueil",
+    "description": "Page d'accueil"
   },
-  "NotFoundPage": {
-    "title": "Page Non Trouvée",
-    "description": "Oups ! Il semble que vous ayez trouvé une page qui n'existe pas. Ne vous inquiétez pas, notre magie d'internationalisation fonctionne toujours sur les autres parties de l'application. N'hésitez pas à revenir en arrière pour explorer davantage !"
-  },
-  "Navigation": {
-    "home": "Accueil"
-  },
-  "Footer": {
-    "copyright": "© 2024 Votre Application. Tous droits réservés."
-  }
+  "Auth": {
+    "common": {
+        "email": "Adresse e-mail",
+        "emailPlaceholder": "nom@exemple.com",
+        "password": "Mot de passe",
+        "error": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "login": {
+        "title": "Se connecter",
+        "subtitle": "Connectez-vous à votre compte",
+        "signIn": "Se connecter",
+        "signingIn": "Connexion en cours...",
+        "googleSignIn": "Se connecter avec Google",
+        "forgotPassword": "Mot de passe oublié ?",
+        "orContinueWith": "ou continuer avec",
+        "noAccount": "Vous n'avez pas de compte ?",
+        "signUp": "S'inscrire"
+    },
+    "logout": {
+        "signOut": "Se déconnecter",
+        "signingOut": "Déconnexion en cours..."
+    },
+    "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+        "resetPassword": "Réinitialiser le mot de passe",
+        "backToSignIn": "Retour à la connexion",
+        "checkEmail": "Vérifiez votre e-mail",
+        "emailSent": "Si un compte existe avec cette adresse e-mail, vous recevrez un lien de réinitialisation",
+        "rememberPassword": "Vous vous souvenez de votre mot de passe ?"
+    }
+}
 }
