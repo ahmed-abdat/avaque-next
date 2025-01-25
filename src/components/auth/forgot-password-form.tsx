@@ -5,6 +5,7 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { ArrowLeft, Mail, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
   ForgotPasswordFormValues,
   createForgotPasswordSchema,
 } from "@/lib/validations/auth";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,6 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       );
 
       if (error) {
-        // Extract seconds from rate limit error
         console.error(error);
         const rateLimitMatch = error.message.match(/after (\d+) seconds/);
         if (rateLimitMatch) {
@@ -58,8 +59,6 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           setError(t("common.errors.rateLimit", { seconds }));
           return;
         }
-
-        // For any other error, show generic error message
         setError(t("common.error"));
         return;
       }
@@ -72,96 +71,116 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
     }
   }
 
-  if (success) {
-    return (
-      <div className="w-full space-y-4">
-        <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t("forgotPassword.checkEmail")}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {t("forgotPassword.emailSent")}
-          </p>
-        </div>
-        <div className="text-center">
-          <Link
-            href={`/${locale}/login`}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            {t("forgotPassword.backToSignIn")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full space-y-6">
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("forgotPassword.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {t("forgotPassword.subtitle")}
-        </p>
-      </div>
-
-      {error && (
-        <div className="rounded-lg bg-destructive/15 px-4 py-3 text-sm text-destructive">
-          {error}
+    <div className="flex min-h-[80vh] w-full items-center justify-center">
+      <div className="w-full max-w-md px-4 py-6">
+        {/* Email Icon with Animated Background */}
+        <div className="relative mx-auto mb-6 flex h-[90px] w-[90px] items-center justify-center">
+          <div className="absolute inset-0 animate-pulse rounded-full bg-primary/10" />
+          <div className="absolute inset-2 rounded-full bg-primary/20" />
+          <Mail className="relative h-10 w-10 text-primary" strokeWidth={1.5} />
         </div>
-      )}
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("common.email")}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder={t("common.emailPlaceholder")}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex items-center justify-between">
-            <Link
-              href={`/${locale}/login`}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              {t("forgotPassword.backToSignIn")}
-            </Link>
+        {success ? (
+          <div className="space-y-4">
+            <div className="text-center">
+              <h1 className="text-xl font-semibold tracking-tight">
+                {t("forgotPassword.checkEmail")}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {t("forgotPassword.emailSent")}
+              </p>
+            </div>
+            <Button asChild variant="outline" className="w-full gap-2 text-sm">
+              <Link href={`/${locale}/login`}>
+                <ArrowLeft className="h-4 w-4" />
+                {t("forgotPassword.backToSignIn")}
+              </Link>
+            </Button>
           </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="text-center">
+              <h1 className="text-xl font-semibold tracking-tight">
+                {t("forgotPassword.title")}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {t("forgotPassword.subtitle")}
+              </p>
+            </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              t("forgotPassword.resetPassword")
+            {error && (
+              <Alert
+                variant="destructive"
+                className="border-destructive/50 text-destructive dark:border-destructive/50 dark:text-destructive"
+              >
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle className="ml-2 text-sm font-medium">
+                  {t("common.error")}
+                </AlertTitle>
+                <AlertDescription className="ml-6 text-xs">
+                  {error}
+                </AlertDescription>
+              </Alert>
             )}
-          </Button>
 
-          <p className="text-sm text-center text-gray-600">
-            {t("forgotPassword.rememberPassword")}{" "}
-            <Link
-              href={`/${locale}/login`}
-              className="text-blue-600 hover:underline"
-            >
-              {t("login.signIn")}
-            </Link>
-          </p>
-        </form>
-      </Form>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">
+                        {t("common.email")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder={t("common.emailPlaceholder")}
+                          className="text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex flex-col gap-4">
+                  <Button
+                    type="submit"
+                    className="w-full dark:bg-primary dark:hover:bg-primary/90 dark:text-white"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      </div>
+                    ) : (
+                      t("forgotPassword.resetPassword")
+                    )}
+                  </Button>
+
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full gap-2 text-sm"
+                  >
+                    <Link href={`/${locale}/login`}>
+                      <ArrowLeft className="h-4 w-4" />
+                      {t("forgotPassword.backToSignIn")}
+                    </Link>
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

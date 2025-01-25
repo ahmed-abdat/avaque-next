@@ -141,7 +141,11 @@ export function RegisterForm({ locale }: { locale: string }) {
             </p>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button
+            type="submit"
+            className="w-full dark:bg-primary dark:hover:bg-primary/90 dark:text-white"
+            disabled={isPending}
+          >
             {isPending
               ? t("register.creatingAccount")
               : t("register.createAccount")}

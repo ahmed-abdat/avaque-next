@@ -32,6 +32,7 @@ const languageOptions: LanguageOption[] = [
 export default function LocalSwitcher() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const pathname = usePathname();
   const currentLocale = useLocale() as Locale;
 
   // Get the next language option to display its flag
@@ -40,7 +41,9 @@ export default function LocalSwitcher() {
 
   const handleLanguageChange = () => {
     startTransition(() => {
-      router.replace(`/${nextLocale}`);
+      // Extract the path after the locale
+      const newPath = pathname.replace(`/${currentLocale}`, `/${nextLocale}`);
+      router.replace(newPath);
     });
   };
 

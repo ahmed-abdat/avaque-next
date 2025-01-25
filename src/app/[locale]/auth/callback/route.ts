@@ -8,11 +8,15 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const returnTo = requestUrl.searchParams.get("returnTo") || "/dashboard";
+  const next = requestUrl.searchParams.get("next") || "/dashboard";
+  const type = requestUrl.searchParams.get("type");
+
+  // Get the locale from the URL path
+  const locale = requestUrl.pathname.split("/")[1] || "en";
 
   if (!code) {
     return NextResponse.redirect(
-      new URL("/login?error=No code provided", request.url)
+      new URL(`/${locale}/login?error=No code provided`, request.url)
     );
   }
 
@@ -38,15 +42,25 @@ export async function GET(request: Request) {
   try {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
+      console.error("Auth callback error:", error);
       return NextResponse.redirect(
-        new URL(`/login?error=${error.message}`, request.url)
+        new URL(`/${locale}/login?error=${error.message}`, request.url)
       );
     }
+
+    // If this is email verification, redirect to login with success message
+    if (type === "email_verification") {
+      return NextResponse.redirect(
+        new URL(`/${locale}/login?verified=true`, request.url)
+      );
+    }
+
+    // For other auth callbacks (like OAuth), redirect to the next URL
+    return NextResponse.redirect(new URL(`/${locale}${next}`, request.url));
   } catch (error) {
+    console.error("Unknown error in auth callback:", error);
     return NextResponse.redirect(
-      new URL("/login?error=Unknown error occurred", request.url)
+      new URL(`/${locale}/login?error=Unknown error occurred`, request.url)
     );
   }
-
-  return NextResponse.redirect(new URL(returnTo, request.url));
 }

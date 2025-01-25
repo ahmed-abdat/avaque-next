@@ -13,9 +13,17 @@
         "invalidEmail": "Cette adresse e-mail n'est pas valide",
         "invalidCredentials": "L'adresse e-mail ou le mot de passe est incorrect",
         "emailExists": "Cette adresse e-mail est déjà utilisée. Voulez-vous vous connecter ?",
+        "emailNotConfirmed": "Votre adresse e-mail n'est pas confirmée. Veuillez vérifier votre boîte de réception ou demander un nouveau lien de vérification.",
         "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
         "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
         "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer"
+      },
+      "resendVerification": {
+        "button": "Renvoyer l'e-mail de vérification",
+        "sending": "Envoi en cours...",
+        "success": "E-mail de vérification envoyé avec succès",
+        "error": "Impossible d'envoyer l'e-mail de vérification",
+        "cancel": "Annuler"
       }
     },
     "validation": {
@@ -35,12 +43,27 @@
       "resetting": "Réinitialisation en cours...",
       "success": "Mot de passe mis à jour",
       "successMessage": "Votre mot de passe a été mis à jour avec succès. Redirection vers la page de connexion...",
-      "backToLogin": "Retour à la connexion"
+      "backToLogin": "Retour à la connexion",
+      "errors": {
+        "samePassword": "Le nouveau mot de passe doit être différent de l'ancien",
+        "sessionExpired": "Votre session de réinitialisation a expiré. Veuillez demander un nouveau lien",
+        "invalidSession": "Session invalide. Veuillez réessayer"
+      }
     },
     "verifyEmail": {
       "title": "Vérifiez votre e-mail",
       "description": "Nous vous avons envoyé un lien de vérification. Veuillez vérifier votre e-mail et cliquer sur le lien pour confirmer votre compte.",
-      "spamNote": "Vous n'avez pas reçu l'e-mail ? Vérifiez votre dossier spam ou demandez un nouveau lien de vérification."
+      "spamNote": "Vous n'avez pas reçu l'e-mail ? Vérifiez votre dossier spam ou demandez un nouveau lien de vérification.",
+      "success": "Votre adresse e-mail a été confirmée avec succès. Vous pouvez maintenant vous connecter.",
+      "checkInbox": "Vérifiez votre boîte de réception",
+      "checkInboxDesc": "Ouvrez votre e-mail et recherchez le message de vérification",
+      "clickLink": "Cliquez sur le lien de vérification",
+      "clickLinkDesc": "Cliquez sur le bouton 'Confirmer l'e-mail' dans le message",
+      "errors": {
+        "linkExpired": "Le lien de vérification a expiré. Veuillez demander un nouveau lien",
+        "invalidLink": "Le lien de vérification est invalide. Veuillez demander un nouveau lien",
+        "accessDenied": "Accès refusé. Veuillez demander un nouveau lien de vérification"
+      }
     },
     "register": {
       "title": "Créer un compte",

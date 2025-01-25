@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,13 +23,46 @@ import { LoginFormValues, createLoginSchema } from "@/lib/validations/auth";
 import { GoogleSignInButton } from "./google-sign-in-button";
 import { login } from "@/app/[locale]/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
+import { ResendVerificationDialog } from "./resend-verification-dialog";
 
 export function LoginForm({ locale }: { locale: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const t = useTranslations("Auth");
   const loginSchema = createLoginSchema(t);
+  const isRtl = locale === "ar";
+
+  // Check for verification success message and errors
+  useEffect(() => {
+    if (searchParams?.get("verified") === "true") {
+      setSuccess(t("verifyEmail.success"));
+    }
+
+    // Handle URL error parameters
+    const urlError = searchParams?.get("error");
+    const errorCode = searchParams?.get("error_code");
+    const errorDescription = searchParams?.get("error_description");
+
+    if (urlError || errorCode || errorDescription) {
+      // Handle specific error cases
+      if (
+        errorCode === "otp_expired" ||
+        errorDescription?.includes("expired")
+      ) {
+        setError(t("verifyEmail.errors.linkExpired"));
+      } else if (urlError === "No code provided") {
+        setError(t("verifyEmail.errors.invalidLink"));
+      } else if (errorCode === "access_denied") {
+        setError(t("verifyEmail.errors.accessDenied"));
+      } else {
+        setError(t("common.error"));
+      }
+    }
+  }, [searchParams, t]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -40,16 +75,19 @@ export function LoginForm({ locale }: { locale: string }) {
   async function onSubmit(values: LoginFormValues) {
     try {
       setError(null);
+      setUnverifiedEmail(null);
       setIsPending(true);
       const result = await login(values);
 
-      console.log(result);
-
       if (result.error) {
+        console.log(result.error);
         // Map Supabase error messages to our translated error messages
         const errorMessage = result.error.toLowerCase();
         if (errorMessage.includes("invalid login credentials")) {
           setError(t("common.errors.invalidCredentials"));
+        } else if (errorMessage.includes("email not confirmed")) {
+          setError(t("common.errors.emailNotConfirmed"));
+          setUnverifiedEmail(values.email);
         } else if (errorMessage.includes("too many requests")) {
           setError(t("common.errors.tooManyRequests"));
         } else if (errorMessage.includes("network")) {
@@ -80,12 +118,56 @@ export function LoginForm({ locale }: { locale: string }) {
           {t("login.title")}
         </h1>
         <p className="text-sm text-muted-foreground">{t("login.subtitle")}</p>
+
+        {/* Sign up link */}
+        <div className="mt-2 text-sm">
+          {t("login.noAccount")}{" "}
+          <Button
+            variant="link"
+            className="gap-1 p-0 h-auto font-semibold text-primary hover:text-primary/90"
+            asChild
+          >
+            <Link href={`/${locale}/register`}>
+              {t("login.signUp")}
+              <ArrowRight className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
+            </Link>
+          </Button>
+        </div>
       </div>
 
+      {success && (
+        <Alert
+          variant="success"
+          className="border-green-200 bg-green-100/50 dark:border-green-900 dark:bg-green-900/20"
+        >
+          <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <AlertDescription className="text-green-600 dark:text-green-400 ms-3">
+            {success}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {error && (
-        <div className="rounded-lg bg-destructive/15 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
+        <Alert
+          variant="destructive"
+          className="border-destructive/50 bg-destructive/10 text-destructive dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200"
+        >
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="ml-2 text-sm font-medium">
+            {t("common.error")}
+          </AlertTitle>
+          <AlertDescription className="ml-6 text-xs">
+            {error}
+            {unverifiedEmail && (
+              <div className="mt-2 border-t border-destructive/30 pt-2 dark:border-red-900/50">
+                <ResendVerificationDialog
+                  email={unverifiedEmail}
+                  locale={locale}
+                />
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
       )}
 
       <div className="grid gap-6">
@@ -132,7 +214,11 @@ export function LoginForm({ locale }: { locale: string }) {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full dark:bg-primary dark:hover:bg-primary/90 dark:text-white"
+              disabled={isPending}
+            >
               {isPending ? t("login.signingIn") : t("login.signIn")}
             </Button>
           </form>

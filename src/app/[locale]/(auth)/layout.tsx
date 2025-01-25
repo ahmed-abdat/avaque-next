@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
+import LocalSwitcher from "@/components/local-switcher";
 
 export default function AuthLayout({
   children,
@@ -12,8 +13,9 @@ export default function AuthLayout({
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
       {/* Left side - Auth form */}
       <div className="flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-background">
-        <div className={`absolute ${locale === "ar" ? "top-4 right-4" : "top-4 left-4"}`}>
+        <div className={`absolute ${locale === "ar" ? "top-4 right-4" : "top-4 left-4"} flex items-center gap-2`}>
           <ThemeToggle locale={locale} />
+          <LocalSwitcher />
         </div>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Image
@@ -25,8 +27,8 @@ export default function AuthLayout({
             priority
           />
         </div>
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[400px]">
-          <div className="bg-card px-6 py-8 shadow-sm ring-1 ring-border/5 sm:rounded-xl sm:px-12">
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[450px]">
+          <div className="bg-card px-4 py-4 shadow-sm ring-1 ring-border/5 sm:rounded-xl sm:px-12">
             {children}
           </div>
         </div>

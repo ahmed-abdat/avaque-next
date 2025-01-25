@@ -22,11 +22,11 @@ export function GoogleSignInButton({ locale }: { locale: string }) {
       // Get the return URL if it exists
       const returnTo = searchParams.get("returnTo") || "/dashboard";
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${
-            window.location.origin
+            process.env.NEXT_PUBLIC_SITE_URL
           }/${locale}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
           queryParams: {
             access_type: "offline",
@@ -39,13 +39,6 @@ export function GoogleSignInButton({ locale }: { locale: string }) {
         console.error("❌ Google sign-in error:", error);
         throw error;
       }
-
-      if (!data.url) {
-        console.error("❌ No OAuth URL returned");
-        throw new Error("No OAuth URL returned");
-      }
-
-      router.push(`/${locale}${data.url}`);
     } catch (error) {
       console.error("❌ Error signing in with Google:", error);
       setError(error instanceof Error ? error.message : t("common.error"));
@@ -70,8 +63,8 @@ export function GoogleSignInButton({ locale }: { locale: string }) {
           </div>
         ) : (
           <div className="flex items-center justify-center gap-2">
-            <FcGoogle className="h-5 w-5" />
             <span>{t("login.googleSignIn")}</span>
+            <FcGoogle className="h-5 w-5" />
           </div>
         )}
       </Button>

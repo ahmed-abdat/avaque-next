@@ -1,14 +1,16 @@
-import LocalSwitcher from '@/components/local-switcher';
-import { useTranslations } from 'next-intl';
+import { LogoutButton } from "@/components/auth/logout-button";
+import LocalSwitcher from "@/components/local-switcher";
+import { createClient } from "@/utils/supabase/server";
 
-export default function Home() {
-  const t = useTranslations('IndexPage');
+export default async function Home() {
+  // check if user is logged in
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
 
   return (
     <div>
-      <h1 className='text-4xl mb-4 font-semibold'>{t('title')}</h1>
-      <p>{t('description')}</p>
-      <LocalSwitcher  />
+      <LocalSwitcher />
+      {session ? <LogoutButton /> : <p>Please login</p>}
     </div>
   );
 }
