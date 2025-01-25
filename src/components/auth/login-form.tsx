@@ -43,13 +43,31 @@ export function LoginForm({ locale }: { locale: string }) {
       setIsPending(true);
       const result = await login(values);
 
+      console.log(result);
+
       if (result.error) {
-        throw new Error(result.error);
+        // Map Supabase error messages to our translated error messages
+        const errorMessage = result.error.toLowerCase();
+        if (errorMessage.includes("invalid login credentials")) {
+          setError(t("common.errors.invalidCredentials"));
+        } else if (errorMessage.includes("too many requests")) {
+          setError(t("common.errors.tooManyRequests"));
+        } else if (errorMessage.includes("network")) {
+          setError(t("common.errors.networkError"));
+        } else if (errorMessage.includes("rate limit")) {
+          // Extract seconds if available in the message
+          const seconds = errorMessage.match(/\d+/)?.[0] || "60";
+          setError(t("common.errors.rateLimit", { seconds }));
+        } else {
+          setError(t("common.error"));
+        }
+        return;
       }
 
       router.replace(`/${locale}/dashboard`);
     } catch (error) {
-      setError(error instanceof Error ? error.message : t("common.error"));
+      console.error(error);
+      setError(t("common.error"));
     } finally {
       setIsPending(false);
     }
