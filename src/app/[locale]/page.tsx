@@ -8,7 +8,7 @@ export default function Home() {
     <div>
       <h1 className='text-4xl mb-4 font-semibold'>{t('title')}</h1>
       <p>{t('description')}</p>
-      <LocalSwitcher />
+      <LocalSwitcher  />
     </div>
   );
 }

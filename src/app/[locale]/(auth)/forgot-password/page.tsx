@@ -5,6 +5,6 @@ export const metadata = {
   description: "Reset your password",
 };
 
-export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm />;
+export default function ForgotPasswordPage({ params }: { params: { locale: string } }) {
+  return <ForgotPasswordForm locale={params.locale} />;
 }

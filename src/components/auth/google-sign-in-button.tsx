@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/utils/supabase/client";
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ locale }: { locale: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export function GoogleSignInButton() {
         options: {
           redirectTo: `${
             window.location.origin
-          }/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
+          }/${locale}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -45,7 +45,7 @@ export function GoogleSignInButton() {
         throw new Error("No OAuth URL returned");
       }
 
-      router.push(data.url);
+      router.push(`/${locale}${data.url}`);
     } catch (error) {
       console.error("❌ Error signing in with Google:", error);
       setError(error instanceof Error ? error.message : t("common.error"));

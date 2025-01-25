@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,28 +17,32 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/utils/supabase/client";
 import { PasswordInput } from "@/components/ui/password-input";
 
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(6, {
-      message: "Password must be at least 6 characters.",
-    }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
-
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const t = useTranslations("Auth");
+
+  const resetPasswordSchema = z
+    .object({
+      password: z.string().min(6, {
+        message: t("validation.passwordMin"),
+      }),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("validation.passwordMatch"),
+      path: ["confirmPassword"],
+    });
+
+  type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -61,10 +66,10 @@ export default function ResetPasswordPage() {
       setSuccess(true);
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push("/login");
+        router.push(`/${locale}/login`);
       }, 2000);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : t("common.error"));
     }
   }
 
@@ -73,11 +78,10 @@ export default function ResetPasswordPage() {
       <div className="w-full space-y-4">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Password Updated
+            {t("resetPassword.success")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Your password has been successfully updated. Redirecting you to
-            login...
+            {t("resetPassword.successMessage")}
           </p>
         </div>
       </div>
@@ -88,10 +92,10 @@ export default function ResetPasswordPage() {
     <div className="w-full space-y-6">
       <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
-          Reset Password
+          {t("resetPassword.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your new password below
+          {t("resetPassword.subtitle")}
         </p>
       </div>
 
@@ -104,10 +108,12 @@ export default function ResetPasswordPage() {
       {success ? (
         <div className="space-y-4">
           <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-600">
-            Your password has been reset successfully.
+            {t("resetPassword.successMessage")}
           </div>
           <Button asChild className="w-full">
-            <Link href="/login">Back to login</Link>
+            <Link href={`/${locale}/login`}>
+              {t("resetPassword.backToLogin")}
+            </Link>
           </Button>
         </div>
       ) : (
@@ -118,10 +124,10 @@ export default function ResetPasswordPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New password</FormLabel>
+                  <FormLabel>{t("resetPassword.newPassword")}</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder="Enter your new password"
+                      placeholder={t("resetPassword.newPasswordPlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -135,10 +141,12 @@ export default function ResetPasswordPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm password</FormLabel>
+                  <FormLabel>{t("resetPassword.confirmPassword")}</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder="Confirm your new password"
+                      placeholder={t(
+                        "resetPassword.confirmPasswordPlaceholder"
+                      )}
                       {...field}
                     />
                   </FormControl>
@@ -152,7 +160,9 @@ export default function ResetPasswordPage() {
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Resetting..." : "Reset password"}
+              {form.formState.isSubmitting
+                ? t("resetPassword.resetting")
+                : t("resetPassword.resetButton")}
             </Button>
           </form>
         </Form>

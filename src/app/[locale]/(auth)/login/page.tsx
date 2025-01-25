@@ -7,6 +7,8 @@ export const metadata = {
 
 
 
-export default function LoginPage() {
-  return <LoginForm />;
+export default function LoginPage({ params: { locale } }: { params: { locale: string } }) {
+
+  
+  return <LoginForm locale={locale} />;
 }

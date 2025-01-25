@@ -3,15 +3,17 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AuthLayout({
   children,
+  params: { locale },
 }: {
   children: React.ReactNode;
+  params: { locale: string };
 }) {
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
       {/* Left side - Auth form */}
       <div className="flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-background">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
+        <div className={`absolute ${locale === "ar" ? "top-4 right-4" : "top-4 left-4"}`}>
+          <ThemeToggle locale={locale} />
         </div>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Image

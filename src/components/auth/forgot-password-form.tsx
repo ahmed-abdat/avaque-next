@@ -19,14 +19,15 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/utils/supabase/client";
 import {
   ForgotPasswordFormValues,
-  forgotPasswordSchema,
+  createForgotPasswordSchema,
 } from "@/lib/validations/auth";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("Auth");
+  const forgotPasswordSchema = createForgotPasswordSchema(t);
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -44,17 +45,28 @@ export function ForgotPasswordForm() {
       const { error } = await supabase.auth.resetPasswordForEmail(
         values.email,
         {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: `${window.location.origin}/${locale}/reset-password`,
         }
       );
 
       if (error) {
-        throw error;
+        // Extract seconds from rate limit error
+        console.error(error);
+        const rateLimitMatch = error.message.match(/after (\d+) seconds/);
+        if (rateLimitMatch) {
+          const seconds = rateLimitMatch[1];
+          setError(t("common.errors.rateLimit", { seconds }));
+          return;
+        }
+
+        // For any other error, show generic error message
+        setError(t("common.error"));
+        return;
       }
 
       setSuccess(true);
     } catch (error) {
-      setError(error instanceof Error ? error.message : t("common.error"));
+      setError(t("common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +85,7 @@ export function ForgotPasswordForm() {
         </div>
         <div className="text-center">
           <Link
-            href="/login"
+            href={`/${locale}/login`}
             className="text-sm font-medium text-primary hover:underline"
           >
             {t("forgotPassword.backToSignIn")}
@@ -122,7 +134,7 @@ export function ForgotPasswordForm() {
 
           <div className="flex items-center justify-between">
             <Link
-              href="/login"
+              href={`/${locale}/login`}
               className="text-sm font-medium text-primary hover:underline"
             >
               {t("forgotPassword.backToSignIn")}
@@ -141,7 +153,10 @@ export function ForgotPasswordForm() {
 
           <p className="text-sm text-center text-gray-600">
             {t("forgotPassword.rememberPassword")}{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link
+              href={`/${locale}/login`}
+              className="text-blue-600 hover:underline"
+            >
               {t("login.signIn")}
             </Link>
           </p>

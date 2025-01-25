@@ -17,17 +17,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LoginFormValues, loginSchema } from "@/lib/validations/auth";
+import { LoginFormValues, createLoginSchema } from "@/lib/validations/auth";
 import { GoogleSignInButton } from "./google-sign-in-button";
 import { login } from "@/app/[locale]/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
 
-export function LoginForm() {
+export function LoginForm({ locale }: { locale: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations("Auth");
+  const loginSchema = createLoginSchema(t);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -47,9 +47,7 @@ export function LoginForm() {
         throw new Error(result.error);
       }
 
-      // Redirect to returnTo URL if it exists, otherwise go to dashboard
-      const returnTo = searchParams.get("returnTo") || "/dashboard";
-      router.replace(returnTo);
+      router.replace(`/${locale}/dashboard`);
     } catch (error) {
       setError(error instanceof Error ? error.message : t("common.error"));
     } finally {
@@ -109,7 +107,7 @@ export function LoginForm() {
 
             <div className="flex items-center justify-end">
               <Link
-                href="/forgot-password"
+                href={`/${locale}/forgot-password`}
                 className="text-sm font-medium text-primary hover:underline"
               >
                 {t("login.forgotPassword")}
@@ -133,12 +131,15 @@ export function LoginForm() {
           </div>
         </div>
 
-        <GoogleSignInButton />
+        <GoogleSignInButton locale={locale} />
 
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
             {t("login.noAccount")}{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
+            <Link
+              href={`/${locale}/register`}
+              className="text-blue-600 hover:underline"
+            >
               {t("login.signUp")}
             </Link>
           </p>

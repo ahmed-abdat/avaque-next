@@ -5,34 +5,76 @@
   },
   "Auth": {
     "common": {
-        "email": "Adresse e-mail",
-        "emailPlaceholder": "nom@exemple.com",
-        "password": "Mot de passe",
-        "error": "Une erreur s'est produite. Veuillez réessayer."
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "nom@exemple.com",
+      "password": "Mot de passe",
+      "error": "Une erreur s'est produite. Veuillez réessayer.",
+      "errors": {
+        "invalidEmail": "Cette adresse e-mail n'est pas valide",
+        "userNotFound": "Aucun compte trouvé avec cette adresse e-mail",
+        "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
+        "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
+        "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer"
+      }
+    },
+    "validation": {
+      "emailRequired": "Veuillez entrer une adresse e-mail valide",
+      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
+      "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
+      "passwordMatch": "Les mots de passe ne correspondent pas"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "subtitle": "Entrez votre nouveau mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
+      "resetButton": "Réinitialiser le mot de passe",
+      "resetting": "Réinitialisation en cours...",
+      "success": "Mot de passe mis à jour",
+      "successMessage": "Votre mot de passe a été mis à jour avec succès. Redirection vers la page de connexion...",
+      "backToLogin": "Retour à la connexion"
+    },
+    "verifyEmail": {
+      "title": "Vérifiez votre e-mail",
+      "description": "Nous vous avons envoyé un lien de vérification. Veuillez vérifier votre e-mail et cliquer sur le lien pour confirmer votre compte.",
+      "spamNote": "Vous n'avez pas reçu l'e-mail ? Vérifiez votre dossier spam ou demandez un nouveau lien de vérification."
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Entrez vos informations pour créer un compte",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "createPassword": "Mot de passe",
+      "createAccount": "Créer un compte",
+      "creatingAccount": "Création du compte...",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter"
     },
     "login": {
-        "title": "Se connecter",
-        "subtitle": "Connectez-vous à votre compte",
-        "signIn": "Se connecter",
-        "signingIn": "Connexion en cours...",
-        "googleSignIn": "Se connecter avec Google",
-        "forgotPassword": "Mot de passe oublié ?",
-        "orContinueWith": "ou continuer avec",
-        "noAccount": "Vous n'avez pas de compte ?",
-        "signUp": "S'inscrire"
+      "title": "Se connecter",
+      "subtitle": "Connectez-vous à votre compte",
+      "signIn": "Se connecter",
+      "signingIn": "Connexion en cours...",
+      "googleSignIn": "Se connecter avec Google",
+      "forgotPassword": "Mot de passe oublié ?",
+      "orContinueWith": "ou continuer avec",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signUp": "S'inscrire"
     },
     "logout": {
-        "signOut": "Se déconnecter",
-        "signingOut": "Déconnexion en cours..."
+      "signOut": "Se déconnecter",
+      "signingOut": "Déconnexion en cours..."
     },
     "forgotPassword": {
-        "title": "Mot de passe oublié",
-        "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
-        "resetPassword": "Réinitialiser le mot de passe",
-        "backToSignIn": "Retour à la connexion",
-        "checkEmail": "Vérifiez votre e-mail",
-        "emailSent": "Si un compte existe avec cette adresse e-mail, vous recevrez un lien de réinitialisation",
-        "rememberPassword": "Vous vous souvenez de votre mot de passe ?"
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+      "resetPassword": "Réinitialiser le mot de passe",
+      "backToSignIn": "Retour à la connexion",
+      "checkEmail": "Vérifiez votre e-mail",
+      "emailSent": "Si un compte existe avec cette adresse e-mail, vous recevrez un lien de réinitialisation",
+      "rememberPassword": "Vous vous souvenez de votre mot de passe ?"
     }
-}
+  }
 }

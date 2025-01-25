@@ -5,6 +5,6 @@ export const metadata = {
   description: "Create your account",
 };
 
-export default function RegisterPage() {
-  return <RegisterForm />;
+export default function RegisterPage({ params }: { params: { locale: string } }) {
+  return <RegisterForm locale={params.locale} />;
 }

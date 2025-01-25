@@ -18,14 +18,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { RegisterFormValues, registerSchema } from "@/lib/validations/auth";
+import {
+  RegisterFormValues,
+  createRegisterSchema,
+} from "@/lib/validations/auth";
 import { signup } from "@/app/[locale]/actions/auth";
 
-export function RegisterForm() {
+export function RegisterForm({ locale }: { locale: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations("Auth");
+  const registerSchema = createRegisterSchema(t);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -46,7 +50,7 @@ export function RegisterForm() {
         throw new Error(result.error);
       }
 
-      router.replace("/verify-email");
+      router.replace(`/${locale}/verify-email`);
     } catch (error) {
       setError(error instanceof Error ? error.message : t("common.error"));
     } finally {
@@ -129,7 +133,7 @@ export function RegisterForm() {
             <p className="text-sm text-muted-foreground">
               {t("register.hasAccount")}{" "}
               <Link
-                href="/login"
+                href={`/${locale}/login`}
                 className="font-medium text-primary hover:underline"
               >
                 {t("register.signIn")}
