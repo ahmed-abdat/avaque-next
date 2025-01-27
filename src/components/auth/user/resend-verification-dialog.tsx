@@ -15,7 +15,7 @@ import {
 import { resendVerificationEmail } from "@/app/[locale]/actions/auth";
 import { Mail, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 
 interface ResendVerificationDialogProps {
   email: string;

@@ -22,7 +22,7 @@ import { LoginFormValues, createLoginSchema } from "@/lib/validations/auth";
 import { GoogleSignInButton } from "./google-sign-in-button";
 import { login } from "@/app/[locale]/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 
 export function LoginForm({ locale }: { locale: string }) {
   const router = useRouter();

@@ -31,7 +31,43 @@
       "emailRequired": "Veuillez entrer une adresse e-mail valide",
       "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
       "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
-      "passwordMatch": "Les mots de passe ne correspondent pas"
+      "passwordMatch": "Les mots de passe ne correspondent pas",
+      "specializationRequired": "La spécialisation est requise",
+      "shortDescriptionMin": "La description doit contenir au moins 50 caractères",
+      "shortDescriptionMax": "La description ne doit pas dépasser 500 caractères"
+    },
+    "consultant": {
+      "register": {
+        "title": "Devenir guide",
+        "subtitle": "Rejoignez notre plateforme en tant que guide",
+        "fullName": "Nom complet",
+        "fullNamePlaceholder": "Jean Dupont",
+        "specialization": "Spécialisation",
+        "specializationPlaceholder": "Ex: Informatique, Mathématiques, Littérature",
+        "shortDescription": "Description courte",
+        "shortDescriptionPlaceholder": "Décrivez brièvement votre parcours et votre expertise (50-500 caractères)",
+        "createAccount": "Créer un compte guide",
+        "creatingAccount": "Création du compte...",
+        "hasAccount": "Déjà guide ?",
+        "signIn": "Se connecter"
+      },
+      "login": {
+        "title": "Espace guide",
+        "subtitle": "Connectez-vous à votre compte guide",
+        "signIn": "Se connecter",
+        "signingIn": "Connexion en cours...",
+        "noAccount": "Vous souhaitez devenir guide ?",
+        "signUp": "S'inscrire en tant que guide",
+        "forgotPassword": "Mot de passe oublié ?",
+        "verifyEmail": {
+          "success": "Votre adresse e-mail a été confirmée avec succès. Vous pouvez maintenant vous connecter."
+        },
+        "errors": {
+          "notConsultant": "Ce compte n'est pas un compte guide",
+          "pendingApproval": "Votre compte est en attente de validation",
+          "profileNotFound": "Profil de guide introuvable"
+        }
+      }
     },
     "resetPassword": {
       "title": "Réinitialiser le mot de passe",

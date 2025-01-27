@@ -1,7 +1,7 @@
 {
   "IndexPage": {
-    "title": "صفحة الإعدادات",
-    "description": "صفحة الإعدادات"
+    "title": "الصفحة الرئيسية",
+    "description": "الصفحة الرئيسية"
   },
   "Auth": {
     "common": {
@@ -31,7 +31,43 @@
       "emailRequired": "يرجى إدخال عنوان بريد إلكتروني صالح",
       "passwordMin": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
       "fullNameMin": "يجب أن يتكون الاسم الكامل من حرفين على الأقل",
-      "passwordMatch": "كلمات المرور غير متطابقة"
+      "passwordMatch": "كلمات المرور غير متطابقة",
+      "specializationRequired": "التخصص مطلوب",
+      "shortDescriptionMin": "يجب أن يحتوي الوصف على 50 حرفاً على الأقل",
+      "shortDescriptionMax": "يجب ألا يتجاوز الوصف 500 حرف"
+    },
+    "consultant": {
+      "register": {
+        "title": "كن مرشداً",
+        "subtitle": "انضم إلى منصتنا كمرشد",
+        "fullName": "الاسم الكامل",
+        "fullNamePlaceholder": "محمد أحمد",
+        "specialization": "التخصص",
+        "specializationPlaceholder": "مثال: علوم الحاسوب، الرياضيات، الأدب",
+        "shortDescription": "وصف مختصر",
+        "shortDescriptionPlaceholder": "صف خبرتك ومؤهلاتك باختصار (50-500 حرف)",
+        "createAccount": "إنشاء حساب مرشد",
+        "creatingAccount": "جاري إنشاء الحساب...",
+        "hasAccount": "هل أنت مرشد بالفعل؟",
+        "signIn": "تسجيل الدخول"
+      },
+      "login": {
+        "title": "منطقة المرشد",
+        "subtitle": "تسجيل الدخول إلى حساب المرشد الخاص بك",
+        "signIn": "تسجيل الدخول",
+        "signingIn": "جاري تسجيل الدخول...",
+        "noAccount": "هل تريد أن تصبح مرشداً؟",
+        "signUp": "التسجيل كمرشد",
+        "forgotPassword": "نسيت كلمة المرور؟",
+        "verifyEmail": {
+          "success": "تم تأكيد بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول."
+        },
+        "errors": {
+          "notConsultant": "هذا الحساب ليس حساب مرشد",
+          "pendingApproval": "حسابك قيد المراجعة",
+          "profileNotFound": "لم يتم العثور على ملف المرشد"
+        }
+      }
     },
     "resetPassword": {
       "title": "إعادة تعيين كلمة المرور",

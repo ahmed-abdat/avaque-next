@@ -22,7 +22,7 @@ import {
   ForgotPasswordFormValues,
   createForgotPasswordSchema,
 } from "@/lib/validations/auth";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 import { isUserExistOnDatabase } from "@/app/[locale]/actions/auth";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {

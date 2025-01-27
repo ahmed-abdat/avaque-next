@@ -48,11 +48,21 @@ export async function GET(request: Request) {
       );
     }
 
-    // If this is email verification, redirect to login with success message
+    // If this is email verification, check user role and redirect accordingly
     if (type === "email_verification") {
-      return NextResponse.redirect(
-        new URL(`/${locale}/login?verified=true`, request.url)
-      );
+      // Get the user's session to check their role
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const userRole = session?.user?.user_metadata?.role;
+
+      // Determine the redirect URL based on the user's role
+      const redirectUrl =
+        userRole === "consultant"
+          ? `/${locale}/consultant/login?verified=true`
+          : `/${locale}/login?verified=true`;
+
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
 
     // For other auth callbacks (like OAuth), redirect to the next URL

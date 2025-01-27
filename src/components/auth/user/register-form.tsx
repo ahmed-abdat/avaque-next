@@ -23,7 +23,7 @@ import {
   createRegisterSchema,
 } from "@/lib/validations/auth";
 import { isUserExistOnDatabase, signup } from "@/app/[locale]/actions/auth";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 
 export function RegisterForm({ locale }: { locale: string }) {
   const router = useRouter();
@@ -47,11 +47,10 @@ export function RegisterForm({ locale }: { locale: string }) {
       setIsPending(true);
 
       const userExists = await isUserExistOnDatabase(values.email);
-      if(userExists) {
+      if (userExists) {
         setError(t("common.errors.emailExists"));
         return;
       }
-
 
       const result = await signup(values);
 

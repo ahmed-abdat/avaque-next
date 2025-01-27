@@ -117,13 +117,15 @@ export async function resendVerificationEmail(email: string) {
   return { success: true, error: null };
 }
 
-
 export async function isUserExistOnDatabase(email: string) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("profiles").select("*").eq("email", email);
-  console.log(data , error);
-  if(error || !data || data.length === 0) {
-    return null
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("email", email);
+  console.log(data, error);
+  if (error || !data || data.length === 0) {
+    return null;
   }
-  return data[0]
+  return data[0];
 }

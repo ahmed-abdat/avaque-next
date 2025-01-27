@@ -12,6 +12,8 @@ const publicRoutes = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
+  "/consultant/login",
+  "/consultant/register",
 ];
 
 // Create i18n middleware
@@ -65,7 +67,7 @@ export default async function middleware(request: NextRequest) {
     // User is authenticated, proceed with i18n
     return i18nMiddleware(request);
   } catch (error) {
-    console.error("Auth middleware error:", error);
+    // console.error("Auth middleware error:", error);
     // On error, redirect to login
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }

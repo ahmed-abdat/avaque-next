@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/utils/supabase/client";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 
 interface ResetPasswordFormProps {
   locale: string;

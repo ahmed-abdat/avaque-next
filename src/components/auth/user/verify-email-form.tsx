@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Mail, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "../auth-message";
 import { useState } from "react";
 
 interface VerifyEmailFormProps {

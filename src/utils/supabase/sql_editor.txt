@@ -10,6 +10,7 @@ create table if not exists public.profiles (
   role user_role not null default 'student',
   full_name text,
   avatar_url text,
+  email text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -18,9 +19,10 @@ create table if not exists public.profiles (
 create table if not exists public.consultant_profiles (
   id uuid references auth.users on delete cascade primary key,
   specialization text not null,
+  short_description text not null,
   bio_ar text,
   bio_fr text,
-  hourly_rate numeric(10,2) not null,
+  hourly_rate numeric(10,2) not null default 100,
   is_approved boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -91,9 +93,13 @@ create policy "Consultant profiles are viewable by everyone"
   on public.consultant_profiles for select
   using (true);
 
+create policy "Consultants can insert their own profile"
+  on public.consultant_profiles for insert
+  with check (auth.uid() = id);
+
 create policy "Consultants can update their own profile"
   on public.consultant_profiles for update
-  using (auth.uid() = id);
+  using (auth.uid() = id and hourly_rate = 100);
 
 -- Bookings: viewable by participants and admin
 create policy "Users can view their own bookings"
@@ -146,13 +152,42 @@ create policy "Students can create reviews for their bookings"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, role, full_name)
-  values (new.id, 'student', new.raw_user_meta_data->>'full_name');
+  -- First, create the base profile
+  insert into public.profiles (
+    id,
+    role,
+    full_name,
+    email
+  ) values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'role', 'student'),
+    new.raw_user_meta_data->>'full_name',
+    new.email
+  );
+
+  -- If the user is registering as a consultant, create a consultant profile
+  if new.raw_user_meta_data->>'role' = 'consultant' then
+    insert into public.consultant_profiles (
+      id,
+      specialization,
+      short_description,
+      hourly_rate,
+      is_approved
+    ) values (
+      new.id,
+      new.raw_user_meta_data->>'specialization',
+      new.raw_user_meta_data->>'short_description',
+      100, -- Default hourly rate
+      false -- Not approved by default
+    );
+  end if;
+
   return new;
 end;
 $$ language plpgsql security definer;
 
--- Set up triggers
+-- Set up trigger
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user(); 
