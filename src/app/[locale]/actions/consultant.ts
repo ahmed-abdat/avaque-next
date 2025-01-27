@@ -56,6 +56,10 @@ export async function consultantLogin(values: {
   });
 
   if (signInError) {
+    // Check if the error is due to unverified email
+    if (signInError.message.includes("Email not confirmed")) {
+      return { error: "Email not confirmed" };
+    }
     return { error: signInError.message };
   }
 
@@ -74,7 +78,6 @@ export async function consultantLogin(values: {
     };
   }
 
-
   if (!consultantProfile.is_approved) {
     await supabase.auth.signOut();
     return {
@@ -90,27 +93,26 @@ export async function isConsultantExist(email: string) {
   const supabase = await createClient();
 
   // First check in profiles table
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("id")
     .eq("email", email)
-    .eq("role", "consultant")
     .single();
 
-  if (profileError || !profile) {
-    return null;
+  if (profile?.id) {
+    return { id: profile.id, type: "profile" };
   }
 
   // Then check in consultant_profiles table
-  const { data: consultantProfile, error: consultantError } = await supabase
+  const { data: consultantProfile } = await supabase
     .from("consultant_profiles")
-    .select("*")
-    .eq("profile_id", profile.id)
+    .select("id")
+    .eq("email", email)
     .single();
 
-  if (consultantError || !consultantProfile) {
-    return null;
+  if (consultantProfile?.id) {
+    return { id: consultantProfile.id, type: "consultant" };
   }
 
-  return consultantProfile;
+  return null;
 }

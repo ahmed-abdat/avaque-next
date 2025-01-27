@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/utils/supabase/client";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "../auth-message";
+import { AuthMessage } from "@/components/auth/auth-message";
 
 interface ResetPasswordFormProps {
   locale: string;
@@ -31,7 +31,53 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
   const t = useTranslations("Auth");
+  const searchParams = useSearchParams();
+  const isConsultant = searchParams.get("consultant") === "true";
+  const code = searchParams.get("code");
+  const email = searchParams.get("email") || "";
+
+  // Verify the reset password code when component mounts
+  useEffect(() => {
+    async function verifyCode() {
+      if (!code || !email) {
+        setError(t("resetPassword.errors.invalidLink"));
+        setIsVerifying(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.verifyOtp({
+          token_hash: code,
+          type: "recovery",
+          token: email
+        });
+
+        console.log(data , error);
+
+        if (error) {
+          if (error.message.includes("expired")) {
+            setError(t("resetPassword.errors.linkExpired"));
+          } else {
+            setError(t("resetPassword.errors.invalidLink"));
+          }
+          return;
+        }
+
+        // If we get here, the code is valid
+        setIsVerifying(false);
+      } catch (error) {
+        setError(t("resetPassword.errors.invalidLink"));
+        // Redirect to forgot password after a delay
+        setTimeout(() => {
+          router.push(`/${locale}/forgot-password?consultant=${isConsultant}`);
+        }, 2000);
+      }
+    }
+
+    verifyCode();
+  }, [code, locale, router, t, isConsultant]);
 
   const resetPasswordSchema = z
     .object({
@@ -65,8 +111,6 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
       });
 
       if (error) {
-        console.log(error);
-
         // Update the condition to catch both possible error messages
         if (
           error.message.includes("same as your old") ||
@@ -88,10 +132,6 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
         switch (error.message) {
           case "Auth session missing!":
             setError(t("resetPassword.errors.sessionExpired"));
-            // Optionally redirect to forgot password page after a delay
-            setTimeout(() => {
-              router.push(`/${locale}/forgot-password`);
-            }, 2000);
             break;
           case "Invalid login credentials":
             setError(t("resetPassword.errors.invalidSession"));
@@ -105,7 +145,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
       setSuccess(true);
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push(`/${locale}/login`);
+        router.push(`/${locale}${isConsultant ? "/consultant" : ""}/login`);
       }, 2000);
     } catch (error) {
       console.error(error);
@@ -113,6 +153,38 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  // Show loading state while verifying the code
+  if (isVerifying) {
+    return (
+      <div className="flex min-h-[80vh] w-full items-center justify-center">
+        <div className="flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </div>
+    );
+  }
+
+  // If there's an error and no form should be shown, display only the error
+  if (error && !code) {
+    return (
+      <div className="flex min-h-[80vh] w-full items-center justify-center">
+        <div className="w-full max-w-md px-4">
+          <AuthMessage type="error" message={error} />
+          <div className="mt-4">
+            <Button asChild variant="outline" className="w-full gap-2 text-sm">
+              <Link
+                href={`/${locale}${isConsultant ? "/consultant" : ""}/login`}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {t("resetPassword.backToLogin")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -221,7 +293,11 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
                     variant="outline"
                     className="w-full gap-2 text-sm"
                   >
-                    <Link href={`/${locale}/login`}>
+                    <Link
+                      href={`/${locale}${
+                        isConsultant ? "/consultant" : ""
+                      }/login`}
+                    >
                       <ArrowLeft className="h-4 w-4" />
                       {t("resetPassword.backToLogin")}
                     </Link>

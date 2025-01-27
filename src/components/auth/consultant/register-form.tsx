@@ -29,6 +29,7 @@ import {
   isConsultantExist,
   consultantSignup,
 } from "@/app/[locale]/actions/consultant";
+import { cn } from "@/lib/utils";
 
 interface ConsultantRegisterFormProps {
   locale: string;
@@ -63,9 +64,12 @@ export function ConsultantRegisterForm({
 
       // Check if consultant already exists
       const consultantExists = await isConsultantExist(values.email);
-      if (consultantExists) {
+      // if consultant exists, set error
+      if (consultantExists?.id && consultantExists?.type === "consultant") {
         setError(t("common.errors.emailExists"));
-        console.log("consultantExists", consultantExists);
+        return;
+      } else if (consultantExists?.id && consultantExists?.type === "profile") {
+        setError(t("consultant.login.errors.profileCannotBeConsultant"));
         return;
       }
 
@@ -78,7 +82,7 @@ export function ConsultantRegisterForm({
       }
 
       // Redirect to email verification page
-      router.replace(`/${locale}/verify-email`);
+      router.replace(`/${locale}/verify-email?consultant=true`);
     } catch (error) {
       setError(error instanceof Error ? error.message : t("common.error"));
       console.log("error", error);
@@ -189,7 +193,10 @@ export function ConsultantRegisterForm({
                     placeholder={t(
                       "consultant.register.shortDescriptionPlaceholder"
                     )}
-                    className="resize-none"
+                    className={cn(
+                      "resize-none",
+                      !isRtl && "placeholder:text-sm"
+                    )}
                     {...field}
                   />
                 </FormControl>

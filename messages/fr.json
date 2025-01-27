@@ -17,6 +17,7 @@
         "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
         "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
         "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
+        "rateLimitExceeded": "Vous avez dépassé le nombre de tentatives autorisées. Veuillez réessayer plus tard",
         "userNotFound": "Aucun compte n'est associé à cette adresse e-mail"
       },
       "resendVerification": {
@@ -65,7 +66,8 @@
         "errors": {
           "notConsultant": "Ce compte n'est pas un compte guide",
           "pendingApproval": "Votre compte est en attente de validation",
-          "profileNotFound": "Profil de guide introuvable"
+          "profileNotFound": "Profil de guide introuvable",
+          "profileCannotBeConsultant": "Vous ne pouvez pas devenir guide car vous êtes déjà un utilisateur"
         }
       }
     },

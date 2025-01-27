@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Mail } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +23,7 @@ import {
   ForgotPasswordFormValues,
   createForgotPasswordSchema,
 } from "@/lib/validations/auth";
-import { AuthMessage } from "../auth-message";
+import { AuthMessage } from "./auth-message";
 import { isUserExistOnDatabase } from "@/app/[locale]/actions/auth";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
@@ -30,12 +31,15 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("Auth");
+  const searchParams = useSearchParams();
+  const emailFromQuery = searchParams.get("email");
+  const isConsultant = searchParams.get("consultant") == "true";
   const forgotPasswordSchema = createForgotPasswordSchema(t);
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: emailFromQuery || "",
     },
   });
 
@@ -57,16 +61,19 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       const { error } = await supabase.auth.resetPasswordForEmail(
         values.email,
         {
-          redirectTo: `${window.location.origin}/${locale}/reset-password`,
+          redirectTo: `${window.location.origin}/${locale}/reset-password?consultant=${isConsultant}?email=${values.email}`,
         }
       );
 
       if (error) {
         console.error(error);
         const rateLimitMatch = error.message.match(/after (\d+) seconds/);
-        if (rateLimitMatch) {
-          const seconds = rateLimitMatch[1];
+        if (rateLimitMatch || error.message.includes("expired")) {
+          const seconds = rateLimitMatch ? rateLimitMatch[1] : 60;
           setError(t("common.errors.rateLimit", { seconds }));
+          return;
+        } else if (error.message.includes("email rate limit exceeded")) {
+          setError(t("common.errors.rateLimitExceeded"));
           return;
         }
         setError(t("common.error"));
@@ -102,7 +109,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
               </p>
             </div>
             <Button asChild variant="outline" className="w-full gap-2 text-sm">
-              <Link href={`/${locale}/login`}>
+              <Link href={`/${locale}/${isConsultant ? "consultant" : ""}/login`}>
                 <ArrowLeft className="h-4 w-4" />
                 {t("forgotPassword.backToSignIn")}
               </Link>
@@ -167,7 +174,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
                     variant="outline"
                     className="w-full gap-2 text-sm"
                   >
-                    <Link href={`/${locale}/login`}>
+                    <Link href={`/${locale}/${isConsultant ? "consultant" : ""}/login`}>
                       <ArrowLeft className="h-4 w-4" />
                       {t("forgotPassword.backToSignIn")}
                     </Link>

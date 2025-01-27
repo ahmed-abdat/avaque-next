@@ -123,8 +123,17 @@ export async function isUserExistOnDatabase(email: string) {
     .from("profiles")
     .select("*")
     .eq("email", email);
+
+
+  // check if user is consultant
+  const { data: consultantData, error: consultantError } = await supabase
+    .from("consultant_profiles")
+    .select("*")
+    .eq("email", email)
+    .single();
+
   console.log(data, error);
-  if (error || !data || data.length === 0) {
+  if (error || !data || data.length === 0 || consultantError || !consultantData) {
     return null;
   }
   return data[0];

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { Mail, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthMessage } from "../auth-message";
+import { AuthMessage } from "./auth-message";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface VerifyEmailFormProps {
   locale: string;
@@ -15,6 +16,8 @@ interface VerifyEmailFormProps {
 export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
   const t = useTranslations("Auth");
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const isConsultant = searchParams.get("consultant") === "true";
 
   return (
     <div className="flex min-h-[80vh] w-full items-center justify-center">
@@ -86,7 +89,7 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
         {/* Actions */}
         <div className="mt-6">
           <Button asChild variant="outline" className="w-full gap-2 text-sm">
-            <Link href={`/${locale}/login`}>
+            <Link href={`/${locale}${isConsultant ? "/consultant" : ""}/login`}>
               <ArrowLeft className="h-4 w-4" />
               {t("resetPassword.backToLogin")}
             </Link>

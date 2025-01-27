@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ResendVerificationDialog } from "./user/resend-verification-dialog";
+import { ResendVerificationDialog } from "./resend-verification-dialog";
 
 interface AuthMessageProps {
   type: "error" | "success";

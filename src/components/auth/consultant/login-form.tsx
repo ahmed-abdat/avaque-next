@@ -25,16 +25,18 @@ import {
   createLoginSchema,
 } from "@/lib/validations/consultant";
 import { consultantLogin } from "@/app/[locale]/actions/consultant";
+import { ResendVerificationDialog } from "../resend-verification-dialog";
 
 interface ConsultantLoginFormProps {
   locale: string;
 }
 
 export function ConsultantLoginForm({ locale }: ConsultantLoginFormProps) {
-  const router = useRouter();
+  // const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations("Auth");
   const loginSchema = createLoginSchema(t);
@@ -64,17 +66,18 @@ export function ConsultantLoginForm({ locale }: ConsultantLoginFormProps) {
   async function onSubmit(values: ConsultantLoginValues) {
     try {
       setError(null);
+      setUnverifiedEmail(null);
       setIsPending(true);
 
       const result = await consultantLogin(values);
 
       if (result?.error) {
-        console.log(result.error);
         // Map error messages to translations
         if (result.error.includes("Invalid login credentials")) {
           setError(t("common.errors.invalidCredentials"));
         } else if (result.error.includes("Email not confirmed")) {
           setError(t("common.errors.emailNotConfirmed"));
+          setUnverifiedEmail(values.email);
         } else if (result.error.includes("pending approval")) {
           setError(t("consultant.login.errors.pendingApproval"));
         } else if (result.error.includes("profile not found")) {
@@ -108,8 +111,15 @@ export function ConsultantLoginForm({ locale }: ConsultantLoginFormProps) {
         </p>
       </div>
 
-      <AuthMessage type="error" message={error} />
-      {(!error  && !isPending && success) &&  <AuthMessage type="success" message={success} />}
+      <AuthMessage
+        type="error"
+        message={error}
+        unverifiedEmail={unverifiedEmail}
+        locale={locale}
+      />
+      {!error && !isPending && success && (
+        <AuthMessage type="success" message={success} />
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -150,7 +160,9 @@ export function ConsultantLoginForm({ locale }: ConsultantLoginFormProps) {
 
           <div className="flex items-center justify-between">
             <Link
-              href={`/${locale}/forgot-password`}
+              href={`/${locale}/forgot-password?email=${form.getValues(
+                "email"
+              )}&consultant=true`}
               className="text-sm font-medium text-primary hover:underline"
             >
               {t("consultant.login.forgotPassword")}
