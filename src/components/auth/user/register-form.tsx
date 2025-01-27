@@ -47,8 +47,11 @@ export function RegisterForm({ locale }: { locale: string }) {
       setIsPending(true);
 
       const userExists = await isUserExistOnDatabase(values.email);
-      if (userExists) {
+      if (userExists?.id && userExists?.type === "student") {
         setError(t("common.errors.emailExists"));
+        return;
+      } else if (userExists?.id && userExists?.type === "consultant") {
+        setError(t("common.errors.consultantCannotBeStudent"));
         return;
       }
 

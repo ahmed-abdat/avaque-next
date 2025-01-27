@@ -51,10 +51,10 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
         const { data, error } = await supabase.auth.verifyOtp({
           token_hash: code,
           type: "recovery",
-          token: email
+          token: email,
         });
 
-        console.log(data , error);
+        console.log(data, error);
 
         if (error) {
           if (error.message.includes("expired")) {

@@ -18,7 +18,8 @@
         "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
         "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
         "rateLimitExceeded": "Vous avez dépassé le nombre de tentatives autorisées. Veuillez réessayer plus tard",
-        "userNotFound": "Aucun compte n'est associé à cette adresse e-mail"
+        "userNotFound": "Aucun compte n'est associé à cette adresse e-mail",
+        "consultantCannotBeStudent": "Vous ne pouvez pas devenir étudiant car vous êtes déjà un guide"
       },
       "resendVerification": {
         "button": "Renvoyer l'e-mail de vérification",
