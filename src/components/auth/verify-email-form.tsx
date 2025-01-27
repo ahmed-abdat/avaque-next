@@ -2,9 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Mail, ArrowLeft, Inbox, AlertCircle } from "lucide-react";
+import { Mail, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthMessage } from "./auth-message";
+import { useState } from "react";
 
 interface VerifyEmailFormProps {
   locale: string;
@@ -12,6 +14,7 @@ interface VerifyEmailFormProps {
 
 export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
   const t = useTranslations("Auth");
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <div className="flex min-h-[80vh] w-full items-center justify-center">
@@ -31,6 +34,11 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
           <p className="mt-2 text-sm text-muted-foreground">
             {t("verifyEmail.description")}
           </p>
+        </div>
+
+        {/* Error Message */}
+        <div className="mt-4">
+          <AuthMessage type="error" message={error} />
         </div>
 
         {/* Email Steps */}
@@ -69,8 +77,7 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
             variant="default"
             className="flex items-start bg-muted/50 py-2"
           >
-            <AlertCircle className="mt-0.5 h-4 w-4" />
-            <AlertDescription className="ml-2 text-xs text-muted-foreground">
+            <AlertDescription className="text-xs text-muted-foreground">
               {t("verifyEmail.spamNote")}
             </AlertDescription>
           </Alert>

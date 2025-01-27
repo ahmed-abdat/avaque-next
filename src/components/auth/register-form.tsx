@@ -22,7 +22,8 @@ import {
   RegisterFormValues,
   createRegisterSchema,
 } from "@/lib/validations/auth";
-import { signup } from "@/app/[locale]/actions/auth";
+import { isUserExistOnDatabase, signup } from "@/app/[locale]/actions/auth";
+import { AuthMessage } from "./auth-message";
 
 export function RegisterForm({ locale }: { locale: string }) {
   const router = useRouter();
@@ -44,6 +45,14 @@ export function RegisterForm({ locale }: { locale: string }) {
     try {
       setError(null);
       setIsPending(true);
+
+      const userExists = await isUserExistOnDatabase(values.email);
+      if(userExists) {
+        setError(t("common.errors.emailExists"));
+        return;
+      }
+
+
       const result = await signup(values);
 
       if (result?.error) {
@@ -69,11 +78,7 @@ export function RegisterForm({ locale }: { locale: string }) {
         </p>
       </div>
 
-      {error && (
-        <div className="rounded-lg bg-destructive/15 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      <AuthMessage type="error" message={error} />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

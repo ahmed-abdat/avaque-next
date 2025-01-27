@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Lock, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Lock, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/utils/supabase/client";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthMessage } from "./auth-message";
 
 interface ResetPasswordFormProps {
   locale: string;
@@ -150,17 +150,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
               </p>
             </div>
 
-            {error && (
-              <Alert
-                variant="destructive"
-                className="flex items-start py-2 dark:text-red-400 dark:bg-red-400/10 dark:border-red-400/50"
-              >
-                <AlertCircle className="mt-0.5 h-4 w-4 dark:text-red-400" />
-                <AlertDescription className="ml-2 text-xs">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
+            <AuthMessage type="error" message={error} />
 
             <Form {...form}>
               <form

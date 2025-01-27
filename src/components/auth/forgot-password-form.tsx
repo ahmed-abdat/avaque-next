@@ -5,7 +5,7 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Mail, AlertCircle } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +22,8 @@ import {
   ForgotPasswordFormValues,
   createForgotPasswordSchema,
 } from "@/lib/validations/auth";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AuthMessage } from "./auth-message";
+import { isUserExistOnDatabase } from "@/app/[locale]/actions/auth";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +44,15 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       setError(null);
       setSuccess(false);
       setIsLoading(true);
+
+      // Check if user exists in database
+      const userExists = await isUserExistOnDatabase(values.email);
+
+      if (!userExists) {
+        setError(t("common.errors.userNotFound"));
+        setIsLoading(false);
+        return;
+      }
 
       const { error } = await supabase.auth.resetPasswordForEmail(
         values.email,
@@ -109,20 +119,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
               </p>
             </div>
 
-            {error && (
-              <Alert
-                variant="destructive"
-                className="border-destructive/50 text-destructive dark:border-destructive/50 dark:text-destructive"
-              >
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle className="ml-2 text-sm font-medium">
-                  {t("common.error")}
-                </AlertTitle>
-                <AlertDescription className="ml-6 text-xs">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
+            <AuthMessage type="error" message={error} />
 
             <Form {...form}>
               <form

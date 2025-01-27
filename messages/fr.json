@@ -16,7 +16,8 @@
         "emailNotConfirmed": "Votre adresse e-mail n'est pas confirmée. Veuillez vérifier votre boîte de réception ou demander un nouveau lien de vérification.",
         "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
         "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
-        "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer"
+        "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
+        "userNotFound": "Aucun compte n'est associé à cette adresse e-mail"
       },
       "resendVerification": {
         "button": "Renvoyer l'e-mail de vérification",

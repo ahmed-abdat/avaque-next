@@ -13,8 +13,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { resendVerificationEmail } from "@/app/[locale]/actions/auth";
-import { Mail, AlertCircle, CheckCircle2, Loader2, X } from "lucide-react";
+import { Mail, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthMessage } from "./auth-message";
 
 interface ResendVerificationDialogProps {
   email: string;
@@ -104,27 +105,17 @@ export function ResendVerificationDialog({
 
           {/* Status messages */}
           {status === "success" && (
-            <Alert
-              variant="success"
-              className="border-green-200 bg-green-100/50 dark:border-green-900 dark:bg-green-900/20 flex items-center"
-            >
-              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 shrink-0" />
-              <AlertDescription className="text-green-600 dark:text-green-400 ms-3">
-                {t("common.resendVerification.success")}
-              </AlertDescription>
-            </Alert>
+            <AuthMessage
+              type="success"
+              message={t("common.resendVerification.success")}
+            />
           )}
 
           {status === "error" && (
-            <Alert
-              variant="destructive"
-              className="flex items-center dark:border-red-900 dark:bg-red-900/20"
-            >
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <AlertDescription className="ms-3">
-                {t("common.resendVerification.error")}
-              </AlertDescription>
-            </Alert>
+            <AuthMessage
+              type="error"
+              message={t("common.resendVerification.error")}
+            />
           )}
 
           {/* Spam note */}
@@ -132,8 +123,7 @@ export function ResendVerificationDialog({
             variant="default"
             className="bg-muted/50 dark:bg-muted/10 border-muted-foreground/20 flex items-start"
           >
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-            <AlertDescription className="text-sm text-muted-foreground ms-3">
+            <AlertDescription className="text-sm text-muted-foreground">
               {t("verifyEmail.spamNote")}
             </AlertDescription>
           </Alert>

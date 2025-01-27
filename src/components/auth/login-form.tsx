@@ -6,8 +6,7 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,7 @@ import { LoginFormValues, createLoginSchema } from "@/lib/validations/auth";
 import { GoogleSignInButton } from "./google-sign-in-button";
 import { login } from "@/app/[locale]/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
-import { ResendVerificationDialog } from "./resend-verification-dialog";
+import { AuthMessage } from "./auth-message";
 
 export function LoginForm({ locale }: { locale: string }) {
   const router = useRouter();
@@ -135,40 +134,14 @@ export function LoginForm({ locale }: { locale: string }) {
         </div>
       </div>
 
-      {success && (
-        <Alert
-          variant="success"
-          className="border-green-200 bg-green-100/50 dark:border-green-900 dark:bg-green-900/20"
-        >
-          <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <AlertDescription className="text-green-600 dark:text-green-400 ms-3">
-            {success}
-          </AlertDescription>
-        </Alert>
-      )}
+      <AuthMessage type="success" message={success} />
 
-      {error && (
-        <Alert
-          variant="destructive"
-          className="border-destructive/50 bg-destructive/10 text-destructive dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200"
-        >
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="ml-2 text-sm font-medium">
-            {t("common.error")}
-          </AlertTitle>
-          <AlertDescription className="ml-6 text-xs">
-            {error}
-            {unverifiedEmail && (
-              <div className="mt-2 border-t border-destructive/30 pt-2 dark:border-red-900/50">
-                <ResendVerificationDialog
-                  email={unverifiedEmail}
-                  locale={locale}
-                />
-              </div>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
+      <AuthMessage
+        type="error"
+        message={error}
+        unverifiedEmail={unverifiedEmail}
+        locale={locale}
+      />
 
       <div className="grid gap-6">
         <Form {...form}>

@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/middleware";
 
 // Routes that don't require authentication
 const publicRoutes = [
+  "/",
   "/login",
   "/register",
   "/verify-email",
@@ -26,9 +27,20 @@ export default async function middleware(request: NextRequest) {
   // Get locale from URL (ar or fr)
   const locale = pathname.split("/")[1] || defaultLocale;
 
+  // Handle root path
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
+  }
+
+  // Handle localized root path (e.g., /ar, /fr)
+  if (pathname === `/${locale}`) {
+    return i18nMiddleware(request);
+  }
+
   // Check if the route is public (no auth needed)
   const isPublicRoute = publicRoutes.some(
-    (route) => pathname.endsWith(route) || pathname.includes("/auth/")
+    (route) =>
+      pathname.endsWith(`/${locale}${route}`) || pathname.includes("/auth/")
   );
 
   if (isPublicRoute) {
@@ -40,10 +52,10 @@ export default async function middleware(request: NextRequest) {
   try {
     const supabase = createClient(request);
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       // If no session, redirect to login with return URL
       const redirectUrl = new URL(`/${locale}/login`, request.url);
       redirectUrl.searchParams.set("returnTo", pathname);

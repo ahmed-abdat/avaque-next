@@ -19,8 +19,6 @@ function getCurrentLocale(): string {
 
 export async function login(values: LoginFormValues) {
   const supabase = await createClient();
-  const locale = getCurrentLocale();
-
   const { error } = await supabase.auth.signInWithPassword({
     email: values.email,
     password: values.password,
@@ -117,4 +115,15 @@ export async function resendVerificationEmail(email: string) {
   }
 
   return { success: true, error: null };
+}
+
+
+export async function isUserExistOnDatabase(email: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("profiles").select("*").eq("email", email);
+  console.log(data , error);
+  if(error || !data || data.length === 0) {
+    return null
+  }
+  return data[0]
 }
