@@ -15,7 +15,7 @@ export default async function Home() {
       <p>{session?.user?.email}</p>
       <p>{session?.user?.user_metadata?.role}</p>
       <p>{session?.user?.user_metadata?.full_name}</p>
-      <Image src={session?.user?.user_metadata?.avatar_url || 'logo.png'} alt="avatar" width={100} height={100} />
+      <Image src={session?.user?.user_metadata?.avatar_url || '/logo.png'} alt="avatar" width={100} height={100} />
     </div>
   );
 }

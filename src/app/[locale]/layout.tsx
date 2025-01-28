@@ -4,6 +4,7 @@ import { locales } from "@/i18n";
 import { notFound } from "next/navigation";
 import { getMessages } from "next-intl/server";
 import { RootProvider } from "@/components/providers/global-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -44,6 +45,14 @@ export default async function RootLayout({
         >
             {children}
         </RootProvider>
+        <Toaster 
+        position="top-center"
+        pauseWhenPageIsHidden
+        closeButton
+        duration={3000}
+        mobileOffset={50}
+        richColors
+        />
       </body>
     </html>
   );

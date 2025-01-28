@@ -67,7 +67,7 @@
         "errors": {
           "notConsultant": "هذا الحساب ليس حساب مرشد",
           "pendingApproval": "حسابك قيد المراجعة",
-          "profileNotFound": "لم يتم العثور على ملف المرشد", 
+          "profileNotFound": "لم يتم العثور على ملف المرشد",
           "profileCannotBeConsultant": "لايمكنك التسجيل كمرشد لأنك مسجل بالفعل كمستخدم"
         }
       }
@@ -139,6 +139,138 @@
       "checkEmail": "تحقق من بريدك الإلكتروني",
       "emailSent": "إذا كان هناك حساب مرتبط بهذا البريد الإلكتروني، ستتلقى رابط إعادة التعيين",
       "rememberPassword": "تذكرت كلمة المرور؟"
+    }
+  },
+  "ConsultantProfile": {
+    "title": "الملف الشخصي للمستشار",
+    "avatarUrl": "الصورة الشخصية",
+    "uploadImage": "رفع صورة",
+    "uploading": "جاري الرفع...",
+    "uploadingAvatar": "جاري رفع الصورة...",
+    "avatarUrlPlaceholder": "اختر صورة شخصية",
+    "fullName": "الاسم الكامل",
+    "fullNamePlaceholder": "أدخل اسمك الكامل",
+    "specialization": "التخصص",
+    "specializationPlaceholder": "مثال: علوم الحاسوب، الأدب، إلخ.",
+    "hourlyRate": "السعر بالساعة",
+    "hourlyRatePlaceholder": "أدخل سعرك بالساعة",
+    "shortDescription": "وصف مختصر",
+    "shortDescriptionPlaceholder": "وصف موجز لخبرتك (يظهر في نتائج البحث)",
+    "bioAr": "السيرة الذاتية بالعربية",
+    "bioArPlaceholder": "سيرتك الذاتية المفصلة باللغة العربية",
+    "bioFr": "السيرة الذاتية بالفرنسية",
+    "bioFrPlaceholder": "سيرتك الذاتية المفصلة باللغة الفرنسية",
+    "updateProfile": "تحديث الملف الشخصي",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "updateError": "حدث خطأ أثناء تحديث الملف الشخصي",
+    "updating": "جاري التحديث...",
+    "noChanges": "لم يتم إجراء أي تغييرات",
+    "errors": {
+      "fileTooLarge": "حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)",
+      "invalidFileType": "نوع الملف غير صالح (يجب أن تكون صورة)",
+      "avatarUploadFailed": "فشل في رفع الصورة الشخصية"
+    }
+  },
+  "ConsultantDashboard": {
+    "navigation": {
+      "overview": "نظرة عامة",
+      "requests": "طلبات الاستشارة",
+      "profile": "إعدادات الملف الشخصي",
+      "logout": "تسجيل الخروج"
+    },
+    "welcome": {
+      "title": "مرحباً",
+      "back": "مرحباً بك مرة أخرى",
+      "specialization": "التخصص"
+    },
+    "stats": {
+      "totalBookings": "إجمالي الاستشارات",
+      "totalBookingsDesc": "إجمالي عدد الاستشارات المكتملة",
+      "totalEarnings": "إجمالي الأرباح",
+      "totalEarningsDesc": "إجمالي الأرباح من جميع الاستشارات",
+      "totalHours": "إجمالي الساعات",
+      "totalHoursDesc": "إجمالي ساعات الاستشارات المقدمة",
+      "activeRequests": "الطلبات النشطة",
+      "activeRequestsDesc": "عدد طلبات الاستشارة قيد الانتظار"
+    },
+    "overview": {
+      "title": "نظرة عامة",
+      "charts": {
+        "earnings": {
+          "title": "نظرة عامة على الأرباح",
+          "description": "رسم بياني يوضح الأرباح على مدار الوقت"
+        },
+        "bookings": {
+          "title": "الاستشارات",
+          "description": "عدد الاستشارات لكل فترة"
+        },
+        "hours": {
+          "title": "الساعات",
+          "description": "عدد ساعات الاستشارات لكل فترة"
+        }
+      }
+    },
+    "requests": {
+      "title": "طلبات الاستشارة",
+      "description": "إدارة طلبات الاستشارة",
+      "noRequests": "لا توجد طلبات استشارة",
+      "detailsTitle": "تفاصيل الطلب",
+      "table": {
+        "student": "الطالب",
+        "subject": "الموضوع",
+        "date": "التاريخ",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "details": {
+        "title": "تفاصيل الطلب",
+        "description": "تفاصيل طلب الاستشارة",
+        "studentInfo": "معلومات الطالب",
+        "message": "الرسالة",
+        "proposedDate": "التاريخ المقترح"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "approved": "تمت الموافقة",
+        "rejected": "تم الرفض",
+        "completed": "مكتمل"
+      },
+      "approve": "موافقة",
+      "reject": "رفض",
+      "viewDetails": "عرض التفاصيل",
+      "statusUpdated": "تم تحديث الحالة بنجاح",
+      "updateError": "حدث خطأ أثناء تحديث الحالة",
+      "meeting": {
+        "link": "رابط الاجتماع",
+        "setup": "إعداد رابط الاجتماع",
+        "description": "أضف رابط Google Meet الدائم الخاص بك للاستشارات",
+        "save": "حفظ الرابط",
+        "saving": "جاري الحفظ...",
+        "sameLink": "قم بإدخال رابط مختلف عن الرابط الحالي",
+        "updated": "تم تحديث رابط الاجتماع بنجاح",
+        "error": "خطأ في التحديث"
+      }
+    },
+    "profile": {
+      "title": "إعدادات الملف الشخصي",
+      "personalInfo": "المعلومات الشخصية",
+      "specialization": "التخصص",
+      "shortDescription": "وصف مختصر",
+      "hourlyRate": "السعر بالساعة",
+      "bio": {
+        "ar": "السيرة الذاتية (العربية)",
+        "fr": "السيرة الذاتية (الفرنسية)"
+      },
+      "save": "حفظ التغييرات",
+      "saved": "تم حفظ التغييرات",
+      "error": "خطأ في الحفظ"
+    },
+    "meetingLink": {
+      "setup": "إعداد رابط الاجتماع",
+      "description": "أضف رابط Google Meet الدائم الخاص بك للاستشارات",
+      "save": "حفظ الرابط",
+      "updated": "تم تحديث رابط الاجتماع بنجاح",
+      "error": "خطأ في التحديث"
     }
   }
 }

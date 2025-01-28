@@ -1,144 +1,183 @@
 {
-  "IndexPage": {
-    "title": "Page d'accueil",
-    "description": "Page d'accueil"
+  "common": {
+    "actions": {
+      "save": "Enregistrer",
+      "update": "Mettre à jour",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "back": "Retour",
+      "view": "Voir",
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "complete": "Terminer"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Refusé",
+      "completed": "Terminé"
+    },
+    "table": {
+      "student": "Étudiant",
+      "subject": "Sujet",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "messages": {
+      "success": "Succès",
+      "error": "Erreur",
+      "updateSuccess": "Mise à jour réussie",
+      "updateError": "Erreur lors de la mise à jour"
+    }
   },
-  "Auth": {
-    "common": {
-      "email": "Adresse e-mail",
-      "emailPlaceholder": "nom@exemple.com",
+  "auth": {
+    "signIn": {
+      "title": "Connexion",
+      "email": "Email",
       "password": "Mot de passe",
-      "error": "Une erreur s'est produite. Veuillez réessayer.",
-      "errors": {
-        "invalidEmail": "Cette adresse e-mail n'est pas valide",
-        "invalidCredentials": "L'adresse e-mail ou le mot de passe est incorrect",
-        "emailExists": "Cette adresse e-mail est déjà utilisée. Voulez-vous vous connecter ?",
-        "emailNotConfirmed": "Votre adresse e-mail n'est pas confirmée. Veuillez vérifier votre boîte de réception ou demander un nouveau lien de vérification.",
-        "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
-        "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
-        "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
-        "rateLimitExceeded": "Vous avez dépassé le nombre de tentatives autorisées. Veuillez réessayer plus tard",
-        "userNotFound": "Aucun compte n'est associé à cette adresse e-mail",
-        "consultantCannotBeStudent": "Vous ne pouvez pas devenir étudiant car vous êtes déjà un guide"
-      },
-      "resendVerification": {
-        "button": "Renvoyer l'e-mail de vérification",
-        "sending": "Envoi en cours...",
-        "success": "E-mail de vérification envoyé avec succès",
-        "error": "Impossible d'envoyer l'e-mail de vérification",
-        "cancel": "Annuler"
-      }
-    },
-    "validation": {
-      "emailRequired": "Veuillez entrer une adresse e-mail valide",
-      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
-      "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
-      "passwordMatch": "Les mots de passe ne correspondent pas",
-      "specializationRequired": "La spécialisation est requise",
-      "shortDescriptionMin": "La description doit contenir au moins 50 caractères",
-      "shortDescriptionMax": "La description ne doit pas dépasser 500 caractères"
-    },
-    "consultant": {
-      "register": {
-        "title": "Devenir guide",
-        "subtitle": "Rejoignez notre plateforme en tant que guide",
-        "fullName": "Nom complet",
-        "fullNamePlaceholder": "Jean Dupont",
-        "specialization": "Spécialisation",
-        "specializationPlaceholder": "Ex: Informatique, Mathématiques, Littérature",
-        "shortDescription": "Description courte",
-        "shortDescriptionPlaceholder": "Décrivez brièvement votre parcours et votre expertise (50-500 caractères)",
-        "createAccount": "Créer un compte guide",
-        "creatingAccount": "Création du compte...",
-        "hasAccount": "Déjà guide ?",
-        "signIn": "Se connecter"
-      },
-      "login": {
-        "title": "Espace guide",
-        "subtitle": "Connectez-vous à votre compte guide",
-        "signIn": "Se connecter",
-        "signingIn": "Connexion en cours...",
-        "noAccount": "Vous souhaitez devenir guide ?",
-        "signUp": "S'inscrire en tant que guide",
-        "forgotPassword": "Mot de passe oublié ?",
-        "verifyEmail": {
-          "success": "Votre adresse e-mail a été confirmée avec succès. Vous pouvez maintenant vous connecter."
-        },
-        "errors": {
-          "notConsultant": "Ce compte n'est pas un compte guide",
-          "pendingApproval": "Votre compte est en attente de validation",
-          "profileNotFound": "Profil de guide introuvable",
-          "profileCannotBeConsultant": "Vous ne pouvez pas devenir guide car vous êtes déjà un utilisateur"
-        }
-      }
+      "submit": "Se connecter",
+      "forgotPassword": "Mot de passe oublié ?",
+      "rememberMe": "Se souvenir de moi"
     },
     "resetPassword": {
       "title": "Réinitialiser le mot de passe",
-      "subtitle": "Entrez votre nouveau mot de passe",
-      "newPassword": "Nouveau mot de passe",
-      "confirmPassword": "Confirmer le mot de passe",
-      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
-      "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
-      "resetButton": "Réinitialiser le mot de passe",
-      "resetting": "Réinitialisation en cours...",
-      "success": "Mot de passe mis à jour",
-      "successMessage": "Votre mot de passe a été mis à jour avec succès. Redirection vers la page de connexion...",
-      "backToLogin": "Retour à la connexion",
-      "errors": {
-        "samePassword": "Le nouveau mot de passe doit être différent de l'ancien",
-        "sessionExpired": "Votre session de réinitialisation a expiré. Veuillez demander un nouveau lien",
-        "invalidSession": "Session invalide. Veuillez réessayer"
-      }
-    },
-    "verifyEmail": {
-      "title": "Vérifiez votre e-mail",
-      "description": "Nous vous avons envoyé un lien de vérification. Veuillez vérifier votre e-mail et cliquer sur le lien pour confirmer votre compte.",
-      "spamNote": "Vous n'avez pas reçu l'e-mail ? Vérifiez votre dossier spam ou demandez un nouveau lien de vérification.",
-      "success": "Votre adresse e-mail a été confirmée avec succès. Vous pouvez maintenant vous connecter.",
-      "checkInbox": "Vérifiez votre boîte de réception",
-      "checkInboxDesc": "Ouvrez votre e-mail et recherchez le message de vérification",
-      "clickLink": "Cliquez sur le lien de vérification",
-      "clickLinkDesc": "Cliquez sur le bouton 'Confirmer l'e-mail' dans le message",
-      "errors": {
-        "linkExpired": "Le lien de vérification a expiré. Veuillez demander un nouveau lien",
-        "invalidLink": "Le lien de vérification est invalide. Veuillez demander un nouveau lien",
-        "accessDenied": "Accès refusé. Veuillez demander un nouveau lien de vérification"
-      }
-    },
-    "register": {
-      "title": "Créer un compte",
-      "subtitle": "Entrez vos informations pour créer un compte",
-      "fullName": "Nom complet",
-      "fullNamePlaceholder": "Jean Dupont",
-      "createPassword": "Mot de passe",
-      "createAccount": "Créer un compte",
-      "creatingAccount": "Création du compte...",
-      "hasAccount": "Vous avez déjà un compte ?",
-      "signIn": "Se connecter"
-    },
-    "login": {
-      "title": "Se connecter",
-      "subtitle": "Connectez-vous à votre compte",
-      "signIn": "Se connecter",
-      "signingIn": "Connexion en cours...",
-      "googleSignIn": "Se connecter avec Google",
-      "forgotPassword": "Mot de passe oublié ?",
-      "orContinueWith": "ou continuer avec",
-      "noAccount": "Vous n'avez pas de compte ?",
-      "signUp": "S'inscrire"
-    },
-    "logout": {
-      "signOut": "Se déconnecter",
-      "signingOut": "Déconnexion en cours..."
-    },
-    "forgotPassword": {
-      "title": "Mot de passe oublié",
-      "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
-      "resetPassword": "Réinitialiser le mot de passe",
       "backToSignIn": "Retour à la connexion",
-      "checkEmail": "Vérifiez votre e-mail",
-      "emailSent": "Si un compte existe avec cette adresse e-mail, vous recevrez un lien de réinitialisation",
+      "checkEmail": "Vérifiez votre email",
+      "emailSent": "Si un compte est associé à cet email, vous recevrez un lien de réinitialisation",
       "rememberPassword": "Vous vous souvenez de votre mot de passe ?"
+    }
+  },
+  "ConsultantProfile": {
+    "title": "Profil du consultant",
+    "avatarUrl": "Photo de profil",
+    "uploadImage": "Télécharger une photo",
+    "uploading": "Téléchargement...",
+    "uploadingAvatar": "Téléchargement de la photo...",
+    "avatarUrlPlaceholder": "Choisissez une photo de profil",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Entrez votre nom complet",
+    "specialization": "Spécialisation",
+    "specializationPlaceholder": "Ex: Informatique, Littérature, etc.",
+    "hourlyRate": "Taux horaire",
+    "hourlyRatePlaceholder": "Entrez votre taux horaire",
+    "shortDescription": "Description courte",
+    "shortDescriptionPlaceholder": "Brève description de votre expertise (apparaît dans les résultats de recherche)",
+    "bioAr": "Biographie en arabe",
+    "bioArPlaceholder": "Votre biographie détaillée en arabe",
+    "bioFr": "Biographie en français",
+    "bioFrPlaceholder": "Votre biographie détaillée en français",
+    "updateProfile": "Mettre à jour le profil",
+    "profileUpdated": "Profil mis à jour avec succès",
+    "updateError": "Erreur lors de la mise à jour du profil",
+    "updating": "Mise à jour en cours...",
+    "noChanges": "Aucune modification n'a été effectuée",
+    "errors": {
+      "fileTooLarge": "Fichier trop volumineux (max 5 Mo)",
+      "invalidFileType": "Type de fichier invalide (doit être une image)",
+      "avatarUploadFailed": "Échec du téléchargement de la photo de profil"
+    }
+  },
+  "ConsultantDashboard": {
+    "navigation": {
+      "overview": "Vue d'ensemble",
+      "requests": "Demandes de consultation",
+      "profile": "Paramètres du profil",
+      "logout": "Déconnexion"
+    },
+    "welcome": {
+      "title": "Bienvenue",
+      "back": "Bon retour parmi nous",
+      "specialization": "Spécialisation"
+    },
+    "stats": {
+      "totalBookings": "Total des consultations",
+      "totalBookingsDesc": "Nombre total de consultations terminées",
+      "totalEarnings": "Gains totaux",
+      "totalEarningsDesc": "Gains totaux de toutes les consultations",
+      "totalHours": "Heures totales",
+      "totalHoursDesc": "Nombre total d'heures de consultation",
+      "activeRequests": "Demandes actives",
+      "activeRequestsDesc": "Nombre de demandes de consultation en attente"
+    },
+    "overview": {
+      "title": "Vue d'ensemble",
+      "charts": {
+        "earnings": {
+          "title": "Aperçu des gains",
+          "description": "Graphique montrant l'évolution des gains dans le temps"
+        },
+        "bookings": {
+          "title": "Consultations",
+          "description": "Nombre de consultations par période"
+        },
+        "hours": {
+          "title": "Heures",
+          "description": "Nombre d'heures de consultation par période"
+        }
+      }
+    },
+    "requests": {
+      "title": "Demandes de consultation",
+      "description": "Gérer les demandes de consultation",
+      "noRequests": "Aucune demande de consultation",
+      "detailsTitle": "Détails de la demande",
+      "table": {
+        "student": "Étudiant",
+        "subject": "Sujet",
+        "date": "Date",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "details": {
+        "title": "Détails de la demande",
+        "description": "Détails de la demande de consultation",
+        "studentInfo": "Informations sur l'étudiant",
+        "message": "Message",
+        "proposedDate": "Date proposée"
+      },
+      "status": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "rejected": "Refusé",
+        "completed": "Terminé"
+      },
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "viewDetails": "Voir les détails",
+      "statusUpdated": "Statut mis à jour avec succès",
+      "updateError": "Erreur lors de la mise à jour du statut",
+      "meeting": {
+        "link": "Lien de réunion",
+        "setup": "Configurer le lien de réunion",
+        "description": "Ajoutez votre lien Google Meet permanent pour les consultations",
+        "save": "Enregistrer le lien",
+        "saving": "Enregistrement...",
+        "sameLink": "Entrez un lien différent de l'actuel",
+        "updated": "Lien de réunion mis à jour avec succès",
+        "error": "Erreur lors de la mise à jour"
+      }
+    },
+    "profile": {
+      "title": "Paramètres du profil",
+      "personalInfo": "Informations personnelles",
+      "specialization": "Spécialisation",
+      "shortDescription": "Description courte",
+      "hourlyRate": "Taux horaire",
+      "bio": {
+        "ar": "Biographie (arabe)",
+        "fr": "Biographie (français)"
+      },
+      "save": "Enregistrer les modifications",
+      "saved": "Modifications enregistrées",
+      "error": "Erreur lors de l'enregistrement"
+    },
+    "meetingLink": {
+      "setup": "Configurer le lien de réunion",
+      "description": "Ajoutez votre lien Google Meet permanent pour les consultations",
+      "save": "Enregistrer le lien",
+      "updated": "Lien de réunion mis à jour avec succès",
+      "error": "Erreur lors de la mise à jour"
     }
   }
 }

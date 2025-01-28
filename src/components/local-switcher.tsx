@@ -5,8 +5,15 @@ import { useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { locales } from "@/i18n";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { IconLanguage } from "@tabler/icons-react";
 
 type Locale = (typeof locales)[number];
 
@@ -14,18 +21,21 @@ interface LanguageOption {
   value: Locale;
   flag: string;
   label: string;
+  nativeLabel: string;
 }
 
 const languageOptions: LanguageOption[] = [
   {
     value: "fr",
     flag: "/flags/fr.svg",
-    label: "Changer en français",
+    label: "Français",
+    nativeLabel: "Français",
   },
   {
     value: "ar",
     flag: "/flags/ar.svg",
-    label: "التغيير إلى العربية",
+    label: "Arabic",
+    nativeLabel: "العربية",
   },
 ];
 
@@ -35,46 +45,69 @@ export default function LocalSwitcher() {
   const pathname = usePathname();
   const currentLocale = useLocale() as Locale;
 
-  // Get the next language option to display its flag
-  const nextLocale = currentLocale === "ar" ? "fr" : "ar";
-  const nextOption = languageOptions.find((l) => l.value === nextLocale);
+  const currentOption = languageOptions.find((l) => l.value === currentLocale);
 
-  const handleLanguageChange = () => {
+  const handleLanguageChange = (locale: Locale) => {
     startTransition(() => {
-      // Extract the path after the locale
-      const newPath = pathname.replace(`/${currentLocale}`, `/${nextLocale}`);
+      const newPath = pathname.replace(`/${currentLocale}`, `/${locale}`);
       router.replace(newPath);
     });
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className={cn(
-        "size-10 flex items-center justify-center relative",
-        isPending && "opacity-50 cursor-not-allowed"
-      )}
-      onClick={handleLanguageChange}
-      disabled={isPending}
-      aria-label={nextOption?.label}
-      title={nextOption?.label}
-    >
-      <div className="relative size-5 overflow-hidden rounded-[1px]">
-        <Image
-          src={nextOption?.flag || ""}
-          alt={nextOption?.label || ""}
-          fill
-          className="object-cover"
-          sizes="20px"
-          priority
-        />
-      </div>
-      {isPending && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/50 dark:bg-gray-800/50 rounded-md">
-          <div className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-        </div>
-      )}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "size-8 flex items-center justify-center relative",
+            isPending && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPending}
+        >
+          {currentOption ? (
+            <div className="relative size-5 overflow-hidden rounded-[1px]">
+              <Image
+                src={currentOption.flag}
+                alt={currentOption.label}
+                fill
+                className="object-cover"
+                sizes="20px"
+                priority
+              />
+            </div>
+          ) : (
+            <IconLanguage className="size-5" />
+          )}
+          {isPending && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/50 dark:bg-gray-800/50 rounded-md">
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+            </div>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center">
+        {languageOptions.map((option) => (
+          <DropdownMenuItem
+            key={option.value}
+            disabled={currentLocale === option.value || isPending}
+            onClick={() => handleLanguageChange(option.value)}
+            className="flex items-center gap-2"
+          >
+            <div className="relative size-4 overflow-hidden rounded-[1px]">
+              <Image
+                src={option.flag}
+                alt={option.label}
+                fill
+                className="object-cover"
+                sizes="16px"
+              />
+            </div>
+            <span>{option.nativeLabel}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

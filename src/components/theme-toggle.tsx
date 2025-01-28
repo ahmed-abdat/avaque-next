@@ -3,77 +3,100 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
-type Checked = DropdownMenuCheckboxItemProps["checked"];
+interface ThemeOption {
+  value: string;
+  icon: React.ReactNode;
+  label: {
+    ar: string;
+    fr: string;
+  };
+}
+
+const themeOptions: ThemeOption[] = [
+  {
+    value: "light",
+    icon: <Sun className="size-4" />,
+    label: {
+      ar: "الوضع النهاري",
+      fr: "Lumineux",
+    },
+  },
+  {
+    value: "dark",
+    icon: <Moon className="size-4" />,
+    label: {
+      ar: "الوضع الليلي",
+      fr: "Sombre",
+    },
+  },
+  {
+    value: "system",
+    icon: <Sun className="size-4" />,
+    label: {
+      ar: "وضع النظام",
+      fr: "Système",
+    },
+  },
+];
 
 export function ThemeToggle({ locale }: { locale: string }) {
   const { theme, setTheme } = useTheme();
   const isRTL = locale === "ar";
+  const [isPending, setIsPending] = React.useState(false);
 
-  const translations = {
-    light: isRTL ? "الوضع النهاري" : "Light",
-    dark: isRTL ? "الوضع الليلي" : "Dark",
-    system: isRTL ? "وضع النظام" : "System",
-    appearance: isRTL ? "المظهر" : "Appearance",
-    toggleTheme: isRTL ? "تغيير المظهر" : "Toggle theme"
-  };
-
-  const [isLight, setIsLight] = React.useState<Checked>(theme === "light");
-  const [isDark, setIsDark] = React.useState<Checked>(theme === "dark");
-  const [isSystem, setIsSystem] = React.useState<Checked>(theme === "system");
+  const currentTheme = theme || "system";
+  const currentOption = themeOptions.find((t) => t.value === currentTheme);
 
   const handleThemeChange = (newTheme: string) => {
+    setIsPending(true);
     setTheme(newTheme);
-    setIsLight(newTheme === "light");
-    setIsDark(newTheme === "dark");
-    setIsSystem(newTheme === "system");
+    setTimeout(() => setIsPending(false), 300);
   };
 
   return (
-    <DropdownMenu dir={isRTL ? "rtl" : "ltr"}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">
-            {translations.toggleTheme}
-          </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "size-8 flex items-center justify-center relative",
+            isPending && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPending}
+        >
+          {currentOption ? currentOption.icon : <Sun className="size-4" />}
+          {isPending && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/50 dark:bg-gray-800/50 rounded-md">
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+            </div>
+          )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align={isRTL ? "end" : "start"} side={isRTL ? "left" : "right"}>
-        <DropdownMenuLabel className={isRTL ? "text-right" : "text-left"}>
-          {translations.appearance}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={isLight}
-          onCheckedChange={() => handleThemeChange("light")}
-        >
-          {translations.light}
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={isDark}
-          onCheckedChange={() => handleThemeChange("dark")}
-        >
-          {translations.dark}
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          checked={isSystem}
-          onCheckedChange={() => handleThemeChange("system")}
-        >
-          {translations.system}
-        </DropdownMenuCheckboxItem>
+      <DropdownMenuContent align="center">
+        {themeOptions.map((option) => (
+          <DropdownMenuItem
+            key={option.value}
+            disabled={currentTheme === option.value || isPending}
+            onClick={() => handleThemeChange(option.value)}
+            className={cn(
+              "flex items-center gap-2",
+              isRTL && "flex-row-reverse"
+            )}
+          >
+            {option.icon}
+            <span>{option.label[locale as keyof typeof option.label]}</span>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

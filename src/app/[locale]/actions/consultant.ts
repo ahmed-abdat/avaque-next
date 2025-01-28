@@ -3,8 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import type { ConsultantRegisterValues } from "@/lib/validations/consultant";
+import type {
+  ConsultantRegisterValues,
+  MeetingLinkFormValues,
+} from "@/lib/validations/consultant";
 import { headers } from "next/headers";
+import type { ConsultantProfileFormValues } from "@/lib/validations/consultant";
+import { meetingLinkSchema } from "@/lib/validations/consultant";
 
 // Helper to get current locale
 function getCurrentLocale(): string {
@@ -86,7 +91,7 @@ export async function consultantLogin(values: {
   }
 
   revalidatePath("/", "layout");
-  redirect(`/${locale}/consultant/dashboard`);
+  redirect(`/${locale}/dashboard`);
 }
 
 export async function isConsultantExist(email: string) {
@@ -115,4 +120,187 @@ export async function isConsultantExist(email: string) {
   }
 
   return null;
+}
+
+export async function getConsultantProfile() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: consultantProfile, error } = await supabase
+    .from("consultant_profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error) return null;
+  return consultantProfile;
+}
+
+export async function updateConsultantAvatar(formData: FormData) {
+  const supabase = await createClient();
+
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    const avatarFile = formData.get("avatarFile") as File;
+    const oldAvatarUrl = formData.get("oldAvatarUrl") as string;
+
+    if (!avatarFile) {
+      return { error: "No file provided" };
+    }
+
+    // Validate file size (5MB) and type on server side as well
+    if (avatarFile.size > 5 * 1024 * 1024) {
+      return { error: "File size too large (max 5MB)" };
+    }
+
+    if (!avatarFile.type.startsWith("image/")) {
+      return { error: "Invalid file type" };
+    }
+
+    // Delete old avatar if it exists
+    if (oldAvatarUrl && oldAvatarUrl.includes("avatar_images")) {
+      const oldPath = oldAvatarUrl.split("avatar_images/").pop();
+      if (oldPath) {
+        try {
+          await supabase.storage.from("avatar_images").remove([oldPath]);
+        } catch (error) {
+          console.error("Error deleting old avatar:", error);
+          // Continue with upload even if delete fails
+        }
+      }
+    }
+
+    // Upload new avatar with user ID in path
+    const fileExt = avatarFile.name.split(".").pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+    const { error: uploadError, data } = await supabase.storage
+      .from("avatar_images")
+      .upload(fileName, avatarFile, {
+        cacheControl: "3600",
+        upsert: true, // Changed to true to allow overwriting
+      });
+
+    if (uploadError) {
+      console.error("Error uploading avatar:", uploadError);
+      return { error: uploadError.message || "Failed to upload avatar" };
+    }
+
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("avatar_images").getPublicUrl(fileName);
+
+    // Update profile with new avatar URL
+    const { error: updateError } = await supabase
+      .from("consultant_profiles")
+      .update({ avatar_url: publicUrl })
+      .eq("id", user.id);
+
+    if (updateError) {
+      console.error("Error updating profile with avatar URL:", updateError);
+      // Try to clean up the uploaded file
+      try {
+        await supabase.storage.from("avatar_images").remove([fileName]);
+      } catch (error) {
+        console.error("Error cleaning up avatar file:", error);
+      }
+      return { error: "Failed to update profile with new avatar" };
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true, avatarUrl: publicUrl };
+  } catch (error) {
+    console.error("Error in avatar update process:", error);
+    return { error: "Failed to process avatar update" };
+  }
+}
+
+export async function updateConsultantProfile(formData: FormData) {
+  const supabase = await createClient();
+
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    // Validate required fields
+    const fullName = formData.get("fullName");
+    const specialization = formData.get("specialization");
+    const shortDescription = formData.get("shortDescription");
+
+    if (!fullName || !specialization || !shortDescription) {
+      return { error: "Required fields are missing" };
+    }
+
+    // Update profile data (excluding avatar)
+    const { error: updateError } = await supabase
+      .from("consultant_profiles")
+      .update({
+        full_name: fullName,
+        specialization,
+        short_description: shortDescription,
+        bio_ar: formData.get("bio_ar") || "",
+        bio_fr: formData.get("bio_fr") || "",
+      })
+      .eq("id", user.id);
+
+    if (updateError) {
+      console.error("Error updating profile:", updateError);
+      return { error: "Failed to update profile" };
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error in profile update process:", error);
+    return { error: "Failed to process profile update" };
+  }
+}
+
+export async function updateMeetingLink(values: MeetingLinkFormValues) {
+  const supabase = await createClient();
+
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    // Validate the data
+    const validatedData = meetingLinkSchema.parse(values);
+
+    // Update the meeting link
+    const { error } = await supabase
+      .from("consultant_profiles")
+      .update({ meet_link: validatedData.meetLink })
+      .eq("id", user.id);
+
+    if (error) throw error;
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating meeting link:", error);
+    return { error: "Failed to update meeting link" };
+  }
 }

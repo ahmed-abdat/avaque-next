@@ -101,7 +101,7 @@ export function LoginForm({ locale }: { locale: string }) {
         return;
       }
 
-      router.replace(`/${locale}/dashboard`);
+      router.replace(`/${locale}`);
     } catch (error) {
       console.error(error);
       setError(t("common.error"));
