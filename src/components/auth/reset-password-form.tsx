@@ -30,6 +30,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
   const t = useTranslations("Auth");
@@ -77,7 +78,35 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
     }
 
     verifyCode();
-  }, [code, locale, router, t, isConsultant]);
+  }, [code, locale, router, t, isConsultant, email]);
+
+  useEffect(() => {
+    if (searchParams?.get("verified") === "true") {
+      setSuccess(true);
+      setSuccessMessage(t("verifyEmail.success"));
+    }
+
+    // Handle URL error parameters
+    const urlError = searchParams?.get("error");
+    const errorCode = searchParams?.get("error_code");
+    const errorDescription = searchParams?.get("error_description");
+
+    if (urlError || errorCode || errorDescription) {
+      // Handle specific error cases
+      if (
+        errorCode === "otp_expired" ||
+        errorDescription?.includes("expired")
+      ) {
+        setError(t("verifyEmail.errors.linkExpired"));
+      } else if (urlError === "No code provided") {
+        setError(t("verifyEmail.errors.invalidLink"));
+      } else if (errorCode === "access_denied") {
+        setError(t("verifyEmail.errors.accessDenied"));
+      } else {
+        setError(t("common.error"));
+      }
+    }
+  }, [searchParams, t, email]);
 
   const resetPasswordSchema = z
     .object({
@@ -204,7 +233,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
             </div>
             <div className="text-center">
               <h1 className="text-xl font-semibold tracking-tight">
-                {t("resetPassword.success")}
+                {successMessage || t("resetPassword.success")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 {t("resetPassword.successMessage")}

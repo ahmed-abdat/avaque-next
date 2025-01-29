@@ -51,7 +51,13 @@ const themeOptions: ThemeOption[] = [
 export function ThemeToggle({ locale }: { locale: string }) {
   const { theme, setTheme } = useTheme();
   const isRTL = locale === "ar";
+  const [mounted, setMounted] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
+
+  // Prevent hydration mismatch
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const currentTheme = theme || "system";
   const currentOption = themeOptions.find((t) => t.value === currentTheme);
@@ -61,6 +67,15 @@ export function ThemeToggle({ locale }: { locale: string }) {
     setTheme(newTheme);
     setTimeout(() => setIsPending(false), 300);
   };
+
+  // Prevent hydration mismatch by not rendering anything until mounted
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="size-8">
+        <span className="sr-only">Loading theme</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -80,6 +95,7 @@ export function ThemeToggle({ locale }: { locale: string }) {
               <div className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
             </div>
           )}
+          <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">

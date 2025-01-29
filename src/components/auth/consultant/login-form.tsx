@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,14 +25,12 @@ import {
   createLoginSchema,
 } from "@/lib/validations/consultant";
 import { consultantLogin } from "@/app/[locale]/actions/consultant";
-import { ResendVerificationDialog } from "../resend-verification-dialog";
 
 interface ConsultantLoginFormProps {
   locale: string;
 }
 
 export function ConsultantLoginForm({ locale }: ConsultantLoginFormProps) {
-  // const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

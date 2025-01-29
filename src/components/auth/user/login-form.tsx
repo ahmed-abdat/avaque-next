@@ -128,7 +128,10 @@ export function LoginForm({ locale }: { locale: string }) {
           >
             <Link href={`/${locale}/register`}>
               {t("login.signUp")}
-              <ArrowRight className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
+              <ArrowRight
+                className="h-4 w-4 inline-block"
+                style={{ transform: isRtl ? "rotate(180deg)" : "none" }}
+              />
             </Link>
           </Button>
         </div>

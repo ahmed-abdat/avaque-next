@@ -71,9 +71,6 @@ export function ConsultationRequests({
                     {t(`requests.status.${request.status}`)}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {request.subject}
-                </p>
                 <div
                   className={`flex items-center gap-2 text-sm text-muted-foreground`}
                 >
@@ -128,9 +125,6 @@ export function ConsultationRequests({
                     </div>
                   </TableCell>
                   <TableCell>
-                    {request.subject}
-                  </TableCell>
-                  <TableCell>
                     {new Date(request.requestDate).toLocaleDateString(
                       isRTL ? "ar" : "fr",
                       {
@@ -177,10 +171,6 @@ export function ConsultationRequests({
                 <div className="text-sm text-muted-foreground">
                   {selectedRequest.studentEmail}
                 </div>
-              </div>
-              <div className="grid gap-1">
-                <div className="font-medium">{t("requests.subject")}</div>
-                <div>{selectedRequest.subject}</div>
               </div>
               <div className="grid gap-1">
                 <div className="font-medium">{t("requests.date")}</div>

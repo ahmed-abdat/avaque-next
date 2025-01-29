@@ -1,29 +1,24 @@
 import { GlobalHeader } from "./global-header";
 import { DashboardTabs } from "./dashboard-tabs";
 import { WelcomeHeader } from "./welcome-header";
-import { ConsultantProfile } from "@/types/dashboard";
+import { ConsultantProfile, DashboardStats } from "@/types/dashboard";
 import { ConsultationRequest } from "../types";
 
-interface DashboardLayoutProps {
-  stats: {
-    totalBookings: number;
-    totalEarnings: number;
-    totalHours: number;
-    activeRequests: number;
-  };
+interface DashboardContainerProps {
+  stats: DashboardStats;
   earningsData: Array<{ date: string; amount: number }>;
   requests: ConsultationRequest[];
   profileData: ConsultantProfile | null;
   locale: string;
 }
 
-export default function DashboardLayout({
+export function DashboardContainer({
   stats,
   earningsData,
   requests,
   profileData,
   locale,
-}: DashboardLayoutProps) {
+}: DashboardContainerProps) {
   const isRTL = locale === "ar";
 
   return (

@@ -52,9 +52,9 @@ export async function GET(request: Request) {
     if (type === "email_verification") {
       // Get the user's session to check their role
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const userRole = session?.user?.user_metadata?.role;
+        data: { user },
+      } = await supabase.auth.getUser();
+      const userRole = user?.user_metadata?.role;
 
       // Determine the redirect URL based on the user's role
       const redirectUrl =

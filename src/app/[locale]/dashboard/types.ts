@@ -3,7 +3,6 @@ export interface ConsultationRequest {
   studentName: string;
   studentEmail: string;
   requestDate: string;
-  subject: string;
   status: string;
   proposedDate: string;
 }

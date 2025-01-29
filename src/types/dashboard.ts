@@ -1,10 +1,47 @@
-import { Database } from "@/types/supabase";
+// Base types for database entities
+export interface ConsultantProfile {
+  avatar_url: string | null;
+  bio_ar: string | null;
+  bio_fr: string | null;
+  created_at: string;
+  email: string;
+  full_name: string | null;
+  hourly_rate: number;
+  id: string;
+  is_approved: boolean | null;
+  meet_link: string | null;
+  role: "admin" | "consultant" | "student";
+  short_description: string;
+  specialization: string;
+  updated_at: string;
+}
 
-export type ConsultantProfile =
-  Database["public"]["Tables"]["consultant_profiles"]["Row"];
+export interface Profile {
+  avatar_url: string | null;
+  created_at: string;
+  email: string | null;
+  full_name: string | null;
+  id: string;
+  role: "admin" | "consultant" | "student";
+  updated_at: string;
+}
 
-export type BookingRecord = Database["public"]["Tables"]["bookings"]["Row"] & {
-  profiles: Database["public"]["Tables"]["profiles"]["Row"];
+export interface Booking {
+  consultant_id: string;
+  created_at: string;
+  duration_minutes: number;
+  google_meet_link: string | null;
+  id: string;
+  scheduled_time: string;
+  status: string;
+  student_id: string;
+  total_amount: number;
+  updated_at: string;
+}
+
+// Combined types
+export type BookingRecord = Booking & {
+  profiles: Profile;
 };
 
 export interface ConsultationRequest {
