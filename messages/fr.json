@@ -196,6 +196,24 @@
   },
   "ConsultantProfile": {
     "title": "Profil du consultant",
+    "sessions": "séance",
+    "languages": {
+      "ar": "Arabe",
+      "fr": "Français"
+    },
+    "stats": {
+      "expertise": "Spécialisation",
+      "languages": "Langues",
+      "sessions": "Séances",
+      "hourlyRate": "Tarif horaire"
+    },
+    "bookSession": "Réserver une séance",
+    "tabs": {
+      "about": "À propos",
+      "expertise": "Expertise",
+      "reviews": "Avis"
+    },
+    "noReviews": "Aucun avis pour le moment",
     "avatar": {
       "url": "Photo de profil",
       "upload": "Télécharger une photo",
@@ -223,7 +241,17 @@
     "profileUpdated": "Profil mis à jour avec succès",
     "updateError": "Erreur lors de la mise à jour du profil",
     "updating": "Mise à jour en cours...",
-    "noChanges": "Aucune modification n'a été effectuée"
+    "noChanges": "Aucune modification n'a été effectuée",
+    "review": {
+      "title": "Laisser un avis",
+      "rating": "Note",
+      "comment": "Commentaire",
+      "commentPlaceholder": "Partagez votre expérience avec ce consultant...",
+      "submit": "Envoyer",
+      "submitting": "Envoi en cours...",
+      "success": "Avis envoyé avec succès",
+      "error": "Erreur lors de l'envoi de l'avis"
+    }
   },
   "ConsultantDashboard": {
     "navigation": {
@@ -341,7 +369,9 @@
       "howItWorks": "Comment ça marche",
       "faq": "FAQ",
       "signIn": "Se connecter",
-      "signUp": "S'inscrire"
+      "signUp": "S'inscrire",
+      "signOut": "Se déconnecter",
+      "dashboard": "Tableau de bord"
     },
     "hero": {
       "subtitle": "La meilleure plateforme de consultation académique",
@@ -485,5 +515,23 @@
       "title": "Réseaux sociaux"
     },
     "copyright": "Tous droits réservés"
+  },
+  "Consultants": {
+    "title": "Trouvez votre consultant",
+    "description": "Connectez-vous avec des experts académiques qualifiés pour vous guider dans votre parcours",
+    "search": {
+      "placeholder": "Rechercher par nom ou spécialisation"
+    },
+    "filters": {
+      "specialization": "Choisir une spécialisation",
+      "sortBy": "Trier par"
+    },
+    "sort": {
+      "rating": "Note",
+      "sessions": "Nombre de sessions"
+    },
+    "sessions": "sessions",
+    "perHour": "par heure",
+    "viewProfile": "Voir le profil"
   }
 }

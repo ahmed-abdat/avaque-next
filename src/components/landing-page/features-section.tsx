@@ -68,7 +68,7 @@ export function FeaturesSection({ locale }: FeaturesSectionProps) {
     <section
       id="features"
       className={cn(
-        "relative space-y-8 py-12 md:py-24 lg:py-32",
+        "relative space-y-8 px-4 py-12 md:py-24 lg:py-32",
         isRtl && "text-right"
       )}
     >
@@ -77,21 +77,21 @@ export function FeaturesSection({ locale }: FeaturesSectionProps) {
 
       <div
         className={cn(
-          "mx-auto flex max-w-[58rem] flex-col items-center space-y-4",
+          "mx-auto flex max-w-[58rem] flex-col items-center space-y-4 px-4",
           isRtl ? "text-right" : "text-center"
         )}
       >
-        <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {t("features.title")}
         </h2>
-        <p className="max-w-[85%] text-lg leading-relaxed text-muted-foreground">
+        <p className="max-w-[85%] text-base leading-relaxed text-muted-foreground sm:text-lg">
           {t("features.description")}
         </p>
       </div>
 
       <div
         className={cn(
-          "mx-auto grid justify-center gap-6 sm:grid-cols-2 md:max-w-[64rem] lg:grid-cols-4",
+          "mx-auto grid justify-center gap-4 px-4 sm:grid-cols-2 sm:gap-6 md:max-w-[64rem] lg:grid-cols-4",
           isRtl && "lg:grid-flow-row-dense"
         )}
       >
@@ -105,16 +105,16 @@ export function FeaturesSection({ locale }: FeaturesSectionProps) {
                 isRtl && "text-right"
               )}
             >
-              <div className="flex h-[180px] flex-col justify-between rounded-lg p-6">
+              <div className="flex h-[180px] flex-col justify-between rounded-lg p-4 sm:p-6">
                 <div className={cn("relative", isRtl && "self-end")}>
                   <div
                     className={cn(
-                      "absolute -left-2 -top-2 h-20 w-20 rounded-full bg-primary/10 opacity-70 transition-all group-hover:scale-125",
+                      "absolute -left-2 -top-2 h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-primary/10 opacity-70 transition-all group-hover:scale-125",
                       isRtl && "-right-2 -left-auto"
                     )}
                   />
                   <Icon
-                    className="relative h-10 w-10 text-primary transition-transform group-hover:scale-110"
+                    className="relative h-8 w-8 sm:h-10 sm:w-10 text-primary transition-transform group-hover:scale-110"
                     aria-hidden="true"
                   />
                 </div>

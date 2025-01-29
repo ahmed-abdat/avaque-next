@@ -1,14 +1,26 @@
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import LocalSwitcher from "@/components/local-switcher";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
   params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (user && !error) {
+    redirect(`/${locale}/`);
+  }
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
       {/* Left side - Auth form */}

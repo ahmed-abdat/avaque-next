@@ -8,7 +8,6 @@ import type {
   MeetingLinkFormValues,
 } from "@/lib/validations/consultant";
 import { headers } from "next/headers";
-import type { ConsultantProfileFormValues } from "@/lib/validations/consultant";
 import { meetingLinkSchema } from "@/lib/validations/consultant";
 
 // Helper to get current locale
@@ -136,6 +135,27 @@ export async function getConsultantProfile() {
 
   if (error) return null;
   return consultantProfile;
+}
+
+export async function getAllConsultants() {
+  const supabase = await createClient();
+  const { data: consultants, error } = await supabase
+    .from("consultant_profiles")
+    .select("*");
+  if (error) return null;
+  return consultants;
+}
+
+export async function getConsultantById(id: string) {
+  const supabase = await createClient();
+  const { data: consultant, error } = await supabase
+    .from("consultant_profiles")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return null;
+  return consultant;
 }
 
 export async function updateConsultantAvatar(formData: FormData) {
@@ -302,5 +322,65 @@ export async function updateMeetingLink(values: MeetingLinkFormValues) {
   } catch (error) {
     console.error("Error updating meeting link:", error);
     return { error: "Failed to update meeting link" };
+  }
+}
+
+export interface Review {
+  id: string;
+  consultant_id: string;
+  student_id: string;
+  booking_id: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getReviewsByConsultantId(consultantId: string) {
+  const supabase = await createClient();
+  const { data: reviews, error } = await supabase
+    .from("reviews")
+    .select("*")
+    .eq("consultant_id", consultantId)
+    .order("created_at", { ascending: false });
+
+  if (error) return null;
+  return reviews as Review[];
+}
+
+export async function submitReview(
+  consultantId: string,
+  rating: number,
+  comment: string
+) {
+  const supabase = await createClient();
+
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    // Insert the review
+    const { error } = await supabase.from("reviews").insert({
+      consultant_id: consultantId,
+      student_id: user.id,
+      rating,
+      comment,
+    });
+
+    if (error) throw error;
+
+    // Revalidate the consultant profile page
+    revalidatePath(`/consultants/${consultantId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    return { error: "Failed to submit review" };
   }
 }

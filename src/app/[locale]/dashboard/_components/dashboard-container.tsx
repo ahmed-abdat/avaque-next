@@ -1,4 +1,3 @@
-import { GlobalHeader } from "./global-header";
 import { DashboardTabs } from "./dashboard-tabs";
 import { WelcomeHeader } from "./welcome-header";
 import { ConsultantProfile } from "@/types/dashboard";
@@ -27,7 +26,6 @@ export function DashboardContainer({
 
   return (
     <div className="min-h-screen bg-background">
-      <GlobalHeader profileData={profileData} isRTL={isRTL} />
       <main className="flex-1">
         <div className="space-y-6 p-4 md:p-8 pt-6">
           <WelcomeHeader profileData={profileData} isRTL={isRTL} />

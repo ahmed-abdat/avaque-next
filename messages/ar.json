@@ -225,7 +225,35 @@
     "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
     "updateError": "حدث خطأ أثناء تحديث الملف الشخصي",
     "updating": "جاري التحديث...",
-    "noChanges": "لم يتم إجراء أي تغييرات"
+    "noChanges": "لم يتم إجراء أي تغييرات",
+    "sessions": "جلسة",
+    "languages": {
+      "ar": "العربية",
+      "fr": "الفرنسية"
+    },
+    "stats": {
+      "expertise": "التخصص",
+      "languages": "اللغات",
+      "sessions": "الجلسات",
+      "hourlyRate": "السعر بالساعة"
+    },
+    "bookSession": "حجز جلسة",
+    "tabs": {
+      "about": "نبذة عني",
+      "expertise": "التخصص",
+      "reviews": "التقييمات"
+    },
+    "noReviews": "لا توجد تقييمات حتى الآن",
+    "review": {
+      "title": "إضافة تقييم",
+      "rating": "التقييم",
+      "comment": "التعليق",
+      "commentPlaceholder": "شارك تجربتك مع هذا المستشار...",
+      "submit": "إرسال",
+      "submitting": "جاري الإرسال...",
+      "success": "تم إرسال التقييم بنجاح",
+      "error": "حدث خطأ أثناء إرسال التقييم"
+    }
   },
   "ConsultantDashboard": {
     "navigation": {
@@ -343,7 +371,9 @@
       "howItWorks": "كيف تعمل",
       "faq": "الأسئلة الشائعة",
       "signIn": "تسجيل الدخول",
-      "signUp": "إنشاء حساب"
+      "signUp": "إنشاء حساب",
+      "signOut": "تسجيل الخروج",
+      "dashboard": "لوحة التحكم"
     },
     "hero": {
       "subtitle": "أفضل منصة للاستشارات الأكاديمية",
@@ -487,5 +517,23 @@
       "title": "التواصل الاجتماعي"
     },
     "copyright": "جميع الحقوق محفوظة"
+  },
+  "Consultants": {
+    "title": "ابحث عن مستشارك",
+    "description": "تواصل مع خبراء أكاديميين مؤهلين لإرشادك في رحلتك التعليمية",
+    "search": {
+      "placeholder": "ابحث بالاسم أو التخصص"
+    },
+    "filters": {
+      "specialization": "اختر التخصص",
+      "sortBy": "ترتيب حسب"
+    },
+    "sort": {
+      "rating": "التقييم",
+      "sessions": "عدد الجلسات"
+    },
+    "sessions": "جلسة",
+    "perHour": "في الساعة",
+    "viewProfile": "عرض الملف الشخصي"
   }
 }

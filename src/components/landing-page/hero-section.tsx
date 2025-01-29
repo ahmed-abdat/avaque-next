@@ -23,7 +23,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
 
       <div
         className={cn(
-          "relative space-y-8 py-12 md:py-24 lg:py-32",
+          "relative space-y-8 px-4 py-12 md:py-24 lg:py-32",
           isRtl && "text-right"
         )}
       >
@@ -38,32 +38,32 @@ export function HeroSection({ locale }: HeroSectionProps) {
               {t("hero.subtitle")}
             </span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="text-3xl text-center font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
             {t("hero.title")}
           </h1>
-          <p className="max-w-[42rem] text-lg leading-relaxed text-muted-foreground sm:text-xl sm:leading-8">
+          <p className="max-w-[42rem] text-center text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl">
             {t("hero.description")}
           </p>
           <div
             className={cn(
-              "flex flex-col gap-4 sm:flex-row",
+              "flex w-full flex-col gap-4 sm:flex-row sm:w-auto",
               isRtl && "sm:flex-row-reverse"
             )}
           >
-            <Link href={`/${locale}/register`}>
+            <Link href={`/${locale}/register`} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="min-w-[200px] shadow-lg transition-all hover:shadow-xl"
+                className="w-full sm:w-auto sm:min-w-[160px] shadow-lg transition-all hover:shadow-xl"
                 aria-label={t("hero.cta")}
               >
                 {t("hero.cta")}
               </Button>
             </Link>
-            <Link href={`/${locale}/consultants`}>
+            <Link href={`/${locale}/consultants`} className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
-                className="min-w-[200px] border-primary/20 bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80"
+                className="w-full sm:w-auto sm:min-w-[160px] border-primary/20 bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80"
                 aria-label={t("hero.exploreCta")}
               >
                 {t("hero.exploreCta")}
@@ -74,7 +74,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
 
         <div
           className={cn(
-            "mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+            "mx-auto grid max-w-5xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3",
             isRtl && "lg:grid-flow-row-dense"
           )}
         >

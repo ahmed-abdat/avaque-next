@@ -8,6 +8,7 @@ import type {
   RegisterFormValues,
 } from "@/lib/validations/auth";
 import { headers } from "next/headers";
+import { UserType } from "@/types/userType";
 
 // Helper to get current locale
 function getCurrentLocale(): string {
@@ -19,7 +20,9 @@ function getCurrentLocale(): string {
 
 export async function login(values: LoginFormValues) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const locale = getCurrentLocale();
+
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: values.email,
     password: values.password,
   });
@@ -29,7 +32,7 @@ export async function login(values: LoginFormValues) {
   }
 
   revalidatePath("/", "layout");
-  return { success: true };
+  redirect(`/${locale}/`);
 }
 
 export async function signup(values: RegisterFormValues) {
@@ -125,7 +128,6 @@ export async function isUserExistOnDatabase(email: string) {
     .eq("email", email)
     .single();
 
-
   // check if user is consultant
   const { data: consultantData, error: consultantError } = await supabase
     .from("consultant_profiles")
@@ -142,3 +144,41 @@ export async function isUserExistOnDatabase(email: string) {
 }
 
 
+export async function getUser(): Promise<UserType | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error) {
+    return null;
+  }
+
+  if (user) {
+    // try to get the user from the database
+    const { data, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("email", user.email)
+    .single();
+
+    if (data) {
+      return data;
+    }
+
+    if(profileError) {
+      const { data: consultantData, error: consultantError } = await supabase
+      .from("consultant_profiles")
+      .select("*")
+      .eq("email", user.email)
+      .single();
+
+      if(consultantData) {
+        return consultantData;
+      }
+    }
+
+  }
+
+  return null;
+}

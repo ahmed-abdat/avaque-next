@@ -79,8 +79,7 @@ export function LoginForm({ locale }: { locale: string }) {
       setIsPending(true);
       const result = await login(values);
 
-      if (result.error) {
-        console.log(result.error);
+      if (result?.error) {
         // Map Supabase error messages to our translated error messages
         const errorMessage = result.error.toLowerCase();
         if (errorMessage.includes("invalid login credentials")) {
@@ -99,10 +98,7 @@ export function LoginForm({ locale }: { locale: string }) {
         } else {
           setError(t("common.messages.error"));
         }
-        return;
       }
-
-      router.replace(`/${locale}`);
     } catch (error) {
       console.error(error);
       setError(t("common.messages.error"));
@@ -186,7 +182,9 @@ export function LoginForm({ locale }: { locale: string }) {
 
             <div className="flex items-center justify-end">
               <Link
-                href={`/${locale}/forgot-password?email=${form.getValues("email")}`}
+                href={`/${locale}/forgot-password?email=${form.getValues(
+                  "email"
+                )}`}
                 className="text-sm font-medium text-primary hover:underline"
               >
                 {tAuth("login.forgotPassword")}

@@ -10,13 +10,13 @@ import { CTASection } from "./cta-section";
 import { Header } from "../header";
 import Footer from "../footer";
 
-export function LandingPage({ locale }: { locale: string }) {
+export function LandingPage({ locale, user }: { locale: string; user: any }) {
   const t = useTranslations("Landing");
   const isRtl = locale === "ar";
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
+      <Header user={user} />
       <main className="flex-1">
         {/* Hero Section */}
         <HeroSection locale={locale} />
