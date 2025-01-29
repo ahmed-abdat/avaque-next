@@ -42,7 +42,9 @@ export function GlobalHeader({ profileData, isRTL }: GlobalHeaderProps) {
                 className={isRTL ? "ml-2" : "mr-2"}
                 priority
               />
-              <span className="hidden font-bold lg:inline-block">Avaque</span>
+              <span className="hidden font-bold lg:inline-block">
+                {isRTL ? "أفاق" : "Avaque"}
+              </span>
             </div>
           </div>
 

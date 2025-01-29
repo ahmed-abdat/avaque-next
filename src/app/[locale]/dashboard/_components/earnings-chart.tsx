@@ -28,6 +28,11 @@ export function EarningsChart({ data, isRTL }: EarningsChartProps) {
   const t = useTranslations("ConsultantDashboard");
   const { theme } = useTheme();
 
+  const formatCurrency = (value: number) => {
+    // Always use fr-MR for server/client consistency
+    return `${value.toLocaleString("fr-MR")} MRU`;
+  };
+
   // Colors based on theme
   const chartColors = {
     stroke: theme === "dark" ? "hsl(var(--primary))" : "hsl(var(--primary))",
@@ -107,11 +112,7 @@ export function EarningsChart({ data, isRTL }: EarningsChartProps) {
                 axisLine={false}
                 tickMargin={8}
                 orientation={isRTL ? "right" : "left"}
-                tickFormatter={(value) =>
-                  isRTL
-                    ? value.toLocaleString("ar-EG")
-                    : value.toLocaleString("fr-FR")
-                }
+                tickFormatter={(value) => value.toLocaleString("fr-MR")}
                 width={35}
               />
               <Tooltip
@@ -131,9 +132,7 @@ export function EarningsChart({ data, isRTL }: EarningsChartProps) {
                           )}
                         </span>
                         <span className="font-bold text-sm text-foreground">
-                          {isRTL
-                            ? `${payload[0].value?.toLocaleString("ar")} MRU`
-                            : `${payload[0].value?.toLocaleString("fr")} MRU`}
+                          {formatCurrency(payload[0].value as number)}
                         </span>
                       </div>
                     </div>

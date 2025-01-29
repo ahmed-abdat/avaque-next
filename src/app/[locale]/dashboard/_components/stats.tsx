@@ -1,10 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { CalendarDays, DollarSign, Clock } from "lucide-react";
-import { useParams } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 interface StatsProps {
   totalBookings: number;
@@ -21,6 +19,11 @@ export function ConsultantStats({
 }: StatsProps) {
   const t = useTranslations("ConsultantDashboard");
 
+  const formatCurrency = (value: number) => {
+    // Always use fr-MR for server/client consistency
+    return `${value.toLocaleString("fr-MR")} MRU`;
+  };
+
   const stats = [
     {
       title: t("stats.totalBookings.title"),
@@ -31,7 +34,7 @@ export function ConsultantStats({
     },
     {
       title: t("stats.totalEarnings.title"),
-      value: `${totalEarnings.toLocaleString(isRTL ? "ar" : "fr")} MRU`,
+      value: formatCurrency(totalEarnings),
       icon: DollarSign,
       color: "text-green-500",
       bgColor: "bg-green-50 dark:bg-green-900/20",
