@@ -23,8 +23,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
-  consultantProfileSchema,
   type ConsultantProfileFormValues,
+  createConsultantProfileSchema,
 } from "@/lib/validations/consultant";
 import {
   updateConsultantProfile,
@@ -41,6 +41,7 @@ export function ConsultantProfileForm({
   isRTL,
 }: ProfileFormProps) {
   const t = useTranslations("ConsultantProfile");
+  const commonT = useTranslations("common");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -49,7 +50,7 @@ export function ConsultantProfileForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const form = useForm<ConsultantProfileFormValues>({
-    resolver: zodResolver(consultantProfileSchema),
+    resolver: zodResolver(createConsultantProfileSchema(commonT)),
     defaultValues: {
       fullName: initialData?.fullName || "",
       bio_ar: initialData?.bio_ar || "",
@@ -187,7 +188,7 @@ export function ConsultantProfileForm({
               name="avatar_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("avatarUrl")}</FormLabel>
+                  <FormLabel>{t("avatar.url")}</FormLabel>
                   <FormControl>
                     <div className="flex flex-col items-center gap-4">
                       {/* Avatar Preview */}
@@ -225,7 +226,7 @@ export function ConsultantProfileForm({
                             className="flex items-center gap-2"
                           >
                             <IconUpload className="size-4" />
-                            {t("uploadImage")}
+                            {t("avatar.upload")}
                           </Button>
                           {previewUrl && (
                             <Button
@@ -252,9 +253,12 @@ export function ConsultantProfileForm({
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("fullName")}</FormLabel>
+                  <FormLabel>{commonT("form.fullName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("fullNamePlaceholder")} {...field} />
+                    <Input
+                      placeholder={commonT("form.fullNamePlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -266,10 +270,10 @@ export function ConsultantProfileForm({
               name="specialization"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("specialization")}</FormLabel>
+                  <FormLabel>{t("fields.specialization")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t("specializationPlaceholder")}
+                      placeholder={t("fields.specializationPlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -283,12 +287,12 @@ export function ConsultantProfileForm({
               name="hourlyRate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("hourlyRate")}</FormLabel>
+                  <FormLabel>{t("fields.hourlyRate")}</FormLabel>
                   <FormControl>
                     <Input
                       disabled
                       type="number"
-                      placeholder={t("hourlyRatePlaceholder")}
+                      placeholder={t("fields.hourlyRatePlaceholder")}
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -305,10 +309,10 @@ export function ConsultantProfileForm({
               name="shortDescription"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("shortDescription")}</FormLabel>
+                  <FormLabel>{t("fields.shortDescription")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("shortDescriptionPlaceholder")}
+                      placeholder={t("fields.shortDescriptionPlaceholder")}
                       className="h-32"
                       {...field}
                     />
@@ -323,10 +327,10 @@ export function ConsultantProfileForm({
               name="bio_ar"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("bioAr")}</FormLabel>
+                  <FormLabel>{t("fields.bioAr")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("bioArPlaceholder")}
+                      placeholder={t("fields.bioArPlaceholder")}
                       className="h-32"
                       {...field}
                     />
@@ -341,10 +345,10 @@ export function ConsultantProfileForm({
               name="bio_fr"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("bioFr")}</FormLabel>
+                  <FormLabel>{t("fields.bioFr")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("bioFrPlaceholder")}
+                      placeholder={t("fields.bioFrPlaceholder")}
                       className="h-32"
                       {...field}
                     />
@@ -360,7 +364,7 @@ export function ConsultantProfileForm({
               className="w-full"
             >
               {isUploadingAvatar
-                ? t("uploadingAvatar")
+                ? t("avatar.uploading")
                 : isSubmitting
                 ? t("updating")
                 : t("updateProfile")}

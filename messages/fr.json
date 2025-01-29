@@ -9,7 +9,10 @@
       "view": "Voir",
       "approve": "Approuver",
       "reject": "Refuser",
-      "complete": "Terminer"
+      "complete": "Terminer",
+      "signIn": "Se connecter",
+      "signUp": "S'inscrire",
+      "signOut": "Se déconnecter"
     },
     "status": {
       "pending": "En attente",
@@ -17,31 +20,174 @@
       "rejected": "Refusé",
       "completed": "Terminé"
     },
-    "table": {
-      "student": "Étudiant",
-      "subject": "Sujet",
-      "date": "Date",
-      "status": "Statut",
-      "actions": "Actions"
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Mot de passe",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont"
+    },
+    "validation": {
+      "emailRequired": "Veuillez entrer une adresse email valide",
+      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
+      "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
+      "passwordMatch": "Les mots de passe ne correspondent pas",
+      "specializationRequired": "La spécialisation est requise",
+      "shortDescriptionMin": "La description doit contenir au moins 50 caractères",
+      "shortDescriptionMax": "La description ne doit pas dépasser 500 caractères",
+      "hourlyRateMin": "Le taux horaire doit être un nombre positif",
+      "invalidMeetLink": "Veuillez entrer un lien Google Meet valide"
     },
     "messages": {
       "success": "Succès",
       "error": "Erreur",
       "updateSuccess": "Mise à jour réussie",
-      "updateError": "Erreur lors de la mise à jour"
+      "updateError": "Erreur lors de la mise à jour",
+      "loading": "Chargement...",
+      "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet"
+    },
+    "errors": {
+      "invalidEmail": "Adresse email invalide",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "emailExists": "Cet email est déjà enregistré. Voulez-vous vous connecter ?",
+      "emailNotConfirmed": "Votre email n'est pas confirmé. Veuillez vérifier votre boîte de réception ou demander un nouveau lien de vérification.",
+      "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
+      "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
+      "userNotFound": "Aucun compte associé à cet email"
     }
   },
-  "auth": {
-    "signIn": {
-      "title": "Connexion",
+  "Auth": {
+    "common": {
       "email": "Email",
+      "emailPlaceholder": "name@example.com",
       "password": "Mot de passe",
-      "submit": "Se connecter",
-      "forgotPassword": "Mot de passe oublié ?",
-      "rememberMe": "Se souvenir de moi"
+      "error": "Une erreur s'est produite. Veuillez réessayer.",
+      "errors": {
+        "invalidEmail": "Adresse email invalide",
+        "invalidCredentials": "Email ou mot de passe incorrect",
+        "emailExists": "Cet email est déjà enregistré. Voulez-vous vous connecter ?",
+        "emailNotConfirmed": "Votre email n'est pas confirmé. Veuillez vérifier votre boîte de réception ou demander un nouveau lien de vérification.",
+        "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
+        "networkError": "Erreur de connexion. Veuillez vérifier votre connexion internet",
+        "rateLimit": "Pour des raisons de sécurité, veuillez attendre {seconds} secondes avant de réessayer",
+        "rateLimitExceeded": "Vous avez dépassé le nombre de tentatives autorisées. Veuillez réessayer plus tard",
+        "userNotFound": "Aucun compte associé à cet email",
+        "consultantCannotBeStudent": "Vous ne pouvez pas vous inscrire en tant qu'utilisateur car vous êtes déjà enregistré en tant que consultant"
+      },
+      "resendVerification": {
+        "button": "Renvoyer le lien de vérification",
+        "sending": "Envoi en cours...",
+        "success": "Lien de vérification envoyé avec succès",
+        "error": "Impossible d'envoyer le lien de vérification",
+        "cancel": "Annuler"
+      }
+    },
+    "validation": {
+      "emailRequired": "Veuillez entrer une adresse email valide",
+      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
+      "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
+      "passwordMatch": "Les mots de passe ne correspondent pas",
+      "specializationRequired": "La spécialisation est requise",
+      "shortDescriptionMin": "La description doit contenir au moins 50 caractères",
+      "shortDescriptionMax": "La description ne doit pas dépasser 500 caractères"
+    },
+    "consultant": {
+      "register": {
+        "title": "Devenir consultant",
+        "subtitle": "Rejoignez notre plateforme en tant que consultant",
+        "fullName": "Nom complet",
+        "fullNamePlaceholder": "Jean Dupont",
+        "specialization": "Spécialisation",
+        "specializationPlaceholder": "Ex: Informatique, Mathématiques, Littérature",
+        "shortDescription": "Description courte",
+        "shortDescriptionPlaceholder": "Décrivez brièvement votre expertise et vos qualifications (50-500 caractères)",
+        "createAccount": "Créer un compte consultant",
+        "creatingAccount": "Création du compte...",
+        "hasAccount": "Déjà consultant ?",
+        "signIn": "Se connecter"
+      },
+      "login": {
+        "title": "Espace consultant",
+        "subtitle": "Connectez-vous à votre compte consultant",
+        "signIn": "Se connecter",
+        "signingIn": "Connexion en cours...",
+        "noAccount": "Vous souhaitez devenir consultant ?",
+        "signUp": "S'inscrire en tant que consultant",
+        "forgotPassword": "Mot de passe oublié ?",
+        "verifyEmail": {
+          "success": "Votre email a été confirmé avec succès. Vous pouvez maintenant vous connecter."
+        },
+        "errors": {
+          "notConsultant": "Ce compte n'est pas un compte consultant",
+          "pendingApproval": "Votre compte est en attente d'approbation",
+          "profileNotFound": "Profil consultant introuvable",
+          "profileCannotBeConsultant": "Vous ne pouvez pas vous inscrire en tant que consultant car vous êtes déjà enregistré en tant qu'utilisateur"
+        }
+      }
     },
     "resetPassword": {
       "title": "Réinitialiser le mot de passe",
+      "subtitle": "Entrez votre nouveau mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
+      "resetButton": "Réinitialiser le mot de passe",
+      "resetting": "Réinitialisation en cours...",
+      "success": "Mot de passe mis à jour",
+      "successMessage": "Votre mot de passe a été mis à jour avec succès. Redirection vers la page de connexion...",
+      "backToLogin": "Retour à la connexion",
+      "errors": {
+        "samePassword": "Le nouveau mot de passe doit être différent de l'ancien",
+        "sessionExpired": "La session de réinitialisation du mot de passe a expiré. Veuillez demander un nouveau lien",
+        "invalidSession": "Session invalide. Veuillez réessayer"
+      }
+    },
+    "verifyEmail": {
+      "title": "Vérifiez votre email",
+      "description": "Nous vous avons envoyé un lien de vérification. Veuillez vérifier votre email et cliquer sur le lien pour confirmer votre compte.",
+      "spamNote": "Vous n'avez pas reçu l'email ? Vérifiez votre dossier spam ou demandez un nouveau lien de vérification.",
+      "success": "Votre email a été confirmé avec succès. Vous pouvez maintenant vous connecter.",
+      "checkInbox": "Vérifiez votre boîte de réception",
+      "checkInboxDesc": "Ouvrez votre email et recherchez le message de vérification",
+      "clickLink": "Cliquez sur le lien de vérification",
+      "clickLinkDesc": "Cliquez sur le bouton 'Confirmer l'email' dans le message",
+      "errors": {
+        "linkExpired": "Le lien de vérification a expiré. Veuillez demander un nouveau lien",
+        "invalidLink": "Lien de vérification invalide. Veuillez demander un nouveau lien",
+        "accessDenied": "Accès refusé. Veuillez demander un nouveau lien de vérification"
+      }
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Entrez vos informations pour créer un compte",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "createPassword": "Mot de passe",
+      "createAccount": "Créer un compte",
+      "creatingAccount": "Création du compte...",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter"
+    },
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Connectez-vous à votre compte",
+      "signIn": "Se connecter",
+      "signingIn": "Connexion en cours...",
+      "googleSignIn": "Se connecter avec Google",
+      "forgotPassword": "Mot de passe oublié ?",
+      "orContinueWith": "Ou continuer avec",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signUp": "Créer un compte"
+    },
+    "logout": {
+      "signOut": "Se déconnecter",
+      "signingOut": "Déconnexion en cours..."
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre email et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+      "resetPassword": "Réinitialiser le mot de passe",
       "backToSignIn": "Retour à la connexion",
       "checkEmail": "Vérifiez votre email",
       "emailSent": "Si un compte est associé à cet email, vous recevrez un lien de réinitialisation",
@@ -50,33 +196,34 @@
   },
   "ConsultantProfile": {
     "title": "Profil du consultant",
-    "avatarUrl": "Photo de profil",
-    "uploadImage": "Télécharger une photo",
-    "uploading": "Téléchargement...",
-    "uploadingAvatar": "Téléchargement de la photo...",
-    "avatarUrlPlaceholder": "Choisissez une photo de profil",
-    "fullName": "Nom complet",
-    "fullNamePlaceholder": "Entrez votre nom complet",
-    "specialization": "Spécialisation",
-    "specializationPlaceholder": "Ex: Informatique, Littérature, etc.",
-    "hourlyRate": "Taux horaire",
-    "hourlyRatePlaceholder": "Entrez votre taux horaire",
-    "shortDescription": "Description courte",
-    "shortDescriptionPlaceholder": "Brève description de votre expertise (apparaît dans les résultats de recherche)",
-    "bioAr": "Biographie en arabe",
-    "bioArPlaceholder": "Votre biographie détaillée en arabe",
-    "bioFr": "Biographie en français",
-    "bioFrPlaceholder": "Votre biographie détaillée en français",
+    "avatar": {
+      "url": "Photo de profil",
+      "upload": "Télécharger une photo",
+      "uploading": "Téléchargement de la photo...",
+      "placeholder": "Choisissez une photo de profil",
+      "errors": {
+        "fileTooLarge": "Fichier trop volumineux (max 5 Mo)",
+        "invalidFileType": "Type de fichier invalide (doit être une image)",
+        "uploadFailed": "Échec du téléchargement de la photo de profil"
+      }
+    },
+    "fields": {
+      "specialization": "Spécialisation",
+      "specializationPlaceholder": "Ex: Informatique, Littérature, etc.",
+      "hourlyRate": "Taux horaire",
+      "hourlyRatePlaceholder": "Entrez votre taux horaire",
+      "shortDescription": "Description courte",
+      "shortDescriptionPlaceholder": "Description brève de votre expertise (apparaît dans les résultats de recherche)",
+      "bioAr": "Biographie en arabe",
+      "bioArPlaceholder": "Votre biographie détaillée en arabe",
+      "bioFr": "Biographie en français",
+      "bioFrPlaceholder": "Votre biographie détaillée en français"
+    },
     "updateProfile": "Mettre à jour le profil",
     "profileUpdated": "Profil mis à jour avec succès",
     "updateError": "Erreur lors de la mise à jour du profil",
     "updating": "Mise à jour en cours...",
-    "noChanges": "Aucune modification n'a été effectuée",
-    "errors": {
-      "fileTooLarge": "Fichier trop volumineux (max 5 Mo)",
-      "invalidFileType": "Type de fichier invalide (doit être une image)",
-      "avatarUploadFailed": "Échec du téléchargement de la photo de profil"
-    }
+    "noChanges": "Aucune modification n'a été effectuée"
   },
   "ConsultantDashboard": {
     "navigation": {
@@ -91,14 +238,22 @@
       "specialization": "Spécialisation"
     },
     "stats": {
-      "totalBookings": "Total des consultations",
-      "totalBookingsDesc": "Nombre total de consultations terminées",
-      "totalEarnings": "Gains totaux",
-      "totalEarningsDesc": "Gains totaux de toutes les consultations",
-      "totalHours": "Heures totales",
-      "totalHoursDesc": "Nombre total d'heures de consultation",
-      "activeRequests": "Demandes actives",
-      "activeRequestsDesc": "Nombre de demandes de consultation en attente"
+      "totalBookings": {
+        "title": "Total des consultations",
+        "desc": "Nombre total de consultations terminées"
+      },
+      "totalEarnings": {
+        "title": "Gains totaux",
+        "desc": "Gains totaux de toutes les consultations"
+      },
+      "totalHours": {
+        "title": "Heures totales",
+        "desc": "Nombre total d'heures de consultation"
+      },
+      "activeRequests": {
+        "title": "Demandes actives",
+        "desc": "Nombre de demandes de consultation en attente"
+      }
     },
     "overview": {
       "title": "Vue d'ensemble",

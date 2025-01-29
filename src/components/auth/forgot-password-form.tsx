@@ -30,7 +30,8 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations("Auth");
+  const t = useTranslations();
+  const tAuth = useTranslations("Auth");
   const searchParams = useSearchParams();
   const emailFromQuery = searchParams.get("email");
   const isConsultant = searchParams.get("consultant") == "true";
@@ -76,13 +77,13 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           setError(t("common.errors.rateLimitExceeded"));
           return;
         }
-        setError(t("common.error"));
+        setError(t("common.messages.error"));
         return;
       }
 
       setSuccess(true);
     } catch (error) {
-      setError(t("common.error"));
+      setError(t("common.messages.error"));
     } finally {
       setIsLoading(false);
     }
@@ -102,16 +103,18 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           <div className="space-y-4">
             <div className="text-center">
               <h1 className="text-xl font-semibold tracking-tight">
-                {t("forgotPassword.checkEmail")}
+                {tAuth("forgotPassword.checkEmail")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                {t("forgotPassword.emailSent")}
+                {tAuth("forgotPassword.emailSent")}
               </p>
             </div>
             <Button asChild variant="outline" className="w-full gap-2 text-sm">
-              <Link href={`/${locale}/${isConsultant ? "consultant" : ""}/login`}>
+              <Link
+                href={`/${locale}/${isConsultant ? "consultant" : ""}/login`}
+              >
                 <ArrowLeft className="h-4 w-4" />
-                {t("forgotPassword.backToSignIn")}
+                {tAuth("forgotPassword.backToSignIn")}
               </Link>
             </Button>
           </div>
@@ -119,10 +122,10 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           <div className="space-y-4">
             <div className="text-center">
               <h1 className="text-xl font-semibold tracking-tight">
-                {t("forgotPassword.title")}
+                {tAuth("forgotPassword.title")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                {t("forgotPassword.subtitle")}
+                {tAuth("forgotPassword.subtitle")}
               </p>
             </div>
 
@@ -139,12 +142,12 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm">
-                        {t("common.email")}
+                        {t("common.form.email")}
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder={t("common.emailPlaceholder")}
+                          placeholder={t("common.form.emailPlaceholder")}
                           className="text-sm"
                           {...field}
                         />
@@ -165,7 +168,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                       </div>
                     ) : (
-                      t("forgotPassword.resetPassword")
+                      tAuth("forgotPassword.resetPassword")
                     )}
                   </Button>
 
@@ -174,9 +177,13 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
                     variant="outline"
                     className="w-full gap-2 text-sm"
                   >
-                    <Link href={`/${locale}/${isConsultant ? "consultant" : ""}/login`}>
+                    <Link
+                      href={`/${locale}/${
+                        isConsultant ? "consultant" : ""
+                      }/login`}
+                    >
                       <ArrowLeft className="h-4 w-4" />
-                      {t("forgotPassword.backToSignIn")}
+                      {tAuth("forgotPassword.backToSignIn")}
                     </Link>
                   </Button>
                 </div>

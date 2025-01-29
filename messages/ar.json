@@ -1,7 +1,60 @@
 {
-  "IndexPage": {
-    "title": "الصفحة الرئيسية",
-    "description": "الصفحة الرئيسية"
+  "common": {
+    "actions": {
+      "save": "حفظ",
+      "update": "تحديث",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "back": "رجوع",
+      "view": "عرض",
+      "approve": "موافقة",
+      "reject": "رفض",
+      "complete": "إكمال",
+      "signIn": "تسجيل الدخول",
+      "signUp": "إنشاء حساب",
+      "signOut": "تسجيل الخروج"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "rejected": "تم الرفض",
+      "completed": "مكتمل"
+    },
+    "form": {
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "password": "كلمة المرور",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "محمد أحمد"
+    },
+    "validation": {
+      "emailRequired": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "passwordMin": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+      "fullNameMin": "يجب أن يتكون الاسم الكامل من حرفين على الأقل",
+      "passwordMatch": "كلمات المرور غير متطابقة",
+      "specializationRequired": "التخصص مطلوب",
+      "shortDescriptionMin": "يجب أن يحتوي الوصف على 50 حرفاً على الأقل",
+      "shortDescriptionMax": "يجب ألا يتجاوز الوصف 500 حرف",
+      "hourlyRateMin": "يجب أن يكون السعر بالساعة رقماً موجباً",
+      "invalidMeetLink": "يرجى إدخال رابط Google Meet صالح"
+    },
+    "messages": {
+      "success": "نجاح",
+      "error": "خطأ",
+      "updateSuccess": "تم التحديث بنجاح",
+      "updateError": "حدث خطأ أثناء التحديث",
+      "loading": "جاري التحميل...",
+      "networkError": "خطأ في الاتصال. يرجى التحقق من اتصال الإنترنت الخاص بك"
+    },
+    "errors": {
+      "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      "emailExists": "هذا البريد الإلكتروني مسجل بالفعل. هل تريد تسجيل الدخول؟",
+      "emailNotConfirmed": "لم يتم تأكيد بريدك الإلكتروني. يرجى التحقق من بريدك الوارد أو طلب رابط تحقق جديد.",
+      "tooManyRequests": "محاولات كثيرة جداً. يرجى المحاولة لاحقاً",
+      "rateLimit": "لأسباب أمنية، يرجى الانتظار {seconds} ثانية قبل إعادة المحاولة",
+      "userNotFound": "لا يوجد حساب مرتبط بهذا البريد الإلكتروني"
+    }
   },
   "Auth": {
     "common": {
@@ -36,7 +89,9 @@
       "passwordMatch": "كلمات المرور غير متطابقة",
       "specializationRequired": "التخصص مطلوب",
       "shortDescriptionMin": "يجب أن يحتوي الوصف على 50 حرفاً على الأقل",
-      "shortDescriptionMax": "يجب ألا يتجاوز الوصف 500 حرف"
+      "shortDescriptionMax": "يجب ألا يتجاوز الوصف 500 حرف",
+      "hourlyRateMin": "يجب أن يكون السعر بالساعة رقماً موجباً",
+      "invalidMeetLink": "يرجى إدخال رابط Google Meet صالح"
     },
     "consultant": {
       "register": {
@@ -143,33 +198,34 @@
   },
   "ConsultantProfile": {
     "title": "الملف الشخصي للمستشار",
-    "avatarUrl": "الصورة الشخصية",
-    "uploadImage": "رفع صورة",
-    "uploading": "جاري الرفع...",
-    "uploadingAvatar": "جاري رفع الصورة...",
-    "avatarUrlPlaceholder": "اختر صورة شخصية",
-    "fullName": "الاسم الكامل",
-    "fullNamePlaceholder": "أدخل اسمك الكامل",
-    "specialization": "التخصص",
-    "specializationPlaceholder": "مثال: علوم الحاسوب، الأدب، إلخ.",
-    "hourlyRate": "السعر بالساعة",
-    "hourlyRatePlaceholder": "أدخل سعرك بالساعة",
-    "shortDescription": "وصف مختصر",
-    "shortDescriptionPlaceholder": "وصف موجز لخبرتك (يظهر في نتائج البحث)",
-    "bioAr": "السيرة الذاتية بالعربية",
-    "bioArPlaceholder": "سيرتك الذاتية المفصلة باللغة العربية",
-    "bioFr": "السيرة الذاتية بالفرنسية",
-    "bioFrPlaceholder": "سيرتك الذاتية المفصلة باللغة الفرنسية",
+    "avatar": {
+      "url": "الصورة الشخصية",
+      "upload": "رفع صورة",
+      "uploading": "جاري رفع الصورة...",
+      "placeholder": "اختر صورة شخصية",
+      "errors": {
+        "fileTooLarge": "حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)",
+        "invalidFileType": "نوع الملف غير صالح (يجب أن تكون صورة)",
+        "uploadFailed": "فشل في رفع الصورة الشخصية"
+      }
+    },
+    "fields": {
+      "specialization": "التخصص",
+      "specializationPlaceholder": "مثال: علوم الحاسوب، الأدب، إلخ.",
+      "hourlyRate": "السعر بالساعة",
+      "hourlyRatePlaceholder": "أدخل سعرك بالساعة",
+      "shortDescription": "وصف مختصر",
+      "shortDescriptionPlaceholder": "وصف موجز لخبرتك (يظهر في نتائج البحث)",
+      "bioAr": "السيرة الذاتية بالعربية",
+      "bioArPlaceholder": "سيرتك الذاتية المفصلة باللغة العربية",
+      "bioFr": "السيرة الذاتية بالفرنسية",
+      "bioFrPlaceholder": "سيرتك الذاتية المفصلة باللغة الفرنسية"
+    },
     "updateProfile": "تحديث الملف الشخصي",
     "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
     "updateError": "حدث خطأ أثناء تحديث الملف الشخصي",
     "updating": "جاري التحديث...",
-    "noChanges": "لم يتم إجراء أي تغييرات",
-    "errors": {
-      "fileTooLarge": "حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)",
-      "invalidFileType": "نوع الملف غير صالح (يجب أن تكون صورة)",
-      "avatarUploadFailed": "فشل في رفع الصورة الشخصية"
-    }
+    "noChanges": "لم يتم إجراء أي تغييرات"
   },
   "ConsultantDashboard": {
     "navigation": {
@@ -184,14 +240,22 @@
       "specialization": "التخصص"
     },
     "stats": {
-      "totalBookings": "إجمالي الاستشارات",
-      "totalBookingsDesc": "إجمالي عدد الاستشارات المكتملة",
-      "totalEarnings": "إجمالي الأرباح",
-      "totalEarningsDesc": "إجمالي الأرباح من جميع الاستشارات",
-      "totalHours": "إجمالي الساعات",
-      "totalHoursDesc": "إجمالي ساعات الاستشارات المقدمة",
-      "activeRequests": "الطلبات النشطة",
-      "activeRequestsDesc": "عدد طلبات الاستشارة قيد الانتظار"
+      "totalBookings": {
+        "title": "إجمالي الاستشارات",
+        "desc": "إجمالي عدد الاستشارات المكتملة"
+      },
+      "totalEarnings": {
+        "title": "إجمالي الأرباح",
+        "desc": "إجمالي الأرباح من جميع الاستشارات"
+      },
+      "totalHours": {
+        "title": "إجمالي الساعات",
+        "desc": "إجمالي ساعات الاستشارات المقدمة"
+      },
+      "activeRequests": {
+        "title": "الطلبات النشطة",
+        "desc": "عدد طلبات الاستشارة قيد الانتظار"
+      }
     },
     "overview": {
       "title": "نظرة عامة",

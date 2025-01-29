@@ -59,7 +59,6 @@ export interface DashboardStats {
   totalBookings: number;
   totalEarnings: number;
   totalHours: number;
-  activeRequests: number;
 }
 
 export interface DashboardTabsProps {

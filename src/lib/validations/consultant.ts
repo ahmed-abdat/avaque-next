@@ -42,26 +42,45 @@ export type ConsultantRegisterValues = z.infer<
   ReturnType<typeof createRegisterSchema>
 >;
 
-export const consultantProfileSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  bio_ar: z.string().min(50, "Arabic bio must be at least 50 characters"),
-  bio_fr: z.string().min(50, "French bio must be at least 50 characters"),
-  shortDescription: z
-    .string()
-    .min(10, "Short description must be at least 10 characters"),
-  avatar_url: z.string().optional(),
-  hourlyRate: z.number().min(0, "Hourly rate must be a positive number"),
-  specialization: z
-    .string()
-    .min(2, "Specialization must be at least 2 characters"),
-  meetLink: z.string().url("Please enter a valid Google Meet URL").optional(),
-});
+export const createConsultantProfileSchema = (t: any) =>
+  z.object({
+    fullName: z.string().min(2, {
+      message: t("validation.fullNameMin"),
+    }),
+    bio_ar: z.string().min(50, {
+      message: t("validation.shortDescriptionMin"),
+    }),
+    bio_fr: z.string().min(50, {
+      message: t("validation.shortDescriptionMin"),
+    }),
+    shortDescription: z
+      .string()
+      .min(50, {
+        message: t("validation.shortDescriptionMin"),
+      })
+      .max(500, {
+        message: t("validation.shortDescriptionMax"),
+      }),
+    avatar_url: z.string().optional(),
+    hourlyRate: z.number().min(0, {
+      message: t("validation.hourlyRateMin"),
+    }),
+    specialization: z.string().min(1, {
+      message: t("validation.specializationRequired"),
+    }),
+    meetLink: z
+      .string()
+      .url({
+        message: t("validation.invalidMeetLink"),
+      })
+      .optional(),
+  });
 
 export const meetingLinkSchema = z.object({
   meetLink: z.string().url("Please enter a valid Google Meet URL"),
 });
 
 export type ConsultantProfileFormValues = z.infer<
-  typeof consultantProfileSchema
+  ReturnType<typeof createConsultantProfileSchema>
 >;
 export type MeetingLinkFormValues = z.infer<typeof meetingLinkSchema>;

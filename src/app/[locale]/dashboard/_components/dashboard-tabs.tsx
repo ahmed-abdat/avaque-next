@@ -19,7 +19,6 @@ interface DashboardTabsProps {
     totalBookings: number;
     totalEarnings: number;
     totalHours: number;
-    activeRequests: number;
   };
   isRTL: boolean;
 }

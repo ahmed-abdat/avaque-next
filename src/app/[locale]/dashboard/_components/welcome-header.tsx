@@ -25,14 +25,14 @@ export function WelcomeHeader({ profileData, isRTL }: WelcomeHeaderProps) {
         >
           {/* Welcome Text */}
           <div className={`space-y-1`}>
-            <div
-              className={`flex items-center gap-2 `}
-            >
+            <div className={`flex items-center gap-2 `}>
               <IconStars className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500 shrink-0" />
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight truncate">
                 {t("welcome.title")}{" "}
                 <span className="text-violet-500">
-                  {profileData?.full_name || profileData?.email.split("@")[0] || ""}
+                  {profileData?.full_name ||
+                    profileData?.email.split("@")[0] ||
+                    ""}
                 </span>
               </h1>
             </div>
@@ -42,19 +42,17 @@ export function WelcomeHeader({ profileData, isRTL }: WelcomeHeaderProps) {
           </div>
 
           {/* Meeting Link */}
-            <MeetingLinkDialog
-              currentLink={profileData?.meet_link || undefined}
-              isRTL={isRTL}
-            />
+          <MeetingLinkDialog
+            currentLink={profileData?.meet_link || undefined}
+            isRTL={isRTL}
+          />
         </div>
 
         {/* Optional: Additional Info or Quick Stats */}
         <div
           className={`mt-4 hidden sm:flex items-center gap-6 text-sm text-muted-foreground `}
         >
-          <div
-            className={`flex items-center gap-2 `}
-          >
+          <div className={`flex items-center gap-2 `}>
             <span>{t("welcome.specialization")}:</span>
             <span className="font-medium text-foreground">
               {profileData?.specialization || "-"}

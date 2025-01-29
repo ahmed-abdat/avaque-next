@@ -133,7 +133,6 @@ export async function isUserExistOnDatabase(email: string) {
     .eq("email", email)
     .single();
 
-  console.log(data, error);
   if (data?.id) {
     return { id: data.id, type: "student" };
   } else if (consultantData?.id) {

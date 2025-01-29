@@ -31,14 +31,15 @@ export function LoginForm({ locale }: { locale: string }) {
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
-  const t = useTranslations("Auth");
+  const t = useTranslations();
+  const tAuth = useTranslations("Auth");
   const loginSchema = createLoginSchema(t);
   const isRtl = locale === "ar";
 
   // Check for verification success message and errors
   useEffect(() => {
     if (searchParams?.get("verified") === "true") {
-      setSuccess(t("verifyEmail.success"));
+      setSuccess(tAuth("verifyEmail.success"));
     }
 
     // Handle URL error parameters
@@ -52,16 +53,16 @@ export function LoginForm({ locale }: { locale: string }) {
         errorCode === "otp_expired" ||
         errorDescription?.includes("expired")
       ) {
-        setError(t("verifyEmail.errors.linkExpired"));
+        setError(tAuth("verifyEmail.errors.linkExpired"));
       } else if (urlError === "No code provided") {
-        setError(t("verifyEmail.errors.invalidLink"));
+        setError(tAuth("verifyEmail.errors.invalidLink"));
       } else if (errorCode === "access_denied") {
-        setError(t("verifyEmail.errors.accessDenied"));
+        setError(tAuth("verifyEmail.errors.accessDenied"));
       } else {
-        setError(t("common.error"));
+        setError(t("common.messages.error"));
       }
     }
-  }, [searchParams, t]);
+  }, [searchParams, t, tAuth]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -96,7 +97,7 @@ export function LoginForm({ locale }: { locale: string }) {
           const seconds = errorMessage.match(/\d+/)?.[0] || "60";
           setError(t("common.errors.rateLimit", { seconds }));
         } else {
-          setError(t("common.error"));
+          setError(t("common.messages.error"));
         }
         return;
       }
@@ -104,7 +105,7 @@ export function LoginForm({ locale }: { locale: string }) {
       router.replace(`/${locale}`);
     } catch (error) {
       console.error(error);
-      setError(t("common.error"));
+      setError(t("common.messages.error"));
     } finally {
       setIsPending(false);
     }
@@ -114,20 +115,22 @@ export function LoginForm({ locale }: { locale: string }) {
     <div className="w-full space-y-6">
       <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {t("login.title")}
+          {tAuth("login.title")}
         </h1>
-        <p className="text-sm text-muted-foreground">{t("login.subtitle")}</p>
+        <p className="text-sm text-muted-foreground">
+          {tAuth("login.subtitle")}
+        </p>
 
         {/* Sign up link */}
         <div className="mt-2 text-sm">
-          {t("login.noAccount")}{" "}
+          {tAuth("login.noAccount")}{" "}
           <Button
             variant="link"
             className="gap-1 p-0 h-auto font-semibold text-primary hover:text-primary/90"
             asChild
           >
             <Link href={`/${locale}/register`}>
-              {t("login.signUp")}
+              {tAuth("login.signUp")}
               <ArrowRight
                 className="h-4 w-4 inline-block"
                 style={{ transform: isRtl ? "rotate(180deg)" : "none" }}
@@ -154,11 +157,11 @@ export function LoginForm({ locale }: { locale: string }) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("common.email")}</FormLabel>
+                  <FormLabel>{t("common.form.email")}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder={t("common.emailPlaceholder")}
+                      placeholder={t("common.form.emailPlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -172,7 +175,7 @@ export function LoginForm({ locale }: { locale: string }) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("common.password")}</FormLabel>
+                  <FormLabel>{t("common.form.password")}</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder="••••••••" {...field} />
                   </FormControl>
@@ -183,10 +186,10 @@ export function LoginForm({ locale }: { locale: string }) {
 
             <div className="flex items-center justify-end">
               <Link
-                href={`/${locale}/forgot-password`}
+                href={`/${locale}/forgot-password?email=${form.getValues("email")}`}
                 className="text-sm font-medium text-primary hover:underline"
               >
-                {t("login.forgotPassword")}
+                {tAuth("login.forgotPassword")}
               </Link>
             </div>
 
@@ -195,7 +198,7 @@ export function LoginForm({ locale }: { locale: string }) {
               className="w-full dark:bg-primary dark:hover:bg-primary/90 dark:text-white"
               disabled={isPending}
             >
-              {isPending ? t("login.signingIn") : t("login.signIn")}
+              {isPending ? tAuth("login.signingIn") : tAuth("login.signIn")}
             </Button>
           </form>
         </Form>
@@ -206,7 +209,7 @@ export function LoginForm({ locale }: { locale: string }) {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              {t("login.orContinueWith")}
+              {tAuth("login.orContinueWith")}
             </span>
           </div>
         </div>
@@ -215,12 +218,12 @@ export function LoginForm({ locale }: { locale: string }) {
 
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            {t("login.noAccount")}{" "}
+            {tAuth("login.noAccount")}{" "}
             <Link
               href={`/${locale}/register`}
               className="text-blue-600 hover:underline"
             >
-              {t("login.signUp")}
+              {tAuth("login.signUp")}
             </Link>
           </p>
         </div>

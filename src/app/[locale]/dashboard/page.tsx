@@ -17,7 +17,6 @@ export default async function DashboardPage({
     totalBookings: 150,
     totalEarnings: 3000,
     totalHours: 75,
-    activeRequests: 5,
   };
 
   const mockEarningsData = [
