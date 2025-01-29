@@ -29,7 +29,7 @@ export function RegisterForm({ locale }: { locale: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const t = useTranslations();
+  const t = useTranslations("Auth");
   const registerSchema = createRegisterSchema(t);
 
   const form = useForm<RegisterFormValues>({
@@ -51,7 +51,7 @@ export function RegisterForm({ locale }: { locale: string }) {
         setError(t("common.errors.emailExists"));
         return;
       } else if (userExists?.id && userExists?.type === "consultant") {
-        setError(t("Auth.common.errors.consultantCannotBeStudent"));
+        setError(t("common.errors.consultantCannotBeStudent"));
         return;
       }
 
@@ -63,7 +63,7 @@ export function RegisterForm({ locale }: { locale: string }) {
 
       router.replace(`/${locale}/verify-email`);
     } catch (error) {
-      setError(error instanceof Error ? error.message : t("common.messages.error"));
+      setError(error instanceof Error ? error.message : t("common.error"));
     } finally {
       setIsPending(false);
     }
@@ -73,10 +73,10 @@ export function RegisterForm({ locale }: { locale: string }) {
     <div className="w-full space-y-6">
       <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {t("Auth.register.title")}
+          {t("register.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {t("Auth.register.subtitle")}
+          {t("register.subtitle")}
         </p>
       </div>
 
@@ -89,10 +89,10 @@ export function RegisterForm({ locale }: { locale: string }) {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("common.form.fullName")}</FormLabel>
+                <FormLabel>{t("register.fullName")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("common.form.fullNamePlaceholder")}
+                    placeholder={t("register.fullNamePlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -106,11 +106,11 @@ export function RegisterForm({ locale }: { locale: string }) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("common.form.email")}</FormLabel>
+                <FormLabel>{t("common.email")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder={t("common.form.emailPlaceholder")}
+                    placeholder={t("common.emailPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -124,10 +124,10 @@ export function RegisterForm({ locale }: { locale: string }) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("common.form.password")}</FormLabel>
+                <FormLabel>{t("common.password")}</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    placeholder={t("common.form.password")}
+                    placeholder={t("register.createPassword")}
                     {...field}
                   />
                 </FormControl>
@@ -138,12 +138,12 @@ export function RegisterForm({ locale }: { locale: string }) {
 
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {t("Auth.register.hasAccount")}{" "}
+              {t("register.hasAccount")}{" "}
               <Link
                 href={`/${locale}/login`}
                 className="font-medium text-primary hover:underline"
               >
-                {t("common.actions.signIn")}
+                {t("register.signIn")}
               </Link>
             </p>
           </div>
@@ -154,8 +154,8 @@ export function RegisterForm({ locale }: { locale: string }) {
             disabled={isPending}
           >
             {isPending
-              ? t("Auth.register.creatingAccount")
-              : t("Auth.register.createAccount")}
+              ? t("register.creatingAccount")
+              : t("register.createAccount")}
           </Button>
         </form>
       </Form>

@@ -334,5 +334,156 @@
       "updated": "Lien de réunion mis à jour avec succès",
       "error": "Erreur lors de la mise à jour"
     }
+  },
+  "Landing": {
+    "nav": {
+      "features": "Fonctionnalités",
+      "howItWorks": "Comment ça marche",
+      "faq": "FAQ",
+      "signIn": "Se connecter",
+      "signUp": "S'inscrire"
+    },
+    "hero": {
+      "subtitle": "La meilleure plateforme de consultation académique",
+      "title": "Élevez votre parcours académique avec les meilleures consultations",
+      "description": "Obtenez des conseils spécialisés d'étudiants en Master et Doctorat dans divers domaines académiques",
+      "cta": "Commencer",
+      "exploreCta": "Explorer les consultants",
+      "features": {
+        "expertise": {
+          "title": "Expertise académique",
+          "description": "Consultants spécialisés dans divers domaines"
+        },
+        "onlineSessions": {
+          "title": "Sessions en ligne",
+          "description": "Consultations en direct via Google Meet"
+        },
+        "community": {
+          "title": "Communauté d'experts",
+          "description": "Rejoignez un réseau de conseillers académiques"
+        }
+      }
+    },
+    "features": {
+      "title": "Fonctionnalités principales",
+      "description": "Découvrez ce qui rend notre plateforme unique",
+      "expertise": {
+        "title": "Expertise académique",
+        "description": "Consultants spécialisés dans divers domaines"
+      },
+      "onlineSessions": {
+        "title": "Sessions en ligne",
+        "description": "Consultations en direct via Google Meet"
+      },
+      "flexibility": {
+        "title": "Flexibilité horaire",
+        "description": "Réservez au moment qui vous convient"
+      },
+      "bilingual": {
+        "title": "Service bilingue",
+        "description": "Assistance en français et en arabe"
+      },
+      "pricing": {
+        "title": "Prix transparents",
+        "description": "Tarifs clairs et abordables"
+      },
+      "support": {
+        "title": "Support complet",
+        "description": "Assistance académique personnalisée"
+      },
+      "specialization": {
+        "title": "Spécialisation",
+        "description": "Experts dans votre domaine d'études"
+      },
+      "convenience": {
+        "title": "Praticité",
+        "description": "Plateforme simple et intuitive"
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "description": "Des étapes simples pour commencer votre consultation",
+      "steps": {
+        "register": {
+          "title": "Créez votre compte",
+          "description": "Inscrivez-vous en quelques minutes"
+        },
+        "choose": {
+          "title": "Choisissez votre consultant",
+          "description": "Parcourez les profils et trouvez le meilleur match"
+        },
+        "book": {
+          "title": "Réservez une session",
+          "description": "Sélectionnez une date et une heure qui vous conviennent"
+        },
+        "start": {
+          "title": "Commencez votre session",
+          "description": "Connectez-vous via Google Meet pour votre consultation"
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Ce que disent nos étudiants",
+      "description": "Découvrez les expériences de nos étudiants",
+      "testimonial1": {
+        "name": "Thomas Martin",
+        "title": "Étudiant en Master",
+        "content": "Le consultant m'a aidé à choisir la bonne spécialisation. Merci beaucoup !"
+      },
+      "testimonial2": {
+        "name": "Marie Dubois",
+        "title": "Étudiante en Doctorat",
+        "content": "Excellentes sessions qui m'ont aidée à compléter ma thèse avec succès"
+      },
+      "testimonial3": {
+        "name": "Pierre Laurent",
+        "title": "Étudiant en Licence",
+        "content": "Plateforme exceptionnelle et service professionnel. Je la recommande vivement"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "description": "Réponses à vos questions",
+      "questions": {
+        "q1": {
+          "question": "Comment choisir le bon consultant ?",
+          "answer": "Vous pouvez parcourir les profils des consultants, lire leurs spécialisations et leurs évaluations pour choisir celui qui correspond le mieux à vos besoins"
+        },
+        "q2": {
+          "question": "Comment fonctionne le paiement ?",
+          "answer": "Nous acceptons les virements bancaires. Après la réservation, vous recevrez les instructions de paiement et pourrez télécharger votre reçu de virement"
+        },
+        "q3": {
+          "question": "Puis-je annuler une session ?",
+          "answer": "Oui, vous pouvez annuler la session jusqu'à 24 heures avant le rendez-vous avec un remboursement complet"
+        },
+        "q4": {
+          "question": "Comment se déroulent les sessions ?",
+          "answer": "Les sessions se déroulent via Google Meet. Vous recevrez le lien de la session après confirmation de la réservation et du paiement"
+        }
+      }
+    },
+    "cta": {
+      "title": "Commencez votre parcours académique aujourd'hui",
+      "description": "Rejoignez la communauté Avaqe et obtenez le soutien académique dont vous avez besoin",
+      "primaryButton": "S'inscrire",
+      "secondaryButton": "Explorer les consultants"
+    }
+  },
+  "Footer": {
+    "description": "Votre plateforme de consultation académique de confiance pour l'excellence éducative",
+    "quickLinks": {
+      "title": "Liens rapides",
+      "features": "Fonctionnalités",
+      "howItWorks": "Comment ça marche",
+      "faq": "FAQ"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "social": {
+      "title": "Réseaux sociaux"
+    },
+    "copyright": "Tous droits réservés"
   }
 }
