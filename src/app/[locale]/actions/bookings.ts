@@ -59,7 +59,8 @@ export async function getUserBookings(userId: string) {
         consultant:consultant_id(
           full_name,
           avatar_url,
-          specialization
+          specialization,
+          is_approved
         )
       `
       )
@@ -70,7 +71,12 @@ export async function getUserBookings(userId: string) {
       throw error;
     }
 
-    return { bookings, error: null };
+    // Filter out bookings with unapproved consultants
+    const approvedBookings = bookings?.filter(
+      (booking) => booking.consultant?.is_approved
+    );
+
+    return { bookings: approvedBookings, error: null };
   } catch (error) {
     console.error("Error fetching user bookings:", error);
     return { bookings: null, error };
@@ -89,7 +95,8 @@ export async function getBookingById(bookingId: string) {
         consultant:consultant_id(
           full_name,
           avatar_url,
-          specialization
+          specialization,
+          is_approved
         )
       `
       )
@@ -98,6 +105,11 @@ export async function getBookingById(bookingId: string) {
 
     if (error) {
       throw error;
+    }
+
+    // Check if the consultant is approved
+    if (!booking.consultant?.is_approved) {
+      return { booking: null, error: new Error("Consultant not approved") };
     }
 
     return { booking, error: null };
@@ -115,7 +127,14 @@ export async function getUserActiveBookings(consultantId?: string) {
     const supabase = await createClient();
     let query = supabase
       .from("bookings")
-      .select("*")
+      .select(
+        `
+        *,
+        consultant:consultant_id(
+          is_approved
+        )
+      `
+      )
       .eq("student_id", user.id)
       .eq("status", "completed"); // Only get completed bookings
 
@@ -126,7 +145,12 @@ export async function getUserActiveBookings(consultantId?: string) {
     const { data: bookings, error } = await query;
 
     if (error) throw error;
-    return { bookings: bookings || [] };
+
+    // Filter out bookings with unapproved consultants
+    const approvedBookings =
+      bookings?.filter((booking) => booking.consultant?.is_approved) || [];
+
+    return { bookings: approvedBookings };
   } catch (error) {
     console.error("Error fetching active bookings:", error);
     return { bookings: [], error };

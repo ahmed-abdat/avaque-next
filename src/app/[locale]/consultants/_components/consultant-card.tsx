@@ -80,7 +80,7 @@ export function ConsultantCard({
             >
               <Star className="h-4 w-4 fill-primary text-primary" />
               <span className="text-sm font-medium">
-                {consultant.rating || 0}
+                {Number(consultant.rating || 0).toFixed(1)}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">

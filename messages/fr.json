@@ -556,5 +556,15 @@
     },
     "bookingSuccess": "Réservation effectuée avec succès",
     "bookingError": "Erreur lors de la réservation"
+  },
+  "Dashboard": {
+    "pendingApproval": {
+      "title": "Votre compte est en attente d'approbation",
+      "description": "Merci de vous être inscrit comme consultant sur notre plateforme. Votre compte est actuellement en cours d'examen par notre équipe. Nous vous informerons par e-mail dès que votre compte sera approuvé.",
+      "nextSteps": "Prochaines étapes",
+      "step1": "Notre équipe examinera vos informations et votre expertise",
+      "step2": "Vous recevrez un e-mail lorsque votre compte sera approuvé",
+      "step3": "Une fois approuvé, vous pourrez commencer à recevoir des réservations et interagir avec les étudiants"
+    }
   }
 }

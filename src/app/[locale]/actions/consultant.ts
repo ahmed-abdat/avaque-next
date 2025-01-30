@@ -107,11 +107,12 @@ export async function isConsultantExist(email: string) {
     return { id: profile.id, type: "profile" };
   }
 
-  // Then check in consultant_profiles table
+  // Then check in consultant_profiles table for approved consultants only
   const { data: consultantProfile } = await supabase
     .from("consultant_profiles")
     .select("id")
     .eq("email", email)
+    .eq("is_approved", true)
     .single();
 
   if (consultantProfile?.id) {
@@ -127,6 +128,7 @@ export async function getConsultantProfile() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
+  // make sure is_approved is true
   const { data: consultantProfile, error } = await supabase
     .from("consultant_profiles")
     .select("*")
@@ -139,11 +141,46 @@ export async function getConsultantProfile() {
 
 export async function getAllConsultants() {
   const supabase = await createClient();
+
+  // Get consultants with their reviews, only approved ones
   const { data: consultants, error } = await supabase
     .from("consultant_profiles")
-    .select("*");
+    .select(
+      `
+      *,
+      reviews:reviews(rating)
+    `
+    )
+    .eq("is_approved", true); // Only get approved consultants
+
   if (error) return null;
-  return consultants;
+
+  // Process each consultant to get their stats
+  const consultantsWithStats = await Promise.all(
+    consultants.map(async (consultant) => {
+      // Get reviews and calculate average rating
+      const reviews = consultant.reviews || [];
+      const totalRating = reviews.reduce(
+        (sum: number, review: any) => sum + (review.rating || 0),
+        0
+      );
+      const averageRating =
+        reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : "0.0";
+
+      // Get the user map to count total sessions
+      const userMap = await getAllUserWhoHaveReviews(consultant.id);
+      const totalSessions = userMap ? userMap.size : 0;
+
+      return {
+        ...consultant,
+        rating: averageRating,
+        totalSessions,
+        reviews: undefined, // Remove the raw reviews data
+      };
+    })
+  );
+
+  return consultantsWithStats;
 }
 
 export async function getConsultantById(id: string) {
@@ -152,6 +189,7 @@ export async function getConsultantById(id: string) {
     .from("consultant_profiles")
     .select("*")
     .eq("id", id)
+    .eq("is_approved", true) // Only get approved consultants
     .single();
 
   if (error) return null;
