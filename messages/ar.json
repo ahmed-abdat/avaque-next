@@ -578,5 +578,62 @@
       "step2": "سنرسل لك بريداً إلكترونياً عند الموافقة على حسابك",
       "step3": "بمجرد الموافقة، يمكنك البدء في استقبال الحجوزات والتفاعل مع الطلاب"
     }
+  },
+  "Profile": {
+    "title": "إعدادات الحساب",
+    "description": "إدارة إعدادات وتفضيلات حسابك",
+    "tabs": {
+      "personalInfo": "المعلومات الشخصية",
+      "bookings": "الحجوزات",
+      "payments": "المدفوعات"
+    },
+    "personalInfo": {
+      "title": "المعلومات الشخصية",
+      "description": "تحديث معلوماتك الشخصية",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "أدخل اسمك الكامل",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "saveChanges": "حفظ التغييرات",
+      "uploadAvatar": "تحديث الصورة الشخصية",
+      "updateSuccess": "تم التحديث بنجاح",
+      "profileUpdated": "تم تحديث معلوماتك الشخصية",
+      "updateError": "خطأ في التحديث",
+      "avatarSuccess": "تم تحديث الصورة",
+      "avatarUpdated": "تم تحديث صورتك الشخصية بنجاح",
+      "avatarError": "خطأ في تحديث الصورة",
+      "unknownError": "حدث خطأ غير متوقع",
+      "invalidFileType": "يرجى اختيار ملف صورة صالح",
+      "fileTooLarge": "حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)"
+    },
+    "bookings": {
+      "title": "حجوزاتك",
+      "filterByStatus": "تصفية حسب الحالة",
+      "allBookings": "جميع الحجوزات",
+      "upcoming": "القادمة",
+      "completed": "المكتملة",
+      "cancelled": "الملغاة",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "noBookings": "لا توجد حجوزات بعد",
+      "noBookingsDesc": "عندما تقوم بحجز استشارة، ستظهر هنا"
+    },
+    "payments": {
+      "title": "سجل المدفوعات",
+      "totalSpent": "إجمالي المصروفات",
+      "completedTransactions": "المعاملات المكتملة",
+      "transactionHistory": "سجل المعاملات",
+      "sort": "ترتيب",
+      "transactionId": "رقم المعاملة",
+      "date": "التاريخ",
+      "description": "الوصف",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "noTransactions": "لا توجد معاملات بعد",
+      "noTransactionsDesc": "سيظهر سجل مدفوعاتك هنا بمجرد إجراء أول دفعة",
+      "completed": "مكتملة",
+      "pending": "قيد المعالجة",
+      "failed": "فشلت"
+    }
   }
 }

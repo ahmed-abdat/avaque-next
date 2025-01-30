@@ -165,7 +165,9 @@ export async function getAllConsultants() {
         0
       );
       const averageRating =
-        reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : "0.0";
+        reviews.length > 0
+          ? parseFloat((totalRating / reviews.length).toFixed(1))
+          : 0;
 
       // Get the user map to count total sessions
       const userMap = await getAllUserWhoHaveReviews(consultant.id);
@@ -180,7 +182,15 @@ export async function getAllConsultants() {
     })
   );
 
-  return consultantsWithStats;
+  // Sort consultants by rating in descending order
+  return consultantsWithStats.sort((a, b) => {
+    // First sort by rating
+    const ratingDiff = b.rating - a.rating;
+    if (ratingDiff !== 0) return ratingDiff;
+
+    // If ratings are equal, sort by total sessions
+    return b.totalSessions - a.totalSessions;
+  });
 }
 
 export async function getConsultantById(id: string) {

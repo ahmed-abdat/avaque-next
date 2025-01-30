@@ -1,5 +1,5 @@
-import { Tables } from "./database.types";
+import type { Database } from "./database.types";
 
 export type UserType =
-| Tables["profiles"]["Row"]
-| Tables["consultant_profiles"]["Row"];
+  | Database["public"]["Tables"]["profiles"]["Row"]
+  | Database["public"]["Tables"]["consultant_profiles"]["Row"];

@@ -566,5 +566,62 @@
       "step2": "Vous recevrez un e-mail lorsque votre compte sera approuvé",
       "step3": "Une fois approuvé, vous pourrez commencer à recevoir des réservations et interagir avec les étudiants"
     }
+  },
+  "Profile": {
+    "title": "Paramètres du Profil",
+    "description": "Gérez vos paramètres et préférences de compte",
+    "tabs": {
+      "personalInfo": "Informations Personnelles",
+      "bookings": "Réservations",
+      "payments": "Paiements"
+    },
+    "personalInfo": {
+      "title": "Informations Personnelles",
+      "description": "Mettez à jour vos informations personnelles",
+      "fullName": "Nom Complet",
+      "fullNamePlaceholder": "Entrez votre nom complet",
+      "email": "Email",
+      "emailPlaceholder": "Entrez votre email",
+      "saveChanges": "Enregistrer les Modifications",
+      "uploadAvatar": "Mettre à jour la photo de profil",
+      "updateSuccess": "Mise à jour réussie",
+      "profileUpdated": "Vos informations personnelles ont été mises à jour",
+      "updateError": "Erreur de mise à jour",
+      "avatarSuccess": "Photo mise à jour",
+      "avatarUpdated": "Votre photo de profil a été mise à jour avec succès",
+      "avatarError": "Erreur lors de la mise à jour de la photo",
+      "unknownError": "Une erreur inattendue s'est produite",
+      "invalidFileType": "Veuillez sélectionner un fichier image valide",
+      "fileTooLarge": "Fichier trop volumineux (maximum 5 Mo)"
+    },
+    "bookings": {
+      "title": "Vos Réservations",
+      "filterByStatus": "Filtrer par statut",
+      "allBookings": "Toutes les réservations",
+      "upcoming": "À venir",
+      "completed": "Terminées",
+      "cancelled": "Annulées",
+      "date": "Date",
+      "time": "Heure",
+      "noBookings": "Pas encore de réservations",
+      "noBookingsDesc": "Vos réservations apparaîtront ici une fois effectuées"
+    },
+    "payments": {
+      "title": "Historique des Paiements",
+      "totalSpent": "Total Dépensé",
+      "completedTransactions": "Transactions Terminées",
+      "transactionHistory": "Historique des Transactions",
+      "sort": "Trier",
+      "transactionId": "ID Transaction",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Montant",
+      "status": "Statut",
+      "noTransactions": "Pas encore de transactions",
+      "noTransactionsDesc": "Votre historique de paiement apparaîtra ici après votre premier paiement",
+      "completed": "Terminée",
+      "pending": "En cours",
+      "failed": "Échouée"
+    }
   }
 }
