@@ -12,6 +12,7 @@ import {
 import { Star, GraduationCap, Clock } from "lucide-react";
 import { ConsultantWithReviews } from "../types";
 import { cn } from "@/lib/utils";
+import { HOUR_RATE } from "@/constants/hour-rate";
 
 interface ConsultantCardProps {
   consultant: ConsultantWithReviews;
@@ -25,7 +26,7 @@ export function ConsultantCard({
   isRtl,
 }: ConsultantCardProps) {
   const t = useTranslations("Consultants");
-  const hourlyRate = 200; // Default to 200 MRU
+  const hourlyRate = HOUR_RATE; // Default to HOUR_RATE MRU
 
   return (
     <Card className="group relative overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">

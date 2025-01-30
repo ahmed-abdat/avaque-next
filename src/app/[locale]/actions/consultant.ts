@@ -348,6 +348,42 @@ export async function getReviewsByConsultantId(consultantId: string) {
   return reviews as Review[];
 }
 
+// get all the user who have review for this consultant
+export async function getAllUserWhoHaveReviews(consultantId: string) {
+  const supabase = await createClient();
+
+  // First get all reviews with their student_ids
+  const { data: reviews, error } = await supabase
+    .from("reviews")
+    .select("student_id")
+    .eq("consultant_id", consultantId);
+
+  if (error || !reviews) return null;
+
+  // Get unique student IDs using Object.keys and reduce
+  const studentIds = Object.keys(
+    reviews.reduce((acc, review) => {
+      acc[review.student_id] = true;
+      return acc;
+    }, {} as Record<string, boolean>)
+  );
+
+  // Fetch profiles for these students
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .in("id", studentIds);
+
+  if (profilesError) return null;
+
+  // Create a map of user IDs to full names
+  const userMap = new Map(
+    profiles.map((profile) => [profile.id, profile.full_name])
+  );
+
+  return userMap;
+}
+
 export async function submitReview(
   consultantId: string,
   rating: number,
@@ -366,19 +402,36 @@ export async function submitReview(
   }
 
   try {
+    // First, get the completed booking that hasn't been reviewed
+    const { data: booking, error: bookingError } = await supabase
+      .from("bookings")
+      .select("id")
+      .eq("student_id", user.id)
+      .eq("consultant_id", consultantId)
+      .eq("status", "completed")
+      .single();
+
+    if (bookingError || !booking) {
+      return { error: "No eligible booking found for review" };
+    }
+
     // Insert the review
-    const { error } = await supabase.from("reviews").insert({
-      consultant_id: consultantId,
-      student_id: user.id,
-      rating,
-      comment,
-    });
+    const { data: review, error } = await supabase
+      .from("reviews")
+      .insert({
+        booking_id: booking.id,
+        consultant_id: consultantId,
+        student_id: user.id,
+        rating,
+        comment,
+      })
+      .select()
+      .single();
 
     if (error) throw error;
 
-    // Revalidate the consultant profile page
     revalidatePath(`/consultants/${consultantId}`);
-    return { success: true };
+    return { success: true, review };
   } catch (error) {
     console.error("Error submitting review:", error);
     return { error: "Failed to submit review" };

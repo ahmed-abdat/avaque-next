@@ -1,4 +1,5 @@
 import {
+  getAllUserWhoHaveReviews,
   getConsultantById,
   getReviewsByConsultantId,
 } from "@/app/[locale]/actions/consultant";
@@ -15,10 +16,11 @@ interface ConsultantProfilePageProps {
 export default async function ConsultantProfilePage({
   params: { locale, consultantId },
 }: ConsultantProfilePageProps) {
-  // Get consultant data and reviews
-  const [consultant, reviews] = await Promise.all([
+  // Get consultant data, reviews, and user names
+  const [consultant, reviews, userMap] = await Promise.all([
     getConsultantById(consultantId),
     getReviewsByConsultantId(consultantId),
+    getAllUserWhoHaveReviews(consultantId),
   ]);
 
   // If consultant not found, show 404
@@ -29,8 +31,9 @@ export default async function ConsultantProfilePage({
   return (
     <ConsultantProfile
       consultant={consultant}
-      reviews={reviews}
+      reviews={reviews || []}
       locale={locale}
+      userMap={userMap || new Map()}
     />
   );
 }

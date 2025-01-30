@@ -1,34 +1,64 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, Calendar, Clock, GraduationCap } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { submitReview } from "@/app/[locale]/actions/consultant";
-import type { Review } from "@/app/[locale]/actions/consultant";
-import { ReviewForm } from "./review-form";
+import { updateReview, deleteReview } from "@/app/[locale]/actions/reviews";
 import { toast } from "sonner";
+import { Review, ConsultantProfileComponentProps } from "../../types";
+import { ReviewForm } from "./review-form";
+import { getUser } from "@/app/[locale]/actions/auth";
+import { getUserBookings } from "@/app/[locale]/actions/bookings";
+import { useEffect, useState } from "react";
+import { UserType } from "@/types/userType";
+import { HOUR_RATE } from "@/constants/hour-rate";
+import { ConsultantHeader } from "./ConsultantHeader";
+import { ReviewCard } from "./ReviewCard";
+import { EditReviewDialog } from "./EditReviewDialog";
+import { BookingCard } from "./BookingCard";
 
-interface ConsultantProfileProps {
-  consultant: any; // Replace with proper type
-  reviews: Review[] | null;
-  locale: string;
+interface ExtendedConsultantProfileProps
+  extends ConsultantProfileComponentProps {
+  userMap: Map<string, string>;
 }
 
+// Main ConsultantProfile component
 export function ConsultantProfile({
   consultant,
-  reviews,
+  reviews: initialReviews,
   locale,
-}: ConsultantProfileProps) {
+  userMap,
+}: ExtendedConsultantProfileProps) {
   const t = useTranslations("ConsultantProfile");
-  const isRtl = locale === "ar";
+  const [canReview, setCanReview] = useState(false);
+  const [user, setUser] = useState<UserType | null>(null);
+  const [reviews, setReviews] = useState(initialReviews);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    rating: 0,
+    comment: "",
+  });
 
-  // Default hourly rate if not set
-  const hourlyRate = 200;
+  useEffect(() => {
+    const checkReviewEligibility = async () => {
+      const currentUser = await getUser();
+      setUser(currentUser);
 
-  // Calculate average rating and total sessions from reviews
+      if (currentUser) {
+        const { bookings } = await getUserBookings(currentUser.id);
+        const hasCompletedBooking =
+          bookings?.some(
+            (booking) =>
+              booking.consultant_id === consultant.id &&
+              !reviews.some((review) => review.student_id === currentUser.id)
+          ) || false;
+
+        setCanReview(hasCompletedBooking);
+      }
+    };
+
+    checkReviewEligibility();
+  }, [consultant.id, reviews]);
+
   const totalReviews = reviews?.length || 0;
   const averageRating =
     totalReviews > 0
@@ -39,180 +69,164 @@ export function ConsultantProfile({
         ) / 10
       : 0;
 
-  const handleReviewSubmit = async (rating: number, comment: string) => {
-    try {
-      const result = await submitReview(consultant.id, rating, comment);
+  const handleEditReview = (review: Review) => {
+    setEditingReview(review);
+    setEditFormData({
+      rating: review.rating,
+      comment: review.comment || "",
+    });
+  };
 
+  const handleDeleteReview = async (review: Review) => {
+    if (!confirm(t("review.deleteConfirmation"))) return;
+
+    try {
+      const result = await deleteReview(review.booking_id, consultant.id);
       if (result.error) {
-        toast.error(t("review.error"));
+        toast.error(t("review.deleteError"));
         return;
       }
 
-      toast.success(t("review.success"));
+      setReviews(reviews.filter((r) => r.booking_id !== review.booking_id));
+      toast.success(t("review.deleteSuccess"));
     } catch (error) {
-      console.error("Error submitting review:", error);
-      toast.error(t("review.error"));
+      console.error("Error deleting review:", error);
+      toast.error(t("review.deleteError"));
     }
   };
 
+  const handleUpdateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingReview || editFormData.rating === 0) return;
+
+    try {
+      setIsSubmitting(true);
+      const result = await updateReview(
+        editingReview.booking_id,
+        editFormData.rating,
+        editFormData.comment
+      );
+
+      if (result.error) {
+        toast.error(t("review.updateError"));
+        return;
+      }
+
+      setReviews(
+        reviews.map((r) =>
+          r.booking_id === editingReview.booking_id
+            ? {
+                ...r,
+                rating: editFormData.rating,
+                comment: editFormData.comment,
+              }
+            : r
+        )
+      );
+
+      toast.success(t("review.updateSuccess"));
+      setEditingReview(null);
+    } catch (error) {
+      console.error("Error updating review:", error);
+      toast.error(t("review.updateError"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNewReview = (review: Review) => {
+    setReviews((prevReviews) => [review, ...prevReviews]);
+    setCanReview(false);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Hero Section */}
-      <section className="relative border-b bg-muted/40">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-background" />
+      <div className="relative bg-primary/5 py-12 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {/* Profile Info */}
+            <div className="lg:col-span-2">
+              <ConsultantHeader
+                consultant={consultant}
+                averageRating={averageRating}
+                totalReviews={totalReviews}
+                userMap={userMap}
+              />
+            </div>
 
-        <div className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 lg:px-8">
-          <div
-            className={cn(
-              "flex flex-col gap-8 md:flex-row",
-              isRtl && "md:flex-row-reverse"
-            )}
-          >
-            {/* Profile Image and Basic Info */}
-            <div className="flex flex-col items-center text-center md:w-1/3">
-              <Avatar className="h-40 w-40 md:h-48 md:w-48">
-                <AvatarImage
-                  src={consultant.avatar_url || ""}
-                  alt={consultant.full_name || ""}
+            {/* Booking Card */}
+            {user && user.role !== "consultant" && (
+              <div className="lg:col-span-1">
+                <BookingCard
+                  hourlyRate={HOUR_RATE}
+                  consultant={consultant}
+                  locale={locale}
                 />
-                <AvatarFallback className="text-4xl">
-                  {consultant.full_name
-                    ?.split(" ")
-                    .map((n: string) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div className="mt-4">
-                <h1 className="text-3xl font-bold tracking-tight">
-                  {consultant.full_name}
-                </h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                  {consultant.specialization}
-                </p>
-                <div className="mt-4 flex items-center justify-center gap-2">
-                  <Star className="h-5 w-5 fill-primary text-primary" />
-                  <span className="text-lg font-medium">
-                    {averageRating} ({totalReviews} {t("sessions")})
-                  </span>
-                </div>
               </div>
-            </div>
-
-            {/* Profile Details */}
-            <div className={cn("flex-grow space-y-8", isRtl && "text-right")}>
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <Card className="border-none bg-primary/5 shadow-none">
-                  <CardContent className="p-4">
-                    <GraduationCap className="mb-2 h-5 w-5 text-primary" />
-                    <div className="text-sm font-medium text-muted-foreground">
-                      {t("stats.expertise")}
-                    </div>
-                    <div className="mt-1 text-xl font-semibold">
-                      {consultant.specialization}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="border-none bg-primary/5 shadow-none">
-                  <CardContent className="p-4">
-                    <Calendar className="mb-2 h-5 w-5 text-primary" />
-                    <div className="text-sm font-medium text-muted-foreground">
-                      {t("stats.sessions")}
-                    </div>
-                    <div className="mt-1 text-xl font-semibold">
-                      {totalReviews}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="border-none bg-primary/5 shadow-none">
-                  <CardContent className="p-4">
-                    <Clock className="mb-2 h-5 w-5 text-primary" />
-                    <div className="text-sm font-medium text-muted-foreground">
-                      {t("stats.hourlyRate")}
-                    </div>
-                    <div className="mt-1 text-xl font-semibold">
-                      {hourlyRate} MRU
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* About Section */}
-              <div>
-                <h2 className="mb-4 text-xl font-semibold">
-                  {t("tabs.about")}
-                </h2>
-                <Card className="border-none bg-card/50">
-                  <CardContent className="p-6">
-                    <p className="text-lg leading-relaxed text-muted-foreground">
-                      {consultant.short_description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Book Session Button */}
-              <Button size="lg" className="w-full">
-                {t("bookSession")}
-              </Button>
-            </div>
+            )}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Reviews Section */}
-      <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="mb-6 text-2xl font-semibold">{t("review.title")}</h2>
-          <ReviewForm
-            consultantId={consultant.id}
-            onSubmit={handleReviewSubmit}
-            isRtl={isRtl}
-          />
-        </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-12">
+            {/* About Section */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-6">{t("tabs.about")}</h2>
+              <div className="prose dark:prose-invert max-w-none">
+                {locale === "fr" ? consultant.bio_fr : consultant.bio_ar}
+              </div>
+            </section>
 
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold">{t("tabs.reviews")}</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {reviews?.length ? (
-              reviews.map((review: Review) => (
-                <Card key={review.id} className="border-none bg-card/50">
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          {Array.from({ length: review.rating }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className="h-4 w-4 fill-primary text-primary"
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(review.created_at).toLocaleDateString(
-                            locale
-                          )}
-                        </span>
-                      </div>
-                      <p className="text-muted-foreground">{review.comment}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <Card className="col-span-full border-none bg-card/50">
-                <CardContent className="flex min-h-[200px] items-center justify-center p-6">
-                  <p className="text-center text-muted-foreground">
+            {/* Reviews Section */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-6">
+                {t("tabs.reviews")}
+              </h2>
+              <div className="space-y-6">
+                {canReview && (
+                  <ReviewForm
+                    consultantId={consultant.id}
+                    onSuccess={handleNewReview}
+                  />
+                )}
+
+                {reviews.length > 0 ? (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {reviews.map((review) => (
+                      <ReviewCard
+                        key={review.booking_id}
+                        review={review}
+                        onEdit={handleEditReview}
+                        onDelete={handleDeleteReview}
+                        canModify={user?.id === review.student_id}
+                        userName={userMap.get(review.student_id)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-12">
                     {t("noReviews")}
                   </p>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </div>
+            </section>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Edit Review Dialog */}
+      <EditReviewDialog
+        isOpen={!!editingReview}
+        onClose={() => setEditingReview(null)}
+        onSubmit={handleUpdateReview}
+        formData={editFormData}
+        setFormData={setEditFormData}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

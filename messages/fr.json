@@ -62,6 +62,11 @@
       "emailPlaceholder": "name@example.com",
       "password": "Mot de passe",
       "error": "Une erreur s'est produite. Veuillez réessayer.",
+      "validation": {
+        "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
+        "emailRequired": "Veuillez entrer une adresse email valide",
+        "passwordMin": "Le mot de passe doit contenir au moins 6 caractères"
+      },
       "errors": {
         "invalidEmail": "Adresse email invalide",
         "invalidCredentials": "Email ou mot de passe incorrect",
@@ -81,15 +86,6 @@
         "error": "Impossible d'envoyer le lien de vérification",
         "cancel": "Annuler"
       }
-    },
-    "validation": {
-      "emailRequired": "Veuillez entrer une adresse email valide",
-      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
-      "fullNameMin": "Le nom complet doit contenir au moins 2 caractères",
-      "passwordMatch": "Les mots de passe ne correspondent pas",
-      "specializationRequired": "La spécialisation est requise",
-      "shortDescriptionMin": "La description doit contenir au moins 50 caractères",
-      "shortDescriptionMax": "La description ne doit pas dépasser 500 caractères"
     },
     "consultant": {
       "register": {
@@ -205,7 +201,9 @@
       "expertise": "Spécialisation",
       "languages": "Langues",
       "sessions": "Séances",
-      "hourlyRate": "Tarif horaire"
+      "hourlyRate": "Tarif horaire",
+      "duration": "Durée",
+      "minutes": "minutes"
     },
     "bookSession": "Réserver une séance",
     "tabs": {
@@ -244,13 +242,23 @@
     "noChanges": "Aucune modification n'a été effectuée",
     "review": {
       "title": "Laisser un avis",
+      "editTitle": "Modifier l'avis",
       "rating": "Note",
       "comment": "Commentaire",
       "commentPlaceholder": "Partagez votre expérience avec ce consultant...",
       "submit": "Envoyer",
       "submitting": "Envoi en cours...",
       "success": "Avis envoyé avec succès",
-      "error": "Erreur lors de l'envoi de l'avis"
+      "error": "Erreur lors de l'envoi de l'avis",
+      "update": "Mettre à jour",
+      "updateSuccess": "Avis mis à jour avec succès",
+      "updateError": "Erreur lors de la mise à jour de l'avis",
+      "delete": "Supprimer",
+      "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet avis ?",
+      "deleteSuccess": "Avis supprimé avec succès",
+      "deleteError": "Erreur lors de la suppression de l'avis",
+      "cancel": "Annuler",
+      "description": "Partagez votre opinion et votre évaluation"
     }
   },
   "ConsultantDashboard": {
@@ -532,6 +540,21 @@
     },
     "sessions": "sessions",
     "perHour": "par heure",
-    "viewProfile": "Voir le profil"
+    "viewProfile": "Voir le profil",
+    "bookSession": "Réserver une séance",
+    "booking": {
+      "title": "Réserver une consultation",
+      "description": "Choisissez une date et une heure qui vous conviennent",
+      "success": "Réservation effectuée avec succès",
+      "error": "Erreur lors de la réservation",
+      "activeBookingWarning": "Vous avez déjà une réservation active avec ce consultant. Veuillez terminer ou annuler la réservation actuelle avant d'en faire une nouvelle.",
+      "selectDate": "Sélectionner une date",
+      "selectTime": "Sélectionner une heure",
+      "submit": "Confirmer la réservation",
+      "submitting": "Réservation en cours...",
+      "noAvailableSlots": "Aucun créneau disponible pour cette date"
+    },
+    "bookingSuccess": "Réservation effectuée avec succès",
+    "bookingError": "Erreur lors de la réservation"
   }
 }

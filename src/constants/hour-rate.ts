@@ -1,0 +1,1 @@
+export const HOUR_RATE = 200;
