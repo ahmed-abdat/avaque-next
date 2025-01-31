@@ -1,5 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // Force dynamic rendering for the route handler
@@ -13,7 +12,7 @@ export async function GET(request: Request) {
   const returnTo = requestUrl.searchParams.get("returnTo");
 
   // Get the locale from the URL path
-  const locale = requestUrl.pathname.split("/")[1] || "en";
+  const locale = requestUrl.pathname.split("/")[1] || "ar";
 
   if (!code) {
     return NextResponse.redirect(
@@ -21,26 +20,8 @@ export async function GET(request: Request) {
     );
   }
 
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: "", ...options });
-        },
-      },
-    }
-  );
-
   try {
+    const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error("Auth callback error:", error);
@@ -56,6 +37,11 @@ export async function GET(request: Request) {
         data: { user },
       } = await supabase.auth.getUser();
       const userRole = user?.user_metadata?.role;
+
+
+      if (userRole === "consultant") {
+        return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+      }
 
       // If returnTo is provided, use it for the redirect
       if (returnTo) {

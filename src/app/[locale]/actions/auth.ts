@@ -70,7 +70,7 @@ export async function signOut() {
   }
 
   revalidatePath("/", "layout");
-  redirect(`/${locale}/login`);
+  redirect(`/${locale}`);
 }
 
 export async function resetPassword(email: string) {

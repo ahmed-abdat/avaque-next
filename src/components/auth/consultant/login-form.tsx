@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "../auth-message";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
 import {
   ConsultantLoginValues,
   createLoginSchema,

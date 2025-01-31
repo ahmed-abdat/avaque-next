@@ -1,4 +1,4 @@
-import { RegisterForm } from "@/components/auth/user/register-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
 
 export const metadata = {
   title: "Register | Avaque",
@@ -10,5 +10,6 @@ export default function RegisterPage({
 }: {
   params: { locale: string };
 }) {
-  return <RegisterForm locale={params.locale} />;
+  const locale = params.locale;
+  return <RegisterForm locale={locale} userType="user" />;
 }

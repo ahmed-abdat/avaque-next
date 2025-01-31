@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/form";
 import { supabase } from "@/utils/supabase/client";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "@/components/auth/auth-message";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
+import { createResetPasswordSchema, ResetPasswordValues } from "@/features/auth/validations/reset-password-schema";
 
 interface ResetPasswordFormProps {
   locale: string;
@@ -73,7 +74,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
         // Redirect to forgot password after a delay
         setTimeout(() => {
           router.push(`/${locale}/forgot-password?consultant=${isConsultant}`);
-        }, 2000);
+        }, 500);
       }
     }
 
@@ -108,19 +109,8 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
     }
   }, [searchParams, t, email]);
 
-  const resetPasswordSchema = z
-    .object({
-      password: z.string().min(6, {
-        message: t("validation.passwordMin"),
-      }),
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t("validation.passwordMatch"),
-      path: ["confirmPassword"],
-    });
+  const resetPasswordSchema = createResetPasswordSchema(t);
 
-  type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -175,7 +165,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
       // Redirect to login after 2 seconds
       setTimeout(() => {
         router.push(`/${locale}${isConsultant ? "/consultant" : ""}/login`);
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.error(error);
       setError(t("common.error"));

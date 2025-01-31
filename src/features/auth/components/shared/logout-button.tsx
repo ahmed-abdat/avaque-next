@@ -3,16 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/app/[locale]/actions/auth";
+import { signOut } from "@/features/auth/actions/signout";
 
-export function LogoutButton() {
+export function LogoutButton({ locale }: { locale: string }) {
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations("Auth");
 
   async function handleLogout() {
     try {
       setIsPending(true);
-      await signOut();
+      await signOut(locale);
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {

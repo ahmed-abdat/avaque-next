@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { ForgotPasswordForm } from "@/features/auth/components/shared/forgot-password-form";
 
 export const metadata = {
   title: "Forgot Password | Avaque",
@@ -10,5 +10,6 @@ export default function ForgotPasswordPage({
 }: {
   params: { locale: string };
 }) {
-  return <ForgotPasswordForm locale={params.locale} />;
+  const locale = params.locale;
+  return <ForgotPasswordForm locale={locale} />;
 }

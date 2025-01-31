@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,8 +22,8 @@ import { supabase } from "@/utils/supabase/client";
 import {
   ForgotPasswordFormValues,
   createForgotPasswordSchema,
-} from "@/lib/validations/auth";
-import { AuthMessage } from "./auth-message";
+} from "@/features/auth/validations/forgot-password-schema";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
 import { isUserExistOnDatabase } from "@/app/[locale]/actions/auth";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {

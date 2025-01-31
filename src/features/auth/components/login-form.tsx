@@ -19,14 +19,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { AuthMessage } from "./shared/auth-message";
-import { GoogleSignInButton } from "@/components/auth/user/google-sign-in-button";
-import { login } from "@/app/[locale]/actions/auth";
-import { consultantLogin } from "@/app/[locale]/actions/consultant";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
+import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button";
+import { login, consultantLogin } from "../actions/login";
 import {
   LoginFormValues,
   createLoginSchema,
-} from "../validations/login-schema";
+} from "@/features/auth/validations/login-schema";
 
 interface LoginFormProps {
   locale: string;
@@ -94,8 +93,8 @@ export function LoginForm({ locale, userType }: LoginFormProps) {
       setIsPending(true);
 
       const result = await (userType === "consultant"
-        ? consultantLogin(values)
-        : login(values));
+        ? consultantLogin(values, locale)
+        : login(values, locale));
 
       if (!result?.error) {
         // On successful login, check for returnTo URL
@@ -281,9 +280,7 @@ export function LoginForm({ locale, userType }: LoginFormProps) {
             href={signUpHref}
             className="font-medium text-primary hover:underline"
           >
-            {userType === "consultant"
-              ? t("common.actions.signUp")
-              : t("common.actions.signUp")}
+            {t("common.actions.signUp")}
           </Link>
         </p>
       </div>

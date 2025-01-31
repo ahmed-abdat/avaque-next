@@ -14,7 +14,6 @@ export default async function LoginPage({
   params: { locale: string };
   searchParams?: { returnTo?: string };
 }) {
-  try {
     const supabase = await createClient();
     const {
       data: { user },
@@ -31,9 +30,5 @@ export default async function LoginPage({
       redirect(`/${locale}/`);
     }
 
-    return <LoginForm locale={locale} userType="user" />
-  } catch (error) {
-    console.error("Error in login page:", error);
-    return <LoginForm locale={locale} userType="user" />
-  }
+  return <LoginForm locale={locale} userType="user" />;
 }
