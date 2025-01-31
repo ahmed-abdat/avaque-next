@@ -269,23 +269,40 @@ export async function updateConsultantAvatar(formData: FormData) {
       data: { publicUrl },
     } = supabase.storage.from("avatar_images").getPublicUrl(fileName);
 
-    // Update profile with new avatar URL
-    const { error: updateError } = await supabase
-      .from("consultant_profiles")
-      .update({ avatar_url: publicUrl })
-      .eq("id", user.id);
+    if (user.user_metadata.role === "consultant") {
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from("consultant_profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
 
-    if (updateError) {
-      console.error("Error updating profile with avatar URL:", updateError);
-      // Try to clean up the uploaded file
-      try {
-        await supabase.storage.from("avatar_images").remove([fileName]);
-      } catch (error) {
-        console.error("Error cleaning up avatar file:", error);
+      if (updateError) {
+        console.error("Error updating profile with avatar URL:", updateError);
+        // Try to clean up the uploaded file
+        try {
+          await supabase.storage.from("avatar_images").remove([fileName]);
+        } catch (error) {
+          console.error("Error cleaning up avatar file:", error);
+        }
+        return { error: "Failed to update profile with new avatar" };
       }
-      return { error: "Failed to update profile with new avatar" };
-    }
+    } else {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
 
+      if (updateError) {
+        console.error("Error updating profile with avatar URL:", updateError);
+        // Try to clean up the uploaded file
+        try {
+          await supabase.storage.from("avatar_images").remove([fileName]);
+        } catch (error) {
+          console.error("Error cleaning up avatar file:", error);
+        }
+        return { error: "Failed to update profile with new avatar" };
+      }
+    }
     revalidatePath("/dashboard");
     return { success: true, avatarUrl: publicUrl };
   } catch (error) {
@@ -416,17 +433,20 @@ export async function getAllUserWhoHaveReviews(consultantId: string) {
     }, {} as Record<string, boolean>)
   );
 
-  // Fetch profiles for these students
+  // Fetch profiles for these students with avatar_url
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
-    .select("id, full_name")
+    .select("id, full_name, avatar_url")
     .in("id", studentIds);
 
   if (profilesError) return null;
 
-  // Create a map of user IDs to full names
+  // Create a map of user IDs to profile info
   const userMap = new Map(
-    profiles.map((profile) => [profile.id, profile.full_name])
+    profiles.map((profile) => [
+      profile.id,
+      { name: profile.full_name, avatarUrl: profile.avatar_url },
+    ])
   );
 
   return userMap;

@@ -6,8 +6,8 @@ import { Mail, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthMessage } from "./auth-message";
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface VerifyEmailFormProps {
   locale: string;
@@ -17,7 +17,25 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
   const t = useTranslations("Auth");
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const isConsultant = searchParams.get("consultant") === "true";
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+
+  // Get returnTo from session storage
+  useEffect(() => {
+    const storedReturnTo = sessionStorage.getItem("returnTo");
+    if (storedReturnTo) {
+      setReturnTo(storedReturnTo);
+    }
+  }, []);
+
+  // Handle successful verification
+  useEffect(() => {
+    if (searchParams.get("verified") === "true" && returnTo) {
+      sessionStorage.removeItem("returnTo"); // Clean up
+      router.push(returnTo);
+    }
+  }, [searchParams, returnTo, router]);
 
   return (
     <div className="flex min-h-[80vh] w-full items-center justify-center">
@@ -89,7 +107,11 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
         {/* Actions */}
         <div className="mt-6">
           <Button asChild variant="outline" className="w-full gap-2 text-sm">
-            <Link href={`/${locale}${isConsultant ? "/consultant" : ""}/login`}>
+            <Link
+              href={`/${locale}${isConsultant ? "/consultant" : ""}/login${
+                returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""
+              }`}
+            >
               <ArrowLeft className="h-4 w-4" />
               {t("resetPassword.backToLogin")}
             </Link>

@@ -64,6 +64,15 @@ export function LoginForm({ locale }: { locale: string }) {
     }
   }, [searchParams, t, tAuth]);
 
+  // Store returnTo URL in session storage on component mount
+  useEffect(() => {
+    const returnTo = searchParams?.get("returnTo");
+    if (returnTo) {
+      sessionStorage.setItem("returnTo", returnTo);
+      console.log("returnTo", returnTo);
+    }
+  }, [searchParams]);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -78,6 +87,15 @@ export function LoginForm({ locale }: { locale: string }) {
       setUnverifiedEmail(null);
       setIsPending(true);
       const result = await login(values);
+
+      if (!result?.error) {
+        // On successful login, check for returnTo URL
+        const returnTo = sessionStorage.getItem("returnTo");
+        if (returnTo) {
+          sessionStorage.removeItem("returnTo"); // Clean up
+          router.push(returnTo);
+        }
+      }
 
       if (result?.error) {
         // Map Supabase error messages to our translated error messages
@@ -107,6 +125,11 @@ export function LoginForm({ locale }: { locale: string }) {
     }
   }
 
+  // Update the sign up link to preserve the returnTo parameter
+  const signUpHref = searchParams?.get("returnTo")
+    ? `/${locale}/register?returnTo=${searchParams.get("returnTo")}`
+    : `/${locale}/register`;
+
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col space-y-2 text-center">
@@ -125,7 +148,7 @@ export function LoginForm({ locale }: { locale: string }) {
             className="gap-1 p-0 h-auto font-semibold text-primary hover:text-primary/90"
             asChild
           >
-            <Link href={`/${locale}/register`}>
+            <Link href={signUpHref}>
               {tAuth("login.signUp")}
               <ArrowRight
                 className="h-4 w-4 inline-block"
@@ -217,10 +240,7 @@ export function LoginForm({ locale }: { locale: string }) {
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
             {tAuth("login.noAccount")}{" "}
-            <Link
-              href={`/${locale}/register`}
-              className="text-blue-600 hover:underline"
-            >
+            <Link href={signUpHref} className="text-blue-600 hover:underline">
               {tAuth("login.signUp")}
             </Link>
           </p>

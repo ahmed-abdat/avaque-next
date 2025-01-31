@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { updateReview, deleteReview } from "@/app/[locale]/actions/reviews";
 import { toast } from "sonner";
-import { Review, ConsultantProfileComponentProps } from "../../types";
+import { Review, ConsultantWithReviews } from "../../types";
 import { ReviewForm } from "./review-form";
 import { getUser } from "@/app/[locale]/actions/auth";
 import { getUserBookings } from "@/app/[locale]/actions/bookings";
@@ -15,9 +15,16 @@ import { ReviewCard } from "./ReviewCard";
 import { EditReviewDialog } from "./EditReviewDialog";
 import { BookingCard } from "./BookingCard";
 
-interface ExtendedConsultantProfileProps
-  extends ConsultantProfileComponentProps {
-  userMap: Map<string, string>;
+interface UserProfile {
+  name: string;
+  avatarUrl: string | null;
+}
+
+interface ExtendedConsultantProfileProps {
+  consultant: ConsultantWithReviews;
+  reviews: Review[];
+  locale: string;
+  userProfiles: Map<string, UserProfile>;
 }
 
 // Main ConsultantProfile component
@@ -25,7 +32,7 @@ export function ConsultantProfile({
   consultant,
   reviews: initialReviews,
   locale,
-  userMap,
+  userProfiles,
 }: ExtendedConsultantProfileProps) {
   const t = useTranslations("ConsultantProfile");
   const [canReview, setCanReview] = useState(false);
@@ -151,7 +158,7 @@ export function ConsultantProfile({
                 consultant={consultant}
                 averageRating={averageRating}
                 totalReviews={totalReviews}
-                userMap={userMap}
+                userProfiles={userProfiles}
               />
             </div>
 
@@ -203,7 +210,7 @@ export function ConsultantProfile({
                         onEdit={handleEditReview}
                         onDelete={handleDeleteReview}
                         canModify={user?.id === review.student_id}
-                        userName={userMap.get(review.student_id)}
+                        userProfile={userProfiles.get(review.student_id)}
                       />
                     ))}
                   </div>

@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/auth/user/login-form";
+import { LoginForm } from "@/features/auth/components/login-form";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
@@ -9,8 +9,10 @@ export const metadata = {
 
 export default async function LoginPage({
   params: { locale },
+  searchParams,
 }: {
   params: { locale: string };
+  searchParams?: { returnTo?: string };
 }) {
   try {
     const supabase = await createClient();
@@ -20,12 +22,18 @@ export default async function LoginPage({
     } = await supabase.auth.getUser();
 
     if (user && !error) {
+      // If there's a returnTo parameter, redirect there instead
+      const returnTo = searchParams?.returnTo;
+      if (returnTo) {
+        redirect(decodeURIComponent(returnTo));
+      }
+      // Otherwise redirect to the default locale page
       redirect(`/${locale}/`);
     }
 
-    return <LoginForm locale={locale} />;
+    return <LoginForm locale={locale} userType="user" />
   } catch (error) {
     console.error("Error in login page:", error);
-    return <LoginForm locale={locale} />;
+    return <LoginForm locale={locale} userType="user" />
   }
 }

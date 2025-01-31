@@ -1,17 +1,22 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Pencil, Trash2 } from "lucide-react";
 import { Review } from "../../types";
+
+interface UserProfile {
+  name: string;
+  avatarUrl: string | null;
+}
 
 interface ReviewCardProps {
   review: Review;
   onEdit: (review: Review) => void;
   onDelete: (review: Review) => void;
   canModify: boolean;
-  userName?: string;
+  userProfile?: UserProfile;
 }
 
 export function ReviewCard({
@@ -19,7 +24,7 @@ export function ReviewCard({
   onEdit,
   onDelete,
   canModify,
-  userName,
+  userProfile,
 }: ReviewCardProps) {
   return (
     <Card className="overflow-hidden">
@@ -27,13 +32,19 @@ export function ReviewCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
+              {userProfile?.avatarUrl && (
+                <AvatarImage
+                  src={userProfile.avatarUrl}
+                  alt={userProfile.name}
+                />
+              )}
               <AvatarFallback>
-                {userName?.[0] || review.student_id[0]}
+                {userProfile?.name?.[0] || review.student_id[0]}
               </AvatarFallback>
             </Avatar>
             <div>
               <p className="font-medium line-clamp-1">
-                {userName || review.student_id}
+                {userProfile?.name || review.student_id}
               </p>
               <p className="text-sm text-muted-foreground">
                 {new Date(review.created_at).toLocaleDateString()}

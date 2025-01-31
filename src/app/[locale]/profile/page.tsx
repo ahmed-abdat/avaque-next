@@ -13,8 +13,8 @@ export default async function ProfilePage({
   params: { locale },
 }: ProfilePageProps) {
   const user = await getUser();
-  if (!user) redirect("/");
-
+  if (!user) redirect(`/${locale}`);
+  
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
       <Header user={user} />

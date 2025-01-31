@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") || "/";
   const type = requestUrl.searchParams.get("type");
+  const returnTo = requestUrl.searchParams.get("returnTo");
 
   // Get the locale from the URL path
   const locale = requestUrl.pathname.split("/")[1] || "en";
@@ -56,7 +57,13 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
       const userRole = user?.user_metadata?.role;
 
-      // Determine the redirect URL based on the user's role
+      // If returnTo is provided, use it for the redirect
+      if (returnTo) {
+        const redirectUrl = `${returnTo}?verified=true`;
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
+      }
+
+      // Otherwise, use the default role-based redirect
       const redirectUrl =
         userRole === "consultant"
           ? `/${locale}/consultant/login?verified=true`

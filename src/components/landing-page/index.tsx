@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { HeroSection } from "./hero-section";
 import { FeaturesSection } from "./features-section";
 import { HowItWorksSection } from "./how-it-works-section";
@@ -13,6 +15,20 @@ import Footer from "../footer";
 export function LandingPage({ locale, user }: { locale: string; user: any }) {
   const t = useTranslations("Landing");
   const isRtl = locale === "ar";
+  const router = useRouter();
+
+  // Check for returnTo URL and redirect if user is authenticated
+  useEffect(() => {
+    if (user) {
+      const returnTo = sessionStorage.getItem("returnTo");
+      console.log("returnTo", returnTo);
+      console.log("user", user);
+      if (returnTo) {
+        sessionStorage.removeItem("returnTo"); // Clean up after getting the URL
+        router.push(returnTo);
+      }
+    }
+  }, [user, router]);
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">

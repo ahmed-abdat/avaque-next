@@ -379,7 +379,8 @@
       "signIn": "Se connecter",
       "signUp": "S'inscrire",
       "signOut": "Se déconnecter",
-      "dashboard": "Tableau de bord"
+      "dashboard": "Tableau de bord",
+      "profile": "Profil"
     },
     "hero": {
       "subtitle": "La meilleure plateforme de consultation académique",

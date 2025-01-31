@@ -9,6 +9,7 @@ export default async function ConsultantsLayout({
 }) {
   const userData = await getUser();
 
+
   return (
     <>
       <Header user={userData} />

@@ -15,6 +15,7 @@ function getCurrentLocale(): string {
   const headersList = headers();
   const pathname = headersList.get("x-pathname") || "";
   const locale = pathname.split("/")[1];
+  console.log(locale, "locale from the auth");
   return locale === "fr" ? "fr" : "ar"; // Default to "ar" if not "fr"
 }
 
@@ -22,7 +23,7 @@ export async function login(values: LoginFormValues) {
   const supabase = await createClient();
   const locale = getCurrentLocale();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email: values.email,
     password: values.password,
   });
@@ -143,7 +144,6 @@ export async function isUserExistOnDatabase(email: string) {
   return null;
 }
 
-
 export async function getUser(): Promise<UserType | null> {
   const supabase = await createClient();
   const {
@@ -157,27 +157,26 @@ export async function getUser(): Promise<UserType | null> {
   if (user) {
     // try to get the user from the database
     const { data, error: profileError } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("email", user.email)
-    .single();
+      .from("profiles")
+      .select("*")
+      .eq("email", user.email)
+      .single();
 
     if (data) {
       return data;
     }
 
-    if(profileError) {
+    if (profileError) {
       const { data: consultantData, error: consultantError } = await supabase
-      .from("consultant_profiles")
-      .select("*")
-      .eq("email", user.email)
-      .single();
+        .from("consultant_profiles")
+        .select("*")
+        .eq("email", user.email)
+        .single();
 
-      if(consultantData) {
+      if (consultantData) {
         return consultantData;
       }
     }
-
   }
 
   return null;

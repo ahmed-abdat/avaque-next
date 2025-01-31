@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/middleware";
 // Routes that don't require authentication
 const publicRoutes = [
   "/",
+  "/consultants",
   "/login",
   "/register",
   "/verify-email",

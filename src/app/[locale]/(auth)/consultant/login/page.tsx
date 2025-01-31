@@ -1,4 +1,4 @@
-import { ConsultantLoginForm } from "@/components/auth/consultant/login-form";
+import { LoginForm } from "@/features/auth/components/login-form";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,5 +11,6 @@ export default function ConsultantLoginPage({
 }: {
   params: { locale: string };
 }) {
-  return <ConsultantLoginForm locale={locale} />;
+  return <LoginForm locale={locale} userType="consultant" />;
 }
+  

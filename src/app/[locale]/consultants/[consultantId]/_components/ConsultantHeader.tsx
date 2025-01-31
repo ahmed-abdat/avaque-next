@@ -5,21 +5,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, GraduationCap, Users } from "lucide-react";
 import { ConsultantWithReviews } from "../../types";
 
+interface UserProfile {
+  name: string;
+  avatarUrl: string | null;
+}
+
 interface ConsultantHeaderProps {
   consultant: ConsultantWithReviews;
   averageRating: number;
   totalReviews: number;
-  userMap: Map<string, string>;
+  userProfiles: Map<string, UserProfile>;
 }
 
 export function ConsultantHeader({
   consultant,
   averageRating,
   totalReviews,
-  userMap,
+  userProfiles,
 }: ConsultantHeaderProps) {
   const t = useTranslations("ConsultantProfile");
-  const totalSessions = userMap.size; // Using userMap size as total sessions
+  const totalSessions = userProfiles.size; // Using userProfiles size as total sessions
 
   return (
     <div className="flex items-start gap-6">
