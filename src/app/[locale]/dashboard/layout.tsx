@@ -1,7 +1,7 @@
 import { Header } from "@/components/header";
 import { getUser } from "@/app/[locale]/actions";
 import { redirect } from "next/navigation";
-import { PendingApproval } from "./_components/pending-approval";
+import { PendingApproval } from "@/features/dashboards/consultants/components/pending-approval";
 
 
 

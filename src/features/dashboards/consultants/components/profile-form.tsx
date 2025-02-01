@@ -4,8 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useState } from "react";
-import Image from "next/image";
+import { useState, memo } from "react";
 import { IconUpload, IconX } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,10 +25,9 @@ import {
   type ConsultantProfileFormValues,
   createConsultantProfileSchema,
 } from "@/lib/validations/consultant";
-import {
-  updateConsultantProfile,
-  updateConsultantAvatar,
-} from "@/app/[locale]/actions/consultant";
+import { updateConsultantProfile } from "@/app/[locale]/actions/consultant";
+
+import { updateAvatar } from "@/app/[locale]/actions";
 
 interface ProfileFormProps {
   initialData?: Partial<ConsultantProfileFormValues>;
@@ -124,7 +122,7 @@ export function ConsultantProfileForm({
         }
 
         // Update avatar first
-        const avatarResult = await updateConsultantAvatar(avatarFormData);
+        const avatarResult = await updateAvatar(avatarFormData);
         if (avatarResult.error) {
           toast.error(t("errors.avatarUploadFailed"));
           return;
@@ -172,6 +170,73 @@ export function ConsultantProfileForm({
     }
   }
 
+  // Split form into smaller components
+  const AvatarUpload = memo(({ control, initialData }: any) => (
+    <FormField
+      control={control}
+      name="avatar_url"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("avatar.url")}</FormLabel>
+          <FormControl>
+            <div className="flex flex-col items-center gap-4">
+              {/* Avatar Preview */}
+              <Avatar className="w-32 h-32">
+                <AvatarImage
+                  src={previewUrl || ""}
+                  alt={initialData?.fullName || "Avatar"}
+                />
+                <AvatarFallback className="text-xl">
+                  {initialData?.fullName?.charAt(0).toUpperCase() || "A"}
+                </AvatarFallback>
+              </Avatar>
+
+              {/* Upload Controls */}
+              <div className="flex items-center gap-4">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="avatar-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageSelect(file);
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting || isUploadingAvatar}
+                    onClick={() =>
+                      document.getElementById("avatar-upload")?.click()
+                    }
+                    className="flex items-center gap-2"
+                  >
+                    <IconUpload className="size-4" />
+                    {t("avatar.upload")}
+                  </Button>
+                  {previewUrl && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      disabled={isSubmitting || isUploadingAvatar}
+                      onClick={removeImage}
+                    >
+                      <IconX className="size-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  ));
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader className={isRTL ? "text-right" : "text-left"}>
@@ -183,70 +248,7 @@ export function ConsultantProfileForm({
             onSubmit={form.handleSubmit(onSubmit)}
             className={`space-y-6 ${isRTL ? "rtl" : "ltr"}`}
           >
-            <FormField
-              control={form.control}
-              name="avatar_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("avatar.url")}</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col items-center gap-4">
-                      {/* Avatar Preview */}
-                      <Avatar className="w-32 h-32">
-                        <AvatarImage
-                          src={previewUrl || ""}
-                          alt={initialData?.fullName || "Avatar"}
-                        />
-                        <AvatarFallback className="text-xl">
-                          {initialData?.fullName?.charAt(0).toUpperCase() ||
-                            "A"}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      {/* Upload Controls */}
-                      <div className="flex items-center gap-4">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          id="avatar-upload"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleImageSelect(file);
-                          }}
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            disabled={isSubmitting || isUploadingAvatar}
-                            onClick={() =>
-                              document.getElementById("avatar-upload")?.click()
-                            }
-                            className="flex items-center gap-2"
-                          >
-                            <IconUpload className="size-4" />
-                            {t("avatar.upload")}
-                          </Button>
-                          {previewUrl && (
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              disabled={isSubmitting || isUploadingAvatar}
-                              onClick={removeImage}
-                            >
-                              <IconX className="size-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <AvatarUpload control={form.control} initialData={initialData} />
 
             <FormField
               control={form.control}
