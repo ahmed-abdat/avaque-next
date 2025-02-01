@@ -584,6 +584,7 @@
       "email": "Email",
       "emailPlaceholder": "Entrez votre email",
       "saveChanges": "Enregistrer les Modifications",
+      "saving": "Enregistrement en cours...",
       "uploadAvatar": "Mettre à jour la photo de profil",
       "updateSuccess": "Mise à jour réussie",
       "profileUpdated": "Vos informations personnelles ont été mises à jour",

@@ -62,12 +62,8 @@ export function ProfileAvatar({
 
   return (
     <div className={cn("relative", className)}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="relative h-32 w-32 lg:h-40 lg:w-40"
-      >
-        <Avatar className="h-full w-full">
+      <div className="relative h-32 w-32 lg:h-40 lg:w-40 transition-transform duration-200 ease-in-out hover:scale-[1.01]">
+        <Avatar className="h-full w-full bg-transparent">
           <AvatarImage
             src={previewUrl || ""}
             alt={displayName}
@@ -82,12 +78,12 @@ export function ProfileAvatar({
             <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         )}
-      </motion.div>
+      </div>
 
-      <div className="absolute -bottom-2 flex items-center justify-center gap-2">
+      <div className="absolute w-full -bottom-4 left-1/2 flex -translate-x-1/2 items-center justify-center gap-2">
         <Label
           htmlFor="avatar-upload"
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:bg-primary/90 hover:shadow-xl active:scale-95"
         >
           <Camera className="h-5 w-5" />
         </Label>
@@ -96,7 +92,7 @@ export function ProfileAvatar({
             type="button"
             variant="destructive"
             size="icon"
-            className="h-10 w-10 rounded-full"
+            className="h-10 w-10 rounded-full transition-all duration-200 hover:shadow-xl active:scale-95"
             onClick={onRemoveAvatar}
           >
             <X className="h-5 w-5" />

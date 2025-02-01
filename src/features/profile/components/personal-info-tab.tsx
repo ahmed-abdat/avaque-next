@@ -98,11 +98,11 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
     }
   };
 
+  const hasNameChanged = form.getValues("full_name") !== user.full_name;
+  const hasAvatarChanged =
+    selectedFile !== null || (previewUrl === null && user.avatar_url);
   const onSubmit = async (data: ProfileFormData) => {
     setIsSaving(true);
-    const hasNameChanged = data.full_name !== user.full_name;
-    const hasAvatarChanged =
-      selectedFile !== null || (previewUrl === null && user.avatar_url);
 
     try {
       let nameUpdateSuccess = true;
@@ -155,7 +155,7 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
   };
 
   return (
-    <div dir={isRtl ? "rtl" : "ltr"} className="container max-w-5xl mx-auto">
+    <div className="container max-w-5xl mx-auto">
       {/* Header Section */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -174,43 +174,17 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
             animate={{ y: 0, opacity: 1 }}
             className="relative flex flex-col items-center pt-8 pb-6 border-b"
           >
-            <div className="relative group">
+            <div className="relative group ">
               <ProfileAvatar
                 previewUrl={previewUrl}
                 displayName={displayName}
                 isUploading={isUploading}
                 onAvatarChange={handleAvatarChange}
                 onRemoveAvatar={handleRemoveAvatar}
-                className="h-28 w-28 shadow-lg ring-2 ring-background"
+                className="h-28 w-28 "
               />
-              <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 text-white"
-                    onClick={() =>
-                      document.getElementById("avatar-upload")?.click()
-                    }
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                  {previewUrl && (
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 text-white"
-                      onClick={handleRemoveAvatar}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-12 text-center">
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </motion.div>
@@ -279,9 +253,16 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
                       "min-w-[140px] h-11 text-base transition-all duration-300",
                       "bg-primary hover:bg-primary/90",
                       "shadow hover:shadow-primary/25",
-                      (isSaving || isUploading) && "opacity-90"
+                      (isSaving ||
+                        isUploading ||
+                        (!hasNameChanged && !hasAvatarChanged)) &&
+                        "opacity-90 cursor-not-allowed"
                     )}
-                    disabled={isSaving || isUploading}
+                    disabled={
+                      isSaving ||
+                      isUploading ||
+                      (!hasNameChanged && !hasAvatarChanged)
+                    }
                   >
                     {isSaving || isUploading ? (
                       <>

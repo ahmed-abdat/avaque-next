@@ -596,6 +596,7 @@
       "email": "البريد الإلكتروني",
       "emailPlaceholder": "أدخل بريدك الإلكتروني",
       "saveChanges": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
       "uploadAvatar": "تحديث الصورة الشخصية",
       "updateSuccess": "تم التحديث بنجاح",
       "profileUpdated": "تم تحديث معلوماتك الشخصية",
