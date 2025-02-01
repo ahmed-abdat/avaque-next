@@ -1,11 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useState, memo } from "react";
-import { IconUpload, IconX } from "@tabler/icons-react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,16 +18,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FormCardLayout } from "@/components/shared/form-card-layout";
+import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
 
 import {
   type ConsultantProfileFormValues,
   createConsultantProfileSchema,
 } from "@/lib/validations/consultant";
 import { updateConsultantProfile } from "@/app/[locale]/actions/consultant";
-
 import { updateAvatar } from "@/app/[locale]/actions";
+import { cn } from "@/lib/utils";
 
 interface ProfileFormProps {
   initialData?: Partial<ConsultantProfileFormValues>;
@@ -42,8 +42,8 @@ export function ConsultantProfileForm({
   const commonT = useTranslations("common");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    initialData?.avatar_url || null
+  const [previewUrl, setPreviewUrl] = useState<string>(
+    initialData?.avatar_url || ""
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -60,6 +60,21 @@ export function ConsultantProfileForm({
     },
   });
 
+  const handleAvatarChange = (file: File) => {
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setSelectedFile(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    if (previewUrl && selectedFile) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl("");
+    setSelectedFile(null);
+  };
+
+  const hasAvatarChanged = previewUrl != initialData?.avatar_url;
   // Check if form values have changed
   const hasFormChanges = () => {
     const formValues = form.getValues();
@@ -69,40 +84,13 @@ export function ConsultantProfileForm({
       formValues.bio_fr !== initialData?.bio_fr ||
       formValues.shortDescription !== initialData?.shortDescription ||
       formValues.specialization !== initialData?.specialization ||
-      selectedFile !== null
+      selectedFile !== null ||
+      previewUrl !== initialData?.avatar_url
     );
   };
 
-  const handleImageSelect = (file: File) => {
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(t("errors.fileTooLarge"));
-      return;
-    }
-
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      toast.error(t("errors.invalidFileType"));
-      return;
-    }
-
-    // Create local preview
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-    setSelectedFile(file);
-  };
-
-  const removeImage = () => {
-    if (previewUrl && selectedFile) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(null);
-    setSelectedFile(null);
-  };
-
   async function onSubmit(data: ConsultantProfileFormValues) {
-    // Check if anything has changed
-    if (!hasFormChanges()) {
+    if (!hasFormChanges() && !hasAvatarChanged) {
       toast.info(t("noChanges"));
       return;
     }
@@ -110,35 +98,35 @@ export function ConsultantProfileForm({
     try {
       setIsSubmitting(true);
 
-      // Handle avatar upload/update separately if there's a file change
-      if (selectedFile) {
+      if (hasAvatarChanged) {
         setIsUploadingAvatar(true);
         const avatarFormData = new FormData();
-        avatarFormData.append("avatarFile", selectedFile);
 
-        // If we have an old avatar, send it to be deleted
+        if (selectedFile) {
+          avatarFormData.append("avatarFile", selectedFile);
+        }
+
         if (initialData?.avatar_url) {
           avatarFormData.append("oldAvatarUrl", initialData.avatar_url);
+          // Add a flag to indicate avatar deletion when previewUrl is null
+          if (previewUrl === null) {
+            avatarFormData.append("deleteAvatar", "true");
+          }
         }
 
-        // Update avatar first
         const avatarResult = await updateAvatar(avatarFormData);
-        if (avatarResult.error) {
-          toast.error(t("errors.avatarUploadFailed"));
+
+        if (!avatarResult.success || avatarResult.error) {
+          toast.error(avatarResult.error || t("avatar.errors.uploadFailed"));
           return;
         }
+
+        setPreviewUrl(avatarResult.avatarUrl);
+
         setIsUploadingAvatar(false);
       }
 
-      // Only update other fields if they've changed
-      const hasProfileChanges =
-        data.fullName !== initialData?.fullName ||
-        data.bio_ar !== initialData?.bio_ar ||
-        data.bio_fr !== initialData?.bio_fr ||
-        data.shortDescription !== initialData?.shortDescription ||
-        data.specialization !== initialData?.specialization;
-
-      if (hasProfileChanges) {
+      if (hasFormChanges()) {
         const formData = new FormData();
         formData.append("fullName", data.fullName || "");
         formData.append("specialization", data.specialization || "");
@@ -154,102 +142,36 @@ export function ConsultantProfileForm({
       }
 
       toast.success(t("profileUpdated"));
-
-      // Clear the selected file after successful upload
       setSelectedFile(null);
     } catch (error) {
       console.error("Profile update error:", error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error(t("updateError"));
-      }
+      toast.error(t("updateError"));
     } finally {
       setIsSubmitting(false);
       setIsUploadingAvatar(false);
     }
   }
 
-  // Split form into smaller components
-  const AvatarUpload = memo(({ control, initialData }: any) => (
-    <FormField
-      control={control}
-      name="avatar_url"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{t("avatar.url")}</FormLabel>
-          <FormControl>
-            <div className="flex flex-col items-center gap-4">
-              {/* Avatar Preview */}
-              <Avatar className="w-32 h-32">
-                <AvatarImage
-                  src={previewUrl || ""}
-                  alt={initialData?.fullName || "Avatar"}
-                />
-                <AvatarFallback className="text-xl">
-                  {initialData?.fullName?.charAt(0).toUpperCase() || "A"}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Upload Controls */}
-              <div className="flex items-center gap-4">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id="avatar-upload"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleImageSelect(file);
-                  }}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={isSubmitting || isUploadingAvatar}
-                    onClick={() =>
-                      document.getElementById("avatar-upload")?.click()
-                    }
-                    className="flex items-center gap-2"
-                  >
-                    <IconUpload className="size-4" />
-                    {t("avatar.upload")}
-                  </Button>
-                  {previewUrl && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      disabled={isSubmitting || isUploadingAvatar}
-                      onClick={removeImage}
-                    >
-                      <IconX className="size-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  ));
-
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className={isRTL ? "text-right" : "text-left"}>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className={`space-y-6 ${isRTL ? "rtl" : "ltr"}`}
-          >
-            <AvatarUpload control={form.control} initialData={initialData} />
+    <FormCardLayout title={t("title")} isRTL={isRTL}>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={`space-y-6 ${isRTL ? "rtl" : "ltr"}`}
+        >
+          <div className="flex justify-center mb-8">
+            <UserAvatarUpload
+              previewUrl={previewUrl}
+              displayName={form.getValues("fullName")}
+              isUploading={isUploadingAvatar}
+              onAvatarChange={handleAvatarChange}
+              onRemoveAvatar={handleRemoveAvatar}
+              size="lg"
+            />
+          </div>
 
+          {/* Form Fields */}
+          <div className="space-y-4">
             <FormField
               control={form.control}
               name="fullName"
@@ -359,21 +281,39 @@ export function ConsultantProfileForm({
                 </FormItem>
               )}
             />
+          </div>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting || isUploadingAvatar || !hasFormChanges()}
-              className="w-full"
-            >
-              {isUploadingAvatar
-                ? t("avatar.uploading")
-                : isSubmitting
-                ? t("updating")
-                : t("updateProfile")}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          <Button
+            type="submit"
+            disabled={isSubmitting || isUploadingAvatar || !hasFormChanges()}
+            className="w-full"
+          >
+            {isUploadingAvatar ? (
+              <>
+                <Loader2
+                  className={cn(
+                    "h-4 w-4 animate-spin",
+                    isRTL ? "ml-2" : "mr-2"
+                  )}
+                />
+                {t("avatar.uploading")}
+              </>
+            ) : isSubmitting ? (
+              <>
+                <Loader2
+                  className={cn(
+                    "h-4 w-4 animate-spin",
+                    isRTL ? "ml-2" : "mr-2"
+                  )}
+                />
+                {t("updating")}
+              </>
+            ) : (
+              t("updateProfile")
+            )}
+          </Button>
+        </form>
+      </Form>
+    </FormCardLayout>
   );
 }

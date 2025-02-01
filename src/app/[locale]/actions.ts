@@ -117,7 +117,7 @@ export async function updateAvatar(formData: FormData) {
       }
 
       revalidatePath("/", "layout");
-      return { success: true, avatarUrl: null };
+      return { success: true, avatarUrl: "" };
     }
 
     // Validate new avatar file if it exists
