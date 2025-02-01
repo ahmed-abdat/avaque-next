@@ -24,7 +24,7 @@ import {
   createForgotPasswordSchema,
 } from "@/features/auth/validations/forgot-password-schema";
 import { AuthMessage } from "@/features/auth/components/shared/auth-message";
-import { isUserExistOnDatabase } from "@/app/[locale]/actions/auth";
+import { isUserExiste } from "@/app/[locale]/actions/auth";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       setIsLoading(true);
 
       // Check if user exists in database
-      const userExists = await isUserExistOnDatabase(values.email);
+      const userExists = await isUserExiste(values.email);
 
       if (!userExists) {
         setError(t("common.errors.userNotFound"));
@@ -129,7 +129,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
               </p>
             </div>
 
-            <AuthMessage type="error" message={error} />
+            <AuthMessage type="error" message={error} locale={locale}/>
 
             <Form {...form}>
               <form

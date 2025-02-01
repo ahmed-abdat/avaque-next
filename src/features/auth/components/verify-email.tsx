@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Mail, ArrowLeft, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -59,7 +59,7 @@ export function VerifyEmailForm({ locale }: VerifyEmailFormProps) {
 
         {/* Error Message */}
         <div className="mt-4">
-          <AuthMessage type="error" message={error} />
+          <AuthMessage type="error" message={error} locale={locale} />
         </div>
 
         {/* Email Steps */}

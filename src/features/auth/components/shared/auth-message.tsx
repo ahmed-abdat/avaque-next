@@ -5,13 +5,13 @@ import { useTranslations } from "next-intl";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { resendVerificationEmail } from "@/app/[locale]/actions/auth";
+import { resendVerificationEmail } from "@/features/auth/actions/resendVerificationEmail";
 
 interface AuthMessageProps {
   type: "error" | "success";
   message: string | null;
   unverifiedEmail?: string | null;
-  locale?: string;
+  locale: string;
 }
 
 export function AuthMessage({
@@ -35,7 +35,7 @@ export function AuthMessage({
       setResendError(null);
       setResendSuccess(false);
 
-      const result = await resendVerificationEmail(unverifiedEmail);
+      const result = await resendVerificationEmail(unverifiedEmail , locale);
 
       if (result.error) {
         setResendError(t("common.errors.resendVerification"));

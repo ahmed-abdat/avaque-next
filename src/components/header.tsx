@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import LanguageSwitcher from "@/components/local-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -20,6 +19,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { UserType } from "@/types/userType";
+import { signOut } from "@/features/auth/actions/signout";
 
 interface HeaderProps {
   user: UserType | null;
@@ -31,24 +31,14 @@ export function Header({ user, isDashboard }: HeaderProps) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
   const [isPending, setIsPending] = useState(false);
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
-      router.refresh();
+      await signOut(locale);
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
@@ -66,7 +56,6 @@ export function Header({ user, isDashboard }: HeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        isScrolled && "shadow-sm"
       )}
     >
       <div className="px-2 sm:px-4 md:px-8">

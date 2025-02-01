@@ -12,10 +12,10 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { resendVerificationEmail } from "@/app/[locale]/actions/auth";
+import { resendVerificationEmail } from "@/features/auth/actions/resendVerificationEmail";
 import { Mail, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthMessage } from "./auth-message";
+import { AuthMessage } from "@/features/auth/components/shared/auth-message";
 
 interface ResendVerificationDialogProps {
   email: string;
@@ -38,7 +38,7 @@ export function ResendVerificationDialog({
     try {
       setIsSending(true);
       setStatus("idle");
-      const result = await resendVerificationEmail(email);
+      const result = await resendVerificationEmail(email, locale);
 
       if (result.error) {
         setStatus("error");
@@ -106,6 +106,7 @@ export function ResendVerificationDialog({
           {/* Status messages */}
           {status === "success" && (
             <AuthMessage
+            locale={locale}
               type="success"
               message={t("common.resendVerification.success")}
             />
@@ -113,6 +114,7 @@ export function ResendVerificationDialog({
 
           {status === "error" && (
             <AuthMessage
+              locale={locale}
               type="error"
               message={t("common.resendVerification.error")}
             />

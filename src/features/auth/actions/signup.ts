@@ -95,3 +95,4 @@ export async function signupConsultant(values: ConsultantRegisterValues) {
   redirect(`/${locale}/verify-email?consultant=true`);
 }
 
+

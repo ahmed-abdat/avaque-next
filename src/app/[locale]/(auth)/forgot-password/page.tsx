@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/features/auth/components/shared/forgot-password-form";
+import { ForgotPasswordForm } from "@/features/auth/components/forgot-password-form";
 
 export const metadata = {
   title: "Forgot Password | Avaque",

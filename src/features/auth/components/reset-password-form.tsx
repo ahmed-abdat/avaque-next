@@ -190,7 +190,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
     return (
       <div className="flex min-h-[80vh] w-full items-center justify-center">
         <div className="w-full max-w-md px-4">
-          <AuthMessage type="error" message={error} />
+          <AuthMessage type="error" message={error} locale={locale} />
           <div className="mt-4">
             <Button asChild variant="outline" className="w-full gap-2 text-sm">
               <Link
@@ -241,7 +241,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
               </p>
             </div>
 
-            <AuthMessage type="error" message={error} />
+            <AuthMessage type="error" message={error} locale={locale} />
 
             <Form {...form}>
               <form
