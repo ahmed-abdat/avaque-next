@@ -1,142 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import type {
-  ConsultantRegisterValues,
-  MeetingLinkFormValues,
-} from "@/lib/validations/consultant";
-import { headers } from "next/headers";
-import { meetingLinkSchema } from "@/lib/validations/consultant";
-
-// Helper to get current locale
-function getCurrentLocale(): string {
-  const headersList = headers();
-  const pathname = headersList.get("x-pathname") || "";
-  const locale = pathname.split("/")[1];
-  return locale === "fr" ? "fr" : "ar"; // Default to "ar" if not "fr"
-}
-
-export async function consultantSignup(values: ConsultantRegisterValues) {
-  const supabase = await createClient();
-  const locale = getCurrentLocale();
-
-  // First, sign up the user with Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: values.email,
-    password: values.password,
-    options: {
-      data: {
-        full_name: values.fullName,
-        role: "consultant",
-        specialization: values.specialization,
-        short_description: values.shortDescription,
-      },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}${process.env.NEXT_PUBLIC_VERIFY_EMAIL_REDIRECT}?type=email_verification`,
-    },
-  });
-
-  if (authError) {
-    return { error: authError.message };
-  }
-
-  // The trigger function will handle creating the consultant profile
-  revalidatePath("/", "layout");
-  redirect(`/${locale}/verify-email`);
-}
-
-export async function consultantLogin(values: {
-  email: string;
-  password: string;
-}) {
-  const supabase = await createClient();
-  const locale = getCurrentLocale();
-
-  // First, attempt to sign in
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: values.email,
-    password: values.password,
-  });
-
-  if (signInError) {
-    // Check if the error is due to unverified email
-    if (signInError.message.includes("Email not confirmed")) {
-      return { error: "Email not confirmed" };
-    }
-    return { error: signInError.message };
-  }
-
-  // Then check if the user exists and is a consultant
-  const { data: consultantProfile, error: consultantProfileError } =
-    await supabase
-      .from("consultant_profiles")
-      .select("id, role, is_approved")
-      .eq("email", values.email)
-      .single();
-
-  if (consultantProfileError || !consultantProfile) {
-    await supabase.auth.signOut();
-    return {
-      error: "profile not found",
-    };
-  }
-
-  if (!consultantProfile.is_approved) {
-    await supabase.auth.signOut();
-    return {
-      error: "Your account is pending approval.",
-    };
-  }
-
-  revalidatePath("/", "layout");
-  redirect(`/${locale}/dashboard`);
-}
-
-export async function isConsultantExist(email: string) {
-  const supabase = await createClient();
-
-  // First check in profiles table
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .single();
-
-  if (profile?.id) {
-    return { id: profile.id, type: "profile" };
-  }
-
-  // Then check in consultant_profiles table for approved consultants only
-  const { data: consultantProfile } = await supabase
-    .from("consultant_profiles")
-    .select("id")
-    .eq("email", email)
-    .eq("is_approved", true)
-    .single();
-
-  if (consultantProfile?.id) {
-    return { id: consultantProfile.id, type: "consultant" };
-  }
-
-  return null;
-}
+import type { MeetingLinkFormValues } from "@/lib/validations/consultant";
+import {
+  getCurrentUser,
+  getUserProfile,
+  updateUserProfile,
+} from "@/app/[locale]/actions";
 
 export async function getConsultantProfile() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
-  // make sure is_approved is true
-  const { data: consultantProfile, error } = await supabase
-    .from("consultant_profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
 
-  if (error) return null;
-  return consultantProfile;
+  return await getUserProfile(user.id, "consultant");
 }
 
 export async function getAllConsultants() {
@@ -151,14 +28,13 @@ export async function getAllConsultants() {
       reviews:reviews(rating)
     `
     )
-    .eq("is_approved", true); // Only get approved consultants
+    .eq("is_approved", true);
 
   if (error) return null;
 
   // Process each consultant to get their stats
   const consultantsWithStats = await Promise.all(
     consultants.map(async (consultant) => {
-      // Get reviews and calculate average rating
       const reviews = consultant.reviews || [];
       const totalRating = reviews.reduce(
         (sum: number, review: any) => sum + (review.rating || 0),
@@ -169,7 +45,6 @@ export async function getAllConsultants() {
           ? parseFloat((totalRating / reviews.length).toFixed(1))
           : 0;
 
-      // Get the user map to count total sessions
       const userMap = await getAllUserWhoHaveReviews(consultant.id);
       const totalSessions = userMap ? userMap.size : 0;
 
@@ -184,42 +59,21 @@ export async function getAllConsultants() {
 
   // Sort consultants by rating in descending order
   return consultantsWithStats.sort((a, b) => {
-    // First sort by rating
     const ratingDiff = b.rating - a.rating;
     if (ratingDiff !== 0) return ratingDiff;
-
-    // If ratings are equal, sort by total sessions
     return b.totalSessions - a.totalSessions;
   });
 }
 
 export async function getConsultantById(id: string) {
-  const supabase = await createClient();
-  const { data: consultant, error } = await supabase
-    .from("consultant_profiles")
-    .select("*")
-    .eq("id", id)
-    .eq("is_approved", true) // Only get approved consultants
-    .single();
-
-  if (error) return null;
-  return consultant;
+  return await getUserProfile(id, "consultant");
 }
 
 export async function updateConsultantProfile(formData: FormData) {
-  const supabase = await createClient();
-
-  // Get the current user
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-  if (userError || !user) {
-    return { error: "Not authenticated" };
-  }
+  const user = await getCurrentUser();
+  if (!user) return { error: "Not authenticated" };
 
   try {
-    // Validate required fields
     const fullName = formData.get("fullName");
     const specialization = formData.get("specialization");
     const shortDescription = formData.get("shortDescription");
@@ -228,25 +82,13 @@ export async function updateConsultantProfile(formData: FormData) {
       return { error: "Required fields are missing" };
     }
 
-    // Update profile data (excluding avatar)
-    const { error: updateError } = await supabase
-      .from("consultant_profiles")
-      .update({
-        full_name: fullName,
-        specialization,
-        short_description: shortDescription,
-        bio_ar: formData.get("bio_ar") || "",
-        bio_fr: formData.get("bio_fr") || "",
-      })
-      .eq("id", user.id);
-
-    if (updateError) {
-      console.error("Error updating profile:", updateError);
-      return { error: "Failed to update profile" };
-    }
-
-    revalidatePath("/dashboard");
-    return { success: true };
+    return await updateUserProfile(user.id, "consultant", {
+      full_name: fullName,
+      specialization,
+      short_description: shortDescription,
+      bio_ar: formData.get("bio_ar") || "",
+      bio_fr: formData.get("bio_fr") || "",
+    });
   } catch (error) {
     console.error("Error in profile update process:", error);
     return { error: "Failed to process profile update" };
@@ -254,31 +96,14 @@ export async function updateConsultantProfile(formData: FormData) {
 }
 
 export async function updateMeetingLink(values: MeetingLinkFormValues) {
-  const supabase = await createClient();
-
-  // Get the current user
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-  if (userError || !user) {
-    return { error: "Not authenticated" };
-  }
+  const user = await getCurrentUser();
+  if (!user) return { error: "Not authenticated" };
 
   try {
-    // Validate the data
-    const validatedData = meetingLinkSchema.parse(values);
-
-    // Update the meeting link
-    const { error } = await supabase
-      .from("consultant_profiles")
-      .update({ meet_link: validatedData.meetLink })
-      .eq("id", user.id);
-
-    if (error) throw error;
-
-    revalidatePath("/dashboard");
-    return { success: true };
+    // use the updateUserProfile function
+    return await updateUserProfile(user.id, "consultant", {
+      meet_link: values.meetLink,
+    });
   } catch (error) {
     console.error("Error updating meeting link:", error);
     return { error: "Failed to update meeting link" };
@@ -308,7 +133,6 @@ export async function getReviewsByConsultantId(consultantId: string) {
   return reviews as Review[];
 }
 
-// get all the user who have review for this consultant
 export async function getAllUserWhoHaveReviews(consultantId: string) {
   const supabase = await createClient();
 
@@ -320,12 +144,9 @@ export async function getAllUserWhoHaveReviews(consultantId: string) {
 
   if (error || !reviews) return null;
 
-  // Get unique student IDs using Object.keys and reduce
-  const studentIds = Object.keys(
-    reviews.reduce((acc, review) => {
-      acc[review.student_id] = true;
-      return acc;
-    }, {} as Record<string, boolean>)
+  // Get unique student IDs
+  const studentIds = Array.from(
+    new Set(reviews.map((review) => review.student_id))
   );
 
   // Fetch profiles for these students with avatar_url
@@ -337,14 +158,12 @@ export async function getAllUserWhoHaveReviews(consultantId: string) {
   if (profilesError) return null;
 
   // Create a map of user IDs to profile info
-  const userMap = new Map(
+  return new Map(
     profiles.map((profile) => [
       profile.id,
       { name: profile.full_name, avatarUrl: profile.avatar_url },
     ])
   );
-
-  return userMap;
 }
 
 export async function submitReview(

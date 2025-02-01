@@ -1,35 +1,35 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { UserType } from "@/types/userType";
 import { revalidatePath } from "next/cache";
+import type { UserType } from "@/types/userType";
 
 export async function isUserExiste(email: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id")
+    .select("*")
     .eq("email", email)
     .single();
 
   if (data?.id && !error) {
-    return { id: data.id, type: "student" };
+    return { user: data, type: "student" };
   }
 
   // check if user is consultant
   const { data: consultantData, error: consultantError } = await supabase
     .from("consultant_profiles")
-    .select("id")
+    .select("*")
     .eq("email", email)
     .single();
 
   if (consultantData?.id && !consultantError) {
-    return { id: consultantData.id, type: "consultant" };
+    return { user: consultantData, type: "consultant" };
   }
   return null;
 }
 
-export async function getUser(): Promise<UserType | null> {
+export async function getUser() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -44,7 +44,7 @@ export async function getUser(): Promise<UserType | null> {
     const { data, error: profileError } = await supabase
       .from("profiles")
       .select("*")
-      .eq("email", user.email)
+      .eq("id", user.id)
       .single();
 
     if (data) {
@@ -55,7 +55,7 @@ export async function getUser(): Promise<UserType | null> {
       const { data: consultantData, error: consultantError } = await supabase
         .from("consultant_profiles")
         .select("*")
-        .eq("email", user.email)
+        .eq("id", user.id)
         .single();
 
       if (consultantData) {
@@ -176,5 +176,54 @@ export async function updateAvatar(formData: FormData) {
   } catch (error) {
     console.error("Error in avatar update process:", error);
     return { error: "Failed to process avatar update" };
+  }
+}
+
+// Add new reusable functions
+export async function getCurrentUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || !user) return null;
+  return user;
+}
+
+export async function getUserProfile(
+  userId: string,
+  role: "consultant" | "student"
+) {
+  const supabase = await createClient();
+  const table = role === "consultant" ? "consultant_profiles" : "profiles";
+
+  const { data, error } = await supabase
+    .from(table)
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  if (error) return null;
+  return data;
+}
+
+export async function updateUserProfile(
+  userId: string,
+  role: "consultant" | "student",
+  data: any
+) {
+  const supabase = await createClient();
+  const table = role === "consultant" ? "consultant_profiles" : "profiles";
+
+  try {
+    const { error } = await supabase.from(table).update(data).eq("id", userId);
+
+    if (error) throw error;
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error(`Error updating ${role} profile:`, error);
+    return { error: `Failed to update ${role} profile` };
   }
 }

@@ -1,8 +1,9 @@
 import { Header } from "@/components/header";
-import { getUser } from "../actions/auth";
-import { getConsultantProfile } from "../actions/consultant";
+import { getUser } from "@/app/[locale]/actions";
 import { redirect } from "next/navigation";
 import { PendingApproval } from "./_components/pending-approval";
+
+
 
 export default async function DashboardLayout({
   children,
@@ -18,22 +19,18 @@ export default async function DashboardLayout({
     redirect(`/${locale}`);
   }
 
-  // Get consultant profile data
-  const profile = await getConsultantProfile();
-
-  if (!profile) {
-    redirect(`/${locale}`);
-  }
 
   // If not approved, show pending message
-  if (!profile.is_approved) {
-    return <PendingApproval profile={profile} locale={locale} />;
+  if (!user.is_approved) {
+    return <PendingApproval profile={user} locale={locale} />;
   }
+
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header user={profile} isDashboard={true} />
+      <Header user={user} isDashboard={true} />
       <main className="flex-1">{children}</main>
     </div>
+
   );
 }
