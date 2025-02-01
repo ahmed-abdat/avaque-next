@@ -24,7 +24,7 @@ import {
   createForgotPasswordSchema,
 } from "@/features/auth/validations/forgot-password-schema";
 import { AuthMessage } from "@/features/auth/components/shared/auth-message";
-import { isUserExiste } from "@/app/[locale]/actions/auth";
+import { isUserExiste } from "@/app/[locale]/actions";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);

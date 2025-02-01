@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IconCalendar } from "@tabler/icons-react";
-import { ConsultationRequest } from "../types";
+import { ConsultationRequest } from "../type";
 
 interface ConsultationRequestsProps {
   requests: ConsultationRequest[];

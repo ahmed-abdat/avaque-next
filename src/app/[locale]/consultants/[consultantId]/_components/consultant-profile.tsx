@@ -5,7 +5,7 @@ import { updateReview, deleteReview } from "@/app/[locale]/actions/reviews";
 import { toast } from "sonner";
 import { Review, ConsultantWithReviews } from "../../types";
 import { ReviewForm } from "./review-form";
-import { getUser } from "@/app/[locale]/actions/auth";
+import { getUser } from "@/app/[locale]/actions";
 import { getUserBookings } from "@/app/[locale]/actions/bookings";
 import { useEffect, useState } from "react";
 import { UserType } from "@/types/userType";

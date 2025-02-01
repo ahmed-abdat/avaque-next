@@ -129,7 +129,7 @@ export function RegisterForm({ locale, userType }: RegisterFormProps) {
         </p>
       </div>
 
-      <AuthMessage type="error" message={error} />
+      <AuthMessage type="error" message={error} locale={locale} />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

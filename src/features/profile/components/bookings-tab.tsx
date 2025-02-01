@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/select";
 import { useTranslations } from "next-intl";
 import { CalendarDays, Clock, User2 } from "lucide-react";
-import { motion } from "framer-motion";
 import type { UserType } from "@/types/userType";
 import { cn } from "@/lib/utils";
 
@@ -67,12 +66,7 @@ export function BookingsTab({ user, locale }: BookingsTabProps) {
       {/* Bookings List */}
       <div className="space-y-4">
         {bookings.map((booking, index) => (
-          <motion.div
-            key={booking.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
+          <div key={booking.id} className="opacity-100">
             <Card className="overflow-hidden">
               <div className="border-b border-border p-4">
                 <div
@@ -132,7 +126,7 @@ export function BookingsTab({ user, locale }: BookingsTabProps) {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 

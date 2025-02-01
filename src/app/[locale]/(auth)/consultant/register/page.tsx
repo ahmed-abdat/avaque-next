@@ -1,4 +1,4 @@
-import { ConsultantRegisterForm } from "@/components/auth/consultant/register-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,5 +11,5 @@ export default function ConsultantRegisterPage({
 }: {
   params: { locale: string };
 }) {
-  return <ConsultantRegisterForm locale={locale} />;
+  return <RegisterForm locale={locale} userType="consultant" />;
 }

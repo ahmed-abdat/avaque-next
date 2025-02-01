@@ -1,7 +1,7 @@
 import { DashboardTabs } from "./dashboard-tabs";
 import { WelcomeHeader } from "./welcome-header";
 import { ConsultantProfile } from "@/types/dashboard";
-import { ConsultationRequest } from "../types";
+import { ConsultationRequest } from "../type";
 
 interface DashboardContainerProps {
   stats: {

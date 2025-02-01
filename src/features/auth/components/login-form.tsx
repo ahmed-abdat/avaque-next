@@ -173,7 +173,7 @@ export function LoginForm({ locale, userType }: LoginFormProps) {
       </div>
 
       {!error && !isPending && success && (
-        <AuthMessage type="success" message={success} />
+        <AuthMessage type="success" message={success} locale={locale} />
       )}
       <AuthMessage
         type="error"

@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
 import { CreditCard, Receipt, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { UserType } from "@/types/userType";
@@ -48,11 +47,7 @@ export function PaymentsTab({ user, locale }: PaymentsTabProps) {
     <div className="space-y-6" dir={isRtl ? "rtl" : "ltr"}>
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        <div className="opacity-100">
           <Card className="p-6">
             <div
               className={cn(
@@ -71,13 +66,9 @@ export function PaymentsTab({ user, locale }: PaymentsTabProps) {
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        <div className="opacity-100">
           <Card className="p-6">
             <div
               className={cn(
@@ -96,15 +87,11 @@ export function PaymentsTab({ user, locale }: PaymentsTabProps) {
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
       </div>
 
       {/* Transactions Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
+      <div className="opacity-100">
         <Card>
           <div
             className={cn(
@@ -175,7 +162,7 @@ export function PaymentsTab({ user, locale }: PaymentsTabProps) {
             </TableBody>
           </Table>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Empty State */}
       {transactions.length === 0 && (

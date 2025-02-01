@@ -1,16 +1,13 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { Loader2, Lock } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,16 +16,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FormCardLayout } from "@/components/shared/form-card-layout";
+import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
+
 import { updateProfile, uploadAvatar } from "../actions/profile";
 import {
   createProfileSchema,
   type ProfileFormData,
   type ProfileProps,
 } from "../validation/profile";
-import { ProfileAvatar } from "./profile-avatar";
 import type { AvatarUploadResponse } from "../types/avatar";
-import { motion } from "framer-motion";
-import { Camera, X, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function PersonalInfoTab({ user, locale }: ProfileProps) {
   const [isUploading, setIsUploading] = useState(false);
@@ -40,11 +40,10 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
   const [displayName, setDisplayName] = useState(user.full_name ?? "");
   const t = useTranslations("Profile.personalInfo");
   const tCommon = useTranslations("common");
-  const profileSchema = createProfileSchema(tCommon);
   const isRtl = locale === "ar";
 
   const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(createProfileSchema(tCommon)),
     defaultValues: {
       full_name: user.full_name ?? "",
     },
@@ -101,6 +100,7 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
   const hasNameChanged = form.getValues("full_name") !== user.full_name;
   const hasAvatarChanged =
     selectedFile !== null || (previewUrl === null && user.avatar_url);
+
   const onSubmit = async (data: ProfileFormData) => {
     setIsSaving(true);
 
@@ -155,135 +155,114 @@ export function PersonalInfoTab({ user, locale }: ProfileProps) {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto">
-      {/* Header Section */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="mb-8"
-      >
-        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
-        <p className="text-muted-foreground mt-1">{t("description")}</p>
-      </motion.div>
+    <FormCardLayout isRTL={isRtl}>
+      <div className="max-w-5xl mx-auto py-6">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {t("title")}
+          </h2>
+        </div>
 
-      <Card className="overflow-hidden">
-        <div className="flex flex-col">
-          {/* Avatar Section */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="relative flex flex-col items-center pt-8 pb-6 border-b"
-          >
-            <div className="relative group ">
-              <ProfileAvatar
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Avatar Section */}
+            <div className="relative flex flex-col items-center pt-8 pb-6 border-b">
+              <UserAvatarUpload
                 previewUrl={previewUrl}
                 displayName={displayName}
                 isUploading={isUploading}
                 onAvatarChange={handleAvatarChange}
                 onRemoveAvatar={handleRemoveAvatar}
-                className="h-28 w-28 "
+                size="lg"
+                className="mb-8"
               />
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              </div>
             </div>
-            <div className="mt-12 text-center">
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-            </div>
-          </motion.div>
 
-          {/* Form Section */}
-          <div className="p-6">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 max-w-xl mx-auto"
-              >
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="grid gap-6"
-                >
-                  <FormField
-                    control={form.control}
-                    name="full_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">
-                          {t("fullName")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder={t("fullNamePlaceholder")}
-                            className="h-11 bg-background transition-all duration-200 hover:border-primary/50 focus:border-primary"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium">
-                      {t("email")}
-                    </Label>
-                    <div className="relative">
+            {/* Form Fields */}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="full_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      {t("fullName")}
+                    </FormLabel>
+                    <FormControl>
                       <Input
-                        id="email"
-                        type="email"
-                        value={user.email ?? ""}
-                        disabled
-                        className="h-11 bg-muted/30 pr-10"
+                        {...field}
+                        placeholder={t("fullNamePlaceholder")}
+                        className="h-11 bg-background transition-all duration-200 hover:border-primary/50 focus:border-primary"
                       />
-                      <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                </motion.div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className={cn(
-                    "flex items-center pt-4",
-                    isRtl ? "justify-start" : "justify-end"
-                  )}
-                >
-                  <Button
-                    type="submit"
-                    className={cn(
-                      "min-w-[140px] h-11 text-base transition-all duration-300",
-                      "bg-primary hover:bg-primary/90",
-                      "shadow hover:shadow-primary/25",
-                      (isSaving ||
-                        isUploading ||
-                        (!hasNameChanged && !hasAvatarChanged)) &&
-                        "opacity-90 cursor-not-allowed"
-                    )}
-                    disabled={
-                      isSaving ||
-                      isUploading ||
-                      (!hasNameChanged && !hasAvatarChanged)
-                    }
-                  >
-                    {isSaving || isUploading ? (
-                      <>
-                        <Loader2
-                          className={cn(
-                            "h-4 w-4 animate-spin",
-                            isRtl ? "ml-2" : "mr-2"
-                          )}
-                        />
-                        {isSaving ? t("saving") : t("uploading")}
-                      </>
-                    ) : (
-                      t("saveChanges")
-                    )}
-                  </Button>
-                </motion.div>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </Card>
-    </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  {t("email")}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user.email ?? ""}
+                    disabled
+                    className="h-11 bg-muted/30 pr-10"
+                  />
+                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div
+              className={cn(
+                "flex items-center pt-4",
+                isRtl ? "justify-start" : "justify-end"
+              )}
+            >
+              <Button
+                type="submit"
+                className={cn(
+                  "min-w-[140px] h-11 text-base transition-all duration-300",
+                  "bg-primary hover:bg-primary/90",
+                  "shadow hover:shadow-primary/25",
+                  (isSaving ||
+                    isUploading ||
+                    (!hasNameChanged && !hasAvatarChanged)) &&
+                    "opacity-90 cursor-not-allowed"
+                )}
+                disabled={
+                  isSaving ||
+                  isUploading ||
+                  (!hasNameChanged && !hasAvatarChanged)
+                }
+              >
+                {isSaving || isUploading ? (
+                  <>
+                    <Loader2
+                      className={cn(
+                        "h-4 w-4 animate-spin",
+                        isRtl ? "ml-2" : "mr-2"
+                      )}
+                    />
+                    {isSaving ? t("saving") : t("uploading")}
+                  </>
+                ) : (
+                  t("saveChanges")
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </FormCardLayout>
   );
 }

@@ -8,7 +8,7 @@ import { ConsultantProfileForm } from "./profile-form";
 import { Overview } from "./overview";
 import { IconChartBar, IconUsers, IconSettings } from "@tabler/icons-react";
 import { ConsultantProfile } from "@/types/dashboard";
-import { ConsultationRequest } from "../types";
+import { ConsultationRequest } from "../type";
 
 interface DashboardTabsProps {
   earningsData: Array<{ date: string; amount: number }>;
