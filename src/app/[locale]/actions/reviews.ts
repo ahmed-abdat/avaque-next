@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { getUser } from "./auth";
+import { getUser } from "@/app/[locale]/actions";
 import { revalidatePath } from "next/cache";
 
 export async function getUserReviewForConsultant(consultantId: string) {

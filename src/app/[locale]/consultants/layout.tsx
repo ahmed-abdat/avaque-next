@@ -1,6 +1,6 @@
 import Footer from "@/components/footer";
 import { Header } from "@/components/header";
-import { getUser } from "@/app/[locale]/actions/auth";
+import { getUser } from "@/app/[locale]/actions";
 
 export default async function ConsultantsLayout({
   children,
