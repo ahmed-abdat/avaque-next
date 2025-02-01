@@ -19,9 +19,9 @@ export function ProfileContent({ user, locale }: ProfileContentProps) {
   const isRtl = locale === "ar";
 
   return (
-    <main className="flex-1 space-y-8 p-4 md:p-8 pt-4">
+    <main className="flex-1 flex flex-col gap-4">
       {/* Profile Header */}
-      <div className="p-4">
+      <div className="p-4 mx-4">
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
           {t("title")}
         </h1>
