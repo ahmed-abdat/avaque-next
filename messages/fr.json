@@ -591,9 +591,11 @@
       "avatarSuccess": "Photo mise à jour",
       "avatarUpdated": "Votre photo de profil a été mise à jour avec succès",
       "avatarError": "Erreur lors de la mise à jour de la photo",
+      "avatarUpdateError": "Erreur lors de la mise à jour de la photo de profil",
       "unknownError": "Une erreur inattendue s'est produite",
       "invalidFileType": "Veuillez sélectionner un fichier image valide",
-      "fileTooLarge": "Fichier trop volumineux (maximum 5 Mo)"
+      "fileTooLarge": "Fichier trop volumineux (maximum 5 Mo)",
+      "noChanges": "Aucune modification n'a été effectuée"
     },
     "bookings": {
       "title": "Vos Réservations",

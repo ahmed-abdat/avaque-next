@@ -1,4 +1,4 @@
-import { getUser } from "./actions/auth";
+import { getUser } from "@/app/[locale]/actions";
 import { Header } from "@/components/header";
 import {
   CTASection,

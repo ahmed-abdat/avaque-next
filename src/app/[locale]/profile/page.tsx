@@ -1,7 +1,7 @@
 import { Header } from "@/components/header";
-import { getUser } from "../actions/auth";
+import { getUser } from "@/app/[locale]/actions";
 import { redirect } from "next/navigation";
-import { ProfileContent } from "./_components/profile-content";
+import { ProfileContent } from "@/features/profile/components/profile-content";
 
 interface ProfilePageProps {
   params: {
@@ -14,7 +14,7 @@ export default async function ProfilePage({
 }: ProfilePageProps) {
   const user = await getUser();
   if (!user) redirect(`/${locale}`);
-  
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
       <Header user={user} />
