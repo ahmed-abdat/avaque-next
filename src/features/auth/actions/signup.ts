@@ -94,5 +94,3 @@ export async function signupConsultant(values: ConsultantRegisterValues) {
   revalidatePath("/", "layout");
   redirect(`/${locale}/verify-email?consultant=true`);
 }
-
-
