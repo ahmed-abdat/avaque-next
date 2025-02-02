@@ -140,8 +140,9 @@ export function AvailabilityManager({
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-2 md:p-6">
         <div className="space-y-6 p-0">
+
           {availability.map((dayAvail) => (
             <div
               key={dayAvail.day}

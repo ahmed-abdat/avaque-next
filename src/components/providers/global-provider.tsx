@@ -2,6 +2,7 @@
 
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "./theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface RootProviderProps {
   children: React.ReactNode;
@@ -21,7 +22,9 @@ export function RootProvider({
         messages={messages}
         timeZone="Africa/Tunis"
       >
+        <TooltipProvider>
           {children}
+        </TooltipProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   );

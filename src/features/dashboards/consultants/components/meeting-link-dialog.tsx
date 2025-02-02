@@ -29,7 +29,7 @@ import { IconVideo, IconVideoPlus, IconLink } from "@tabler/icons-react";
 import {
   meetingLinkSchema,
   type MeetingLinkFormValues,
-} from "@/lib/validations/consultant";
+} from "@/features/dashboards/consultants/validations/meet-link";
 import { updateMeetingLink } from "@/app/[locale]/actions/consultant";
 
 interface MeetingLinkDialogProps {

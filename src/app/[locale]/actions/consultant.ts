@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
-import type { MeetingLinkFormValues } from "@/lib/validations/consultant";
+import type { MeetingLinkFormValues } from "@/features/dashboards/consultants/validations/meet-link";
 import {
   getCurrentUser,
   getUserProfile,

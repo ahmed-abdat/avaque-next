@@ -20,6 +20,7 @@ export function validateAvailability(availability: AvailabilityState[]) {
     if ((end - start) < 30 * 60 * 1000) {
       errors.push(`${day.day}: Minimum 30min slots required`);
     }
+
   });
 
   return {
