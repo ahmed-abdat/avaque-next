@@ -56,6 +56,44 @@ export type Database = {
           },
         ]
       }
+      consultant_availability: {
+        Row: {
+          consultant_id: string
+          created_at: string
+          day: Database["public"]["Enums"]["day_of_week"]
+          end_time: string
+          id: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          consultant_id: string
+          created_at?: string
+          day: Database["public"]["Enums"]["day_of_week"]
+          end_time: string
+          id?: string
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          consultant_id?: string
+          created_at?: string
+          day?: Database["public"]["Enums"]["day_of_week"]
+          end_time?: string
+          id?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultant_availability_consultant_id_fkey"
+            columns: ["consultant_id"]
+            isOneToOne: false
+            referencedRelation: "consultant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultant_profiles: {
         Row: {
           avatar_url: string | null
@@ -234,6 +272,14 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      day_of_week:
+        | "monday"
+        | "tuesday"
+        | "wednesday"
+        | "thursday"
+        | "friday"
+        | "saturday"
+        | "sunday"
       user_role: "admin" | "consultant" | "student"
     }
     CompositeTypes: {

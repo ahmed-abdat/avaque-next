@@ -1,270 +1,200 @@
--- Enable the necessary extensions
-create extension if not exists "uuid-ossp";
 
--- Create custom types
-create type user_role as enum ('admin', 'consultant', 'student');
 
--- Create profiles table (extends auth.users)
-create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade primary key,
-  role user_role not null default 'student',
-  full_name text,
-  avatar_url text,
-  email text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+this is sql for updating the handle_new_user
+
+-- First, add the full_name column to consultant_profiles table
+ALTER TABLE public.consultant_profiles 
+ADD COLUMN full_name text;
+
+-- Update the handle_new_user function to include full_name
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user();
+
+-- Create the updated function with full_name handling
+CREATE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql AS $$
+DECLARE
+    _role text;
+BEGIN
+    -- Get the role from metadata, default to 'student' if not specified
+    _role := coalesce(new.raw_user_meta_data->>'role', 'student');
+
+    -- Create profile based on role
+    IF _role = 'consultant' THEN
+        -- For consultants, create a consultant profile with full_name
+        INSERT INTO public.consultant_profiles (
+            id,
+            email,
+            role,
+            full_name,
+            specialization,
+            short_description,
+            hourly_rate,
+            is_approved,
+            created_at,
+            updated_at
+        ) VALUES (
+            new.id,
+            new.email,
+            _role::user_role,
+            coalesce(new.raw_user_meta_data->>'full_name', ''),
+            coalesce(new.raw_user_meta_data->>'specialization', ''),
+            coalesce(new.raw_user_meta_data->>'short_description', ''),
+            100,  -- Default hourly rate
+            false,  -- Not approved by default
+            now(),
+            now()
+        );
+    ELSE
+        -- For students, create a regular profile
+        INSERT INTO public.profiles (
+            id,
+            role,
+            full_name,
+            email,
+            created_at,
+            updated_at
+        ) VALUES (
+            new.id,
+            _role::user_role,
+            new.raw_user_meta_data->>'full_name',
+            new.email,
+            now(),
+            now()
+        );
+    END IF;
+
+    RETURN new;
+EXCEPTION
+    WHEN others THEN
+        -- Log the error (you can see this in Supabase logs)
+        RAISE LOG 'Error in handle_new_user function: %', SQLERRM;
+        RETURN null;
+END;
+$$;
+
+-- Recreate the trigger
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- Grant necessary permissions
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO postgres, anon, authenticated, service_role;
+
+
+
+
+
+-- Add avatar_url column if it doesn't exist
+ALTER TABLE public.consultant_profiles 
+ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+
+-- Update RLS policy to allow consultants to update their avatar_url
+DROP POLICY IF EXISTS "Consultants can update their own profile" ON public.consultant_profiles;
+
+CREATE POLICY "Consultants can update their own profile"
+ON public.consultant_profiles
+FOR UPDATE
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+-- Create enum for days of the week
+CREATE TYPE day_of_week AS ENUM (
+    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
 );
 
--- Create consultant_profiles table
-create table if not exists public.consultant_profiles (
-  id uuid references auth.users on delete cascade primary key,
-  specialization text not null,
-  short_description text not null,
-  bio_ar text,
-  bio_fr text,
-  hourly_rate numeric(10,2) not null default 100,
-  is_approved boolean default false,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  meet_link text
+-- Create availability table
+CREATE TABLE consultant_availability (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    consultant_id UUID NOT NULL REFERENCES consultant_profiles(id) ON DELETE CASCADE,
+    day day_of_week NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    CHECK (start_time < end_time)
 );
 
--- Create bookings table
-create table if not exists public.bookings (
-  id uuid default uuid_generate_v4() primary key,
-  student_id uuid references auth.users(id) on delete cascade not null,
-  consultant_id uuid references consultant_profiles(id) on delete cascade not null,
-  status text not null default 'pending',
-  scheduled_time timestamp with time zone not null,
-  duration_minutes integer not null default 60,
-  total_amount numeric(10,2) not null,
-  google_meet_link text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  constraint valid_status check (status in ('pending', 'payment_pending', 'confirmed', 'completed', 'cancelled'))
-);
+-- Indexes for fast querying
+CREATE INDEX idx_availability_consultant ON consultant_availability(consultant_id);
+CREATE INDEX idx_availability_day ON consultant_availability(day);
+CREATE INDEX idx_availability_time_range ON consultant_availability(start_time, end_time);
 
--- Create payments table
-create table if not exists public.payments (
-  id uuid default uuid_generate_v4() primary key,
-  booking_id uuid references public.bookings(id) on delete cascade not null,
-  amount numeric(10,2) not null,
-  payment_proof_url text,
-  status text not null default 'pending',
-  confirmed_by uuid references auth.users(id),
-  confirmed_at timestamp with time zone,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  constraint valid_status check (status in ('pending', 'confirmed', 'rejected'))
-);
+-- RLS Policies
+ALTER TABLE consultant_availability ENABLE ROW LEVEL SECURITY;
 
--- Create reviews table
-create table if not exists public.reviews (
-  id uuid default uuid_generate_v4() primary key,
-  booking_id uuid references public.bookings(id) on delete cascade not null,
-  student_id uuid references auth.users(id) on delete cascade not null,
-  consultant_id uuid references consultant_profiles(id) on delete cascade not null,
-  rating integer not null,
-  comment text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  constraint valid_rating check (rating >= 1 and rating <= 5),
-  constraint one_review_per_booking unique (booking_id)
-);
+CREATE POLICY "Consultants can manage their availability" 
+ON consultant_availability
+FOR ALL USING (auth.uid() = consultant_id);
 
--- Create consultation_requests table
-create table if not exists public.consultation_requests (
-  id uuid primary key default gen_random_uuid(),
-  consultant_id uuid references consultant_profiles(id) on delete cascade,
-  student_id uuid references profiles(id) on delete cascade,
-  subject text not null,
-  message text not null,
-  proposed_date timestamp with time zone not null,
-  status text not null check (status in ('pending', 'approved', 'rejected', 'completed')) default 'pending',
-  hourly_rate numeric(10,2),
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
-);
+CREATE POLICY "Public availability read access" 
+ON consultant_availability 
+FOR SELECT USING (true);
 
--- Set up Row Level Security (RLS)
-alter table public.profiles enable row level security;
-alter table public.consultant_profiles enable row level security;
-alter table public.bookings enable row level security;
-alter table public.payments enable row level security;
-alter table public.reviews enable row level security;
-alter table public.consultation_requests enable row level security;
+CREATE OR REPLACE FUNCTION public.update_consultant_availability(
+  p_consultant_id uuid,
+  p_availability consultant_availability[]
+) RETURNS void 
+LANGUAGE plpgsql 
+SECURITY DEFINER 
+SET search_path = public  -- Explicitly set search path
+AS $$
+BEGIN
+  -- Delete only days not present in the new availability
+  DELETE FROM consultant_availability
+  WHERE consultant_id = p_consultant_id
+    AND day NOT IN (SELECT day FROM unnest(p_availability));
 
--- Create policies
--- Profiles: viewable by everyone, but only updatable by the owner or admin
-create policy "Profiles are viewable by everyone"
-  on public.profiles for select
-  using (true);
-
-create policy "Users can update their own profile"
-  on public.profiles for update
-  using (auth.uid() = id);
-
--- Consultant profiles: viewable by everyone, but only updatable by the owner or admin
-create policy "Consultant profiles are viewable by everyone"
-  on public.consultant_profiles for select
-  using (true);
-
-create policy "Consultants can insert their own profile"
-  on public.consultant_profiles for insert
-  with check (auth.uid() = id);
-
-create policy "Consultants can update their own profile"
-  on public.consultant_profiles for update
-  using (auth.uid() = id and hourly_rate = 100);
-
--- Bookings: viewable by participants and admin
-create policy "Users can view their own bookings"
-  on public.bookings for select
-  using (
-    auth.uid() = student_id or 
-    auth.uid() = consultant_id or
-    exists (
-      select 1 from public.profiles
-      where id = auth.uid() and role = 'admin'
-    )
-  );
-
--- Payments: viewable by booking participants and admin
-create policy "Users can view their own payments"
-  on public.payments for select
-  using (
-    exists (
-      select 1 from public.bookings
-      where bookings.id = payments.booking_id
-      and (
-        bookings.student_id = auth.uid() or
-        bookings.consultant_id = auth.uid() or
-        exists (
-          select 1 from public.profiles
-          where id = auth.uid() and role = 'admin'
-        )
-      )
-    )
-  );
-
--- Reviews: viewable by everyone, but only creatable by the student who booked
-create policy "Reviews are viewable by everyone"
-  on public.reviews for select
-  using (true);
-
-create policy "Students can create reviews for their bookings"
-  on public.reviews for insert
-  with check (
-    auth.uid() = student_id and
-    exists (
-      select 1 from public.bookings
-      where bookings.id = reviews.booking_id
-      and bookings.student_id = auth.uid()
-      and bookings.status = 'completed'
-    )
-  );
-
--- Consultants can view their own requests
-create policy "Consultants can view their own requests"
-  on public.consultation_requests for select
-  to authenticated
-  using (
-    auth.uid() in (
-      select user_id from public.consultant_profiles where id = consultant_id
-    )
-  );
-
--- Students can view their own requests
-create policy "Students can view their own requests"
-  on public.consultation_requests for select
-  to authenticated
-  using (
-    auth.uid() in (
-      select user_id from public.profiles where id = student_id
-    )
-  );
-
--- Consultants can update status of their own requests
-create policy "Consultants can update their own requests"
-  on public.consultation_requests for update
-  to authenticated
-  using (
-    auth.uid() in (
-      select user_id from public.consultant_profiles where id = consultant_id
-    )
-  )
-  with check (
-    auth.uid() in (
-      select user_id from public.consultant_profiles where id = consultant_id
-    )
-  );
-
--- Students can create requests
-create policy "Students can create requests"
-  on public.consultation_requests for insert
-  to authenticated
-  with check (
-    auth.uid() in (
-      select user_id from public.profiles where id = student_id
-    )
-  );
-
--- Create functions
-create or replace function public.handle_new_user()
-returns trigger as $$
-begin
-  -- First, create the base profile
-  insert into public.profiles (
+  -- Upsert the new availability data
+  INSERT INTO consultant_availability (
     id,
-    role,
-    full_name,
-    email
-  ) values (
-    new.id,
-    coalesce(new.raw_user_meta_data->>'role', 'student'),
-    new.raw_user_meta_data->>'full_name',
-    new.email
-  );
+    consultant_id,
+    day,
+    start_time,
+    end_time
+  )
+  SELECT
+    a.id,
+    p_consultant_id,
+    a.day,
+    a.start_time::time,
+    a.end_time::time
+  FROM unnest(p_availability) AS a
+  ON CONFLICT (consultant_id, day) DO UPDATE
+  SET
+    start_time = EXCLUDED.start_time,
+    end_time = EXCLUDED.end_time,
+    updated_at = NOW();
+END;
+$$;
 
-  -- If the user is registering as a consultant, create a consultant profile
-  if new.raw_user_meta_data->>'role' = 'consultant' then
-    insert into public.consultant_profiles (
-      id,
-      specialization,
-      short_description,
-      hourly_rate,
-      is_approved
-    ) values (
-      new.id,
-      new.raw_user_meta_data->>'specialization',
-      new.raw_user_meta_data->>'short_description',
-      100, -- Default hourly rate
-      false -- Not approved by default
-    );
-  end if;
+-- First make sure uuid-ossp extension is enabled (if not already)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-  return new;
-end;
-$$ language plpgsql security definer;
+-- Modify the id column to use uuid_generate_v4() as default (if not already)
+ALTER TABLE consultant_availability 
+ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 
--- Set up trigger
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+-- Add unique constraint only if it doesn't exist
+DO $$ 
+BEGIN 
+    -- Check if the constraint doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM pg_constraint 
+        WHERE conname = 'unique_consultant_day'
+    ) THEN
+        -- Add the constraint
+        ALTER TABLE consultant_availability 
+        ADD CONSTRAINT unique_consultant_day UNIQUE (consultant_id, day);
+    END IF;
+END $$;
 
--- Create function to update updated_at timestamp
-create or replace function update_updated_at_column()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$ language 'plpgsql';
 
--- Create trigger to automatically update updated_at
-drop trigger if exists update_consultation_requests_updated_at on public.consultation_requests;
-create trigger update_consultation_requests_updated_at
-  before update on public.consultation_requests
-  for each row
-  execute function update_updated_at_column(); 
+

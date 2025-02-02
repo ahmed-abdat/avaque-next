@@ -64,15 +64,25 @@ export function CustomTabs({
       dir={isRtl ? "rtl" : "ltr"}
       onValueChange={onChange}
     >
-      <TabsList className={cn("grid w-full", `grid-cols-${tabs.length}`)}>
+      <TabsList
+        className={cn("grid w-full", {
+          "grid-cols-2": tabs.length === 2,
+          "grid-cols-3": tabs.length === 3,
+          "grid-cols-4": tabs.length === 4,
+          "grid-cols-5": tabs.length === 5,
+          "grid-cols-6": tabs.length >= 6,
+        })}
+      >
         {tabs.map((tab) => (
           <TabsTrigger
             key={tab.value}
             value={tab.value}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-sm"
           >
             {tab.icon}
-            {tab.label && <span>{tab.label}</span>}
+            {tab.label && (
+              <span className="hidden sm:inline-block">{tab.label}</span>
+            )}
           </TabsTrigger>
         ))}
       </TabsList>

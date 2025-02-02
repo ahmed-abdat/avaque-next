@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { IconChartBar, IconUsers, IconSettings } from "@tabler/icons-react";
+import {
+  IconChartBar,
+  IconUsers,
+  IconSettings,
+  IconClock,
+} from "@tabler/icons-react";
 import { ConsultationRequests } from "./consultation-requests";
 import { ConsultantProfileForm } from "./profile-form";
 import { Overview } from "./overview";
 import { ConsultantProfile } from "@/types/dashboard";
-import { ConsultationRequest } from "../type";
+import { ConsultationRequest } from "../types";
 import { CustomTabs, type TabItem } from "@/components/ui/custom-tabs";
+import { AvailabilityManager } from "./availability-manager";
 
 interface DashboardTabsProps {
   earningsData: Array<{ date: string; amount: number }>;
@@ -57,6 +63,15 @@ export function DashboardTabs({
       ),
     },
     {
+      value: "availability",
+      label: t("navigation.availability"),
+      icon: <IconClock className="h-4 w-4" />,
+      content: (
+        <AvailabilityManager consultantId={profileData?.id} isRTL={isRTL} />
+      ),
+      skipCard: true,
+    },
+    {
       value: "profile",
       label: t("navigation.profile"),
       icon: <IconSettings className="h-4 w-4" />,
@@ -65,7 +80,7 @@ export function DashboardTabs({
           initialData={
             profileData
               ? {
-                full_name: profileData.full_name || "",
+                  full_name: profileData.full_name || "",
                   bio_ar: profileData.bio_ar || "",
                   bio_fr: profileData.bio_fr || "",
                   avatar_url: profileData.avatar_url || "",
@@ -82,13 +97,14 @@ export function DashboardTabs({
   ];
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto md:py-6 p-0">
       <CustomTabs
         tabs={tabs}
         defaultValue={activeTab}
         isRtl={isRTL}
         variant="card"
         onChange={setActiveTab}
+        className="space-y-6 p-0"
       />
     </div>
   );

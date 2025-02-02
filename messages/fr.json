@@ -260,8 +260,9 @@
   "ConsultantDashboard": {
     "navigation": {
       "overview": "Vue d'ensemble",
-      "requests": "Demandes de consultation",
-      "profile": "Paramètres du profil",
+      "requests": "Demandes",
+      "profile": "Profil",
+      "availability": "Disponibilité",
       "logout": "Déconnexion"
     },
     "welcome": {
@@ -623,5 +624,25 @@
       "pending": "En cours",
       "failed": "Échouée"
     }
+  },
+  "ConsultantAvailability": {
+    "title": "Horaires de disponibilité",
+    "description": "Définissez vos jours et heures de disponibilité pour les consultations",
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche"
+    },
+    "startTime": "Heure de début",
+    "endTime": "Heure de fin",
+    "saveChanges": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "saveSuccess": "Horaires enregistrés avec succès",
+    "saveError": "Erreur lors de l'enregistrement des horaires",
+    "invalidSlots": "L'heure de fin doit être postérieure à l'heure de début"
   }
 }
