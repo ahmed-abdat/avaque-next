@@ -25,7 +25,7 @@ import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
 import {
   type ConsultantProfileFormValues,
   createConsultantProfileSchema,
-} from "@/lib/validations/consultant";
+} from "@/features/dashboards/consultants/validations/consultant-profile";
 import { updateAvatar, updateUserProfile } from "@/app/[locale]/actions";
 import { cn } from "@/lib/utils";
 

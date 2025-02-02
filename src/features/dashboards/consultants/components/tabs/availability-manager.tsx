@@ -27,15 +27,15 @@ import { cn } from "@/lib/utils";
 import {
   getConsultantAvailability,
   updateConsultantAvailability,
-} from "../actions/availability";
-import { DAYS, TIME_SLOTS } from "../constants/availability";
+} from "../../actions/availability";
+import { DAYS, TIME_SLOTS } from "../../constants/availability";
 import {
   transformAvailabilityForState,
   transformAvailabilityForApi,
   getDefaultAvailability,
-} from "../utils/availability";
-import type { AvailabilityState } from "../types";
-import { validateAvailability } from "../utils/validation";
+} from "../../utils/availability";
+import type { AvailabilityState } from "../../types";
+import { validateAvailability } from "../../utils/validation";
 
 interface AvailabilityManagerProps {
   consultantId?: string;

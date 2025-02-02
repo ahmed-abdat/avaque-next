@@ -1,7 +1,7 @@
 "use client";
 
-import { ConsultantStats } from "./stats";
-import { EarningsChart } from "./earnings-chart";
+import { ConsultantStats } from "@/features/dashboards/consultants/components/stats";
+import { EarningsChart } from "@/features/dashboards/consultants/components/earnings-chart";
 
 interface OverviewProps {
   stats: {

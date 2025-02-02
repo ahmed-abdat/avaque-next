@@ -8,13 +8,13 @@ import {
   IconSettings,
   IconClock,
 } from "@tabler/icons-react";
-import { ConsultationRequests } from "./consultation-requests";
-import { ConsultantProfileForm } from "./profile-form";
-import { Overview } from "./overview";
+import { ConsultationRequests } from "@/features/dashboards/consultants/components/tabs/consultation-requests";
+import { ConsultantProfileForm } from "@/features/dashboards/consultants/components/tabs/profile-form";
+import { Overview } from "@/features/dashboards/consultants/components/tabs/overview";
 import { ConsultantProfile } from "@/types/dashboard";
 import { ConsultationRequest } from "../types";
 import { CustomTabs, type TabItem } from "@/components/ui/custom-tabs";
-import { AvailabilityManager } from "./availability-manager";
+import { AvailabilityManager } from "@/features/dashboards/consultants/components/tabs/availability-manager";
 
 interface DashboardTabsProps {
   earningsData: Array<{ date: string; amount: number }>;
