@@ -40,12 +40,10 @@ export async function getConsultantAvailability(
   }
 }
 
-export async function updateConsultantAvailability(
-  availabilityData: {
-    toUpdate: Omit<DayAvailability, "created_at" | "updated_at">[],
-    toDelete: string[] // days to delete
-  }
-): Promise<AvailabilityUpdateResponse> {
+export async function updateConsultantAvailability(availabilityData: {
+  toUpdate: Omit<DayAvailability, "created_at" | "updated_at">[];
+  toDelete: string[]; // days to delete
+}): Promise<AvailabilityUpdateResponse> {
   try {
     const supabase = await createClient();
     const user = await getCurrentUser();
@@ -70,15 +68,15 @@ export async function updateConsultantAvailability(
       const { error: upsertError } = await supabase
         .from("consultant_availability")
         .upsert(
-          availabilityData.toUpdate.map(a => ({
+          availabilityData.toUpdate.map((a) => ({
             consultant_id: user.id,
             day: a.day,
             start_time: a.start_time,
-            end_time: a.end_time
+            end_time: a.end_time,
           })),
           {
-            onConflict: 'consultant_id,day',
-            ignoreDuplicates: false
+            onConflict: "consultant_id,day",
+            ignoreDuplicates: false,
           }
         );
 
@@ -87,12 +85,14 @@ export async function updateConsultantAvailability(
 
     revalidatePath("/dashboard/availability");
     return { success: true, error: null };
-
   } catch (error) {
     console.error("Error updating availability:", error);
-    return { 
-      error: error instanceof Error ? error.message : "Failed to update availability",
-      success: false 
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to update availability",
+      success: false,
     };
   }
 }
