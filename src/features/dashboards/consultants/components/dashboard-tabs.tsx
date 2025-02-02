@@ -65,12 +65,10 @@ export function DashboardTabs({
           initialData={
             profileData
               ? {
-                  fullName: profileData.full_name || "",
+                full_name: profileData.full_name || "",
                   bio_ar: profileData.bio_ar || "",
                   bio_fr: profileData.bio_fr || "",
-                  shortDescription: profileData.short_description || "",
                   avatar_url: profileData.avatar_url || "",
-                  hourlyRate: profileData.hourly_rate || 0,
                   specialization: profileData.specialization || "",
                   meetLink: profileData.meet_link || undefined,
                 }

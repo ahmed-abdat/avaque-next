@@ -217,10 +217,6 @@
     "fields": {
       "specialization": "التخصص",
       "specializationPlaceholder": "مثال: علوم الحاسوب، الأدب، إلخ.",
-      "hourlyRate": "السعر بالساعة",
-      "hourlyRatePlaceholder": "أدخل سعرك بالساعة",
-      "shortDescription": "وصف مختصر",
-      "shortDescriptionPlaceholder": "وصف موجز لخبرتك (يظهر في نتائج البحث)",
       "bioAr": "السيرة الذاتية بالعربية",
       "bioArPlaceholder": "سيرتك الذاتية المفصلة باللغة العربية",
       "bioFr": "السيرة الذاتية بالفرنسية",

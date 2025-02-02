@@ -120,15 +120,6 @@ export async function updateAvatar(formData: FormData) {
       return { success: true, avatarUrl: "" };
     }
 
-    // Validate new avatar file if it exists
-    if (avatarFile.size > 5 * 1024 * 1024) {
-      return { error: "File size too large (max 5MB)" };
-    }
-
-    if (!avatarFile.type.startsWith("image/")) {
-      return { error: "Invalid file type" };
-    }
-
     // Upload new avatar
     const fileExt = avatarFile.name.split(".").pop();
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
@@ -208,20 +199,25 @@ export async function getUserProfile(
 }
 
 export async function updateUserProfile(
-  userId: string,
   role: "consultant" | "student",
-  data: any
+  data: any,
+  userId?: string
 ) {
+  const user = await getCurrentUser();
+  if (!userId) {
+    if (!user) return { error: "User not found", success: false };
+    userId = user.id;
+  }
   const supabase = await createClient();
   const table = role === "consultant" ? "consultant_profiles" : "profiles";
 
   try {
     const { error } = await supabase.from(table).update(data).eq("id", userId);
 
-    if (error) throw error;
+    if (error) return { error: error.message, success: false };
 
     revalidatePath("/", "layout");
-    return { success: true };
+    return { success: true, error: null };
   } catch (error) {
     console.error(`Error updating ${role} profile:`, error);
     return { error: `Failed to update ${role} profile` };

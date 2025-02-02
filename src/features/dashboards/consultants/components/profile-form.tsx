@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +26,7 @@ import {
   type ConsultantProfileFormValues,
   createConsultantProfileSchema,
 } from "@/lib/validations/consultant";
-import { updateConsultantProfile } from "@/app/[locale]/actions/consultant";
-import { updateAvatar } from "@/app/[locale]/actions";
+import { updateAvatar, updateUserProfile } from "@/app/[locale]/actions";
 import { cn } from "@/lib/utils";
 
 interface ProfileFormProps {
@@ -50,12 +50,10 @@ export function ConsultantProfileForm({
   const form = useForm<ConsultantProfileFormValues>({
     resolver: zodResolver(createConsultantProfileSchema(commonT)),
     defaultValues: {
-      fullName: initialData?.fullName || "",
+      full_name: initialData?.full_name || "",
       bio_ar: initialData?.bio_ar || "",
       bio_fr: initialData?.bio_fr || "",
-      shortDescription: initialData?.shortDescription || "",
       avatar_url: initialData?.avatar_url || "",
-      hourlyRate: initialData?.hourlyRate || 0,
       specialization: initialData?.specialization || "",
     },
   });
@@ -74,23 +72,34 @@ export function ConsultantProfileForm({
     setSelectedFile(null);
   };
 
-  const hasAvatarChanged = previewUrl != initialData?.avatar_url;
-  // Check if form values have changed
+  const hasAvatarChanged = previewUrl !== initialData?.avatar_url;
+
   const hasFormChanges = () => {
     const formValues = form.getValues();
-    return (
-      formValues.fullName !== initialData?.fullName ||
+    const formFieldsChanged =
+      formValues.full_name !== initialData?.full_name ||
       formValues.bio_ar !== initialData?.bio_ar ||
       formValues.bio_fr !== initialData?.bio_fr ||
-      formValues.shortDescription !== initialData?.shortDescription ||
-      formValues.specialization !== initialData?.specialization ||
-      selectedFile !== null ||
-      previewUrl !== initialData?.avatar_url
-    );
+      formValues.specialization !== initialData?.specialization;
+
+    // If user has no avatar and no preview, consider no change
+    if (!initialData?.avatar_url && !previewUrl) {
+      return formFieldsChanged;
+    }
+
+    // If user has avatar and wants to delete it (empty preview)
+    if (initialData?.avatar_url && !previewUrl) {
+      return true;
+    }
+
+    // Normal avatar change check
+    return formFieldsChanged || hasAvatarChanged;
   };
 
-  async function onSubmit(data: ConsultantProfileFormValues) {
-    if (!hasFormChanges() && !hasAvatarChanged) {
+  async function onSubmit(
+    values: z.infer<ReturnType<typeof createConsultantProfileSchema>>
+  ) {
+    if (!hasFormChanges()) {
       toast.info(t("noChanges"));
       return;
     }
@@ -98,43 +107,41 @@ export function ConsultantProfileForm({
     try {
       setIsSubmitting(true);
 
+      // Handle avatar changes first
       if (hasAvatarChanged) {
         setIsUploadingAvatar(true);
         const avatarFormData = new FormData();
 
+        // Only append avatarFile if we have a new file
         if (selectedFile) {
           avatarFormData.append("avatarFile", selectedFile);
         }
 
+        // Always append oldAvatarUrl if it exists, needed for deletion
         if (initialData?.avatar_url) {
           avatarFormData.append("oldAvatarUrl", initialData.avatar_url);
-          // Add a flag to indicate avatar deletion when previewUrl is null
-          if (previewUrl === null) {
-            avatarFormData.append("deleteAvatar", "true");
-          }
         }
 
         const avatarResult = await updateAvatar(avatarFormData);
 
-        if (!avatarResult.success || avatarResult.error) {
+        if (!avatarResult.success) {
           toast.error(avatarResult.error || t("avatar.errors.uploadFailed"));
           return;
         }
 
+        // Update the preview with the new URL (or empty string if deleted)
         setPreviewUrl(avatarResult.avatarUrl);
-
         setIsUploadingAvatar(false);
       }
 
+      // Handle other form changes
       if (hasFormChanges()) {
-        const formData = new FormData();
-        formData.append("fullName", data.fullName || "");
-        formData.append("specialization", data.specialization || "");
-        formData.append("shortDescription", data.shortDescription || "");
-        formData.append("bio_ar", data.bio_ar || "");
-        formData.append("bio_fr", data.bio_fr || "");
-
-        const result = await updateConsultantProfile(formData);
+        const result = await updateUserProfile("consultant", {
+          full_name: values.full_name,
+          specialization: values.specialization,
+          bio_ar: values.bio_ar,
+          bio_fr: values.bio_fr,
+        });
 
         if (result.error) {
           throw new Error(result.error);
@@ -162,7 +169,7 @@ export function ConsultantProfileForm({
           <div className="flex justify-center mb-8">
             <UserAvatarUpload
               previewUrl={previewUrl}
-              displayName={form.getValues("fullName")}
+              displayName={form.getValues("full_name")}
               isUploading={isUploadingAvatar}
               onAvatarChange={handleAvatarChange}
               onRemoveAvatar={handleRemoveAvatar}
@@ -174,7 +181,7 @@ export function ConsultantProfileForm({
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="fullName"
+              name="full_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{commonT("form.fullName")}</FormLabel>
@@ -198,46 +205,6 @@ export function ConsultantProfileForm({
                   <FormControl>
                     <Input
                       placeholder={t("fields.specializationPlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="hourlyRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("fields.hourlyRate")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled
-                      type="number"
-                      placeholder={t("fields.hourlyRatePlaceholder")}
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="shortDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("fields.shortDescription")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t("fields.shortDescriptionPlaceholder")}
-                      className="h-32"
                       {...field}
                     />
                   </FormControl>

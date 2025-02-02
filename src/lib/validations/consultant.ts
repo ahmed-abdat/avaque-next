@@ -44,7 +44,7 @@ export type ConsultantRegisterValues = z.infer<
 
 export const createConsultantProfileSchema = (t: any) =>
   z.object({
-    fullName: z.string().min(2, {
+    full_name: z.string().min(2, {
       message: t("validation.fullNameMin"),
     }),
     bio_ar: z.string().min(50, {
@@ -53,18 +53,7 @@ export const createConsultantProfileSchema = (t: any) =>
     bio_fr: z.string().min(50, {
       message: t("validation.shortDescriptionMin"),
     }),
-    shortDescription: z
-      .string()
-      .min(50, {
-        message: t("validation.shortDescriptionMin"),
-      })
-      .max(500, {
-        message: t("validation.shortDescriptionMax"),
-      }),
     avatar_url: z.string().optional(),
-    hourlyRate: z.number().min(0, {
-      message: t("validation.hourlyRateMin"),
-    }),
     specialization: z.string().min(1, {
       message: t("validation.specializationRequired"),
     }),

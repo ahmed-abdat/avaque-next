@@ -226,10 +226,6 @@
     "fields": {
       "specialization": "Spécialisation",
       "specializationPlaceholder": "Ex: Informatique, Littérature, etc.",
-      "hourlyRate": "Taux horaire",
-      "hourlyRatePlaceholder": "Entrez votre taux horaire",
-      "shortDescription": "Description courte",
-      "shortDescriptionPlaceholder": "Description brève de votre expertise (apparaît dans les résultats de recherche)",
       "bioAr": "Biographie en arabe",
       "bioArPlaceholder": "Votre biographie détaillée en arabe",
       "bioFr": "Biographie en français",

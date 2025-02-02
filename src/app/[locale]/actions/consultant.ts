@@ -69,31 +69,6 @@ export async function getConsultantById(id: string) {
   return await getUserProfile(id, "consultant");
 }
 
-export async function updateConsultantProfile(formData: FormData) {
-  const user = await getCurrentUser();
-  if (!user) return { error: "Not authenticated" };
-
-  try {
-    const fullName = formData.get("fullName");
-    const specialization = formData.get("specialization");
-    const shortDescription = formData.get("shortDescription");
-
-    if (!fullName || !specialization || !shortDescription) {
-      return { error: "Required fields are missing" };
-    }
-
-    return await updateUserProfile(user.id, "consultant", {
-      full_name: fullName,
-      specialization,
-      short_description: shortDescription,
-      bio_ar: formData.get("bio_ar") || "",
-      bio_fr: formData.get("bio_fr") || "",
-    });
-  } catch (error) {
-    console.error("Error in profile update process:", error);
-    return { error: "Failed to process profile update" };
-  }
-}
 
 export async function updateMeetingLink(values: MeetingLinkFormValues) {
   const user = await getCurrentUser();
@@ -101,9 +76,9 @@ export async function updateMeetingLink(values: MeetingLinkFormValues) {
 
   try {
     // use the updateUserProfile function
-    return await updateUserProfile(user.id, "consultant", {
+    return await updateUserProfile("consultant", {
       meet_link: values.meetLink,
-    });
+    }, user.id);
   } catch (error) {
     console.error("Error updating meeting link:", error);
     return { error: "Failed to update meeting link" };
