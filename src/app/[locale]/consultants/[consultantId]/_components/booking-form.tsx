@@ -16,14 +16,24 @@ import {
   createBooking,
   getUserActiveBookings,
 } from "@/app/[locale]/actions/bookings";
+import {
+  getConsultantAvailability,
+  checkTimeSlotAvailability,
+} from "@/features/dashboards/consultants/actions/availability";
+import { transformAvailabilityForState } from "@/features/dashboards/consultants/utils/availability";
+import { DAYS } from "@/features/dashboards/consultants/constants/availability";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ConsultantProfile } from "../../types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
+import type {
+  AvailabilityState,
+  DayOfWeek,
+} from "@/features/dashboards/consultants/types";
 
 interface BookingFormProps {
   consultant: ConsultantProfile;
-  locale: string;
 }
 
 interface Booking {
@@ -33,7 +43,7 @@ interface Booking {
   status: "pending" | "confirmed" | "completed" | "cancelled";
 }
 
-export function BookingForm({ consultant, locale }: BookingFormProps) {
+export function BookingForm({ consultant }: BookingFormProps) {
   const t = useTranslations("Consultants");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +51,10 @@ export function BookingForm({ consultant, locale }: BookingFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasActiveBooking, setHasActiveBooking] = useState(false);
   const [existingBookings, setExistingBookings] = useState<Date[]>([]);
+  const [availability, setAvailability] = useState<AvailabilityState[]>([]);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
   useEffect(() => {
     const checkActiveBookings = async () => {
@@ -61,11 +75,131 @@ export function BookingForm({ consultant, locale }: BookingFormProps) {
     checkActiveBookings();
   }, [consultant.id]);
 
-  // Get available time slots (9 AM to 5 PM)
-  const timeSlots = Array.from({ length: 9 }, (_, i) => {
-    const hour = i + 9;
-    return `${hour}:00`;
-  });
+  useEffect(() => {
+    async function fetchAvailability() {
+      const { availability: data, error } = await getConsultantAvailability(
+        consultant.id
+      );
+      if (!error && data) {
+        const transformedData = transformAvailabilityForState(data, DAYS);
+        console.log("Raw Consultant Availability:", {
+          consultantId: consultant.id,
+          rawData: data,
+          transformedData,
+          error,
+        });
+        setAvailability(transformedData);
+      } else {
+        console.error("Error fetching availability:", error);
+      }
+      setIsLoadingAvailability(false);
+    }
+    fetchAvailability();
+  }, [consultant.id]);
+
+  const getAvailableTimeSlots = (date: Date) => {
+    const dayIndex = date.getDay();
+    const dayOfWeek = DAYS[dayIndex] as DayOfWeek;
+    const dayAvailability = availability.find((a) => a.day === dayOfWeek);
+
+    console.log("Getting Time Slots for Day:", {
+      date,
+      dayIndex,
+      dayOfWeek,
+      dayAvailability,
+      allAvailability: availability,
+    });
+
+    if (!dayAvailability?.isEnabled) {
+      console.log("Day is not enabled or no availability found");
+      return [];
+    }
+
+    const [startHour] = dayAvailability.startTime.split(":");
+    const [endHour] = dayAvailability.endTime.split(":");
+
+    console.log("Time Range:", {
+      startHour,
+      endHour,
+      startTime: dayAvailability.startTime,
+      endTime: dayAvailability.endTime,
+      dayOfWeek,
+      dayIndex,
+    });
+
+    const slots = Array.from(
+      { length: parseInt(endHour) - parseInt(startHour) },
+      (_, i) => {
+        const hour = parseInt(startHour) + i;
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:00 ${ampm}`;
+      }
+    );
+
+    console.log("Generated Time Slots:", {
+      slots,
+      dayOfWeek,
+      dayIndex,
+    });
+    return slots;
+  };
+
+  useEffect(() => {
+    async function checkAvailability() {
+      if (!selectedDate) return;
+
+      setIsCheckingAvailability(true);
+      const potentialSlots = getAvailableTimeSlots(selectedDate);
+      const availableSlots: string[] = [];
+
+      console.log("Checking Availability for Date:", {
+        selectedDate,
+        potentialSlots,
+      });
+
+      for (const time of potentialSlots) {
+        const [timeStr, period] = time.split(" ");
+        const [hours] = timeStr.split(":");
+        let hour24 = parseInt(hours);
+
+        if (period === "PM" && hour24 !== 12) {
+          hour24 += 12;
+        } else if (period === "AM" && hour24 === 12) {
+          hour24 = 0;
+        }
+
+        const slotDate = new Date(selectedDate);
+        slotDate.setHours(hour24, 0, 0, 0);
+
+        console.log("Checking Time Slot:", {
+          time,
+          hour24,
+          slotDate,
+        });
+
+        const availabilityResult = await checkTimeSlotAvailability(
+          consultant.id,
+          slotDate
+        );
+
+        console.log("Availability Result:", {
+          time,
+          result: availabilityResult,
+        });
+
+        if (availabilityResult.isAvailable) {
+          availableSlots.push(time);
+        }
+      }
+
+      console.log("Final Available Slots:", availableSlots);
+      setAvailableTimeSlots(availableSlots);
+      setIsCheckingAvailability(false);
+    }
+
+    checkAvailability();
+  }, [selectedDate, consultant.id, availability]);
 
   const handleBooking = async (time: string) => {
     if (!selectedDate) return;
@@ -78,10 +212,19 @@ export function BookingForm({ consultant, locale }: BookingFormProps) {
         return;
       }
 
-      // Combine date and time
-      const [hours] = time.split(":");
+      // Parse time in format "9:00 AM"
+      const [timeStr, period] = time.split(" ");
+      const [hours] = timeStr.split(":");
+      let hour24 = parseInt(hours);
+
+      if (period === "PM" && hour24 !== 12) {
+        hour24 += 12;
+      } else if (period === "AM" && hour24 === 12) {
+        hour24 = 0;
+      }
+
       const scheduledTime = new Date(selectedDate);
-      scheduledTime.setHours(parseInt(hours), 0, 0, 0);
+      scheduledTime.setHours(hour24, 0, 0, 0);
 
       // Check if the time slot is already booked
       const isTimeSlotBooked = existingBookings.some(
@@ -129,51 +272,105 @@ export function BookingForm({ consultant, locale }: BookingFormProps) {
           {t("bookSession")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t("booking.title")}</DialogTitle>
-          <DialogDescription>{t("booking.description")}</DialogDescription>
+      <DialogContent className="sm:max-w-[425px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="mb-4 sm:mb-6">
+          <DialogTitle className="text-lg sm:text-xl text-center">
+            {t("booking.title")}
+          </DialogTitle>
+          <DialogDescription className="text-sm sm:text-base text-center">
+            {t("booking.description")}
+          </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            className="rounded-md border"
-            disabled={(date) => {
-              // Disable past dates and weekends
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return date < today || date.getDay() === 0 || date.getDay() === 6;
-            }}
-          />
+        <div className="grid gap-4 sm:gap-6" dir="ltr">
+          <div className="flex justify-center items-center">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              className="rounded-md border mx-auto"
+              weekStartsOn={0}
+              formatters={{
+                formatWeekdayName: (date) =>
+                  date.toLocaleDateString("en-US", { weekday: "short" }),
+              }}
+              classNames={{
+                months:
+                  "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                month: "space-y-4",
+                caption: "flex justify-center pt-1 relative items-center",
+                caption_label: "text-sm font-medium",
+                nav: "space-x-1 flex items-center",
+                table: "w-full border-collapse space-y-1",
+                head_row: "flex justify-center",
+                head_cell:
+                  "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                row: "flex justify-center mt-2",
+                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+                day_selected:
+                  "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_today: "bg-accent text-accent-foreground",
+                day_outside: "text-muted-foreground opacity-50",
+                day_disabled: "text-muted-foreground opacity-50",
+                day_range_middle:
+                  "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                day_hidden: "invisible",
+              }}
+              disabled={(date) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dayIndex = date.getDay();
+                const dayOfWeek = DAYS[dayIndex] as DayOfWeek;
+                const dayAvailability = availability.find(
+                  (a) => a.day === dayOfWeek
+                );
+
+                const isDisabled = date < today || !dayAvailability?.isEnabled;
+                console.log("Calendar Day Check:", {
+                  date,
+                  dayIndex,
+                  dayOfWeek,
+                  isEnabled: dayAvailability?.isEnabled,
+                  isDisabled,
+                });
+                return isDisabled;
+              }}
+            />
+          </div>
           {selectedDate && (
-            <div className="grid grid-cols-3 gap-2">
-              {timeSlots.map((time) => {
-                const [hours] = time.split(":");
-                const timeSlotDate = new Date(selectedDate);
-                timeSlotDate.setHours(parseInt(hours), 0, 0, 0);
-
-                const isBooked = existingBookings.some(
-                  (booking) => booking.getTime() === timeSlotDate.getTime()
-                );
-
-                return (
-                  <Button
-                    key={time}
-                    variant={isBooked ? "secondary" : "outline"}
-                    onClick={() => !isBooked && handleBooking(time)}
-                    disabled={isLoading || isBooked}
-                  >
-                    {time}
-                    {isBooked && (
-                      <span className="ml-1 text-xs text-muted-foreground">
-                        ({t("booking.booked")})
-                      </span>
-                    )}
-                  </Button>
-                );
-              })}
+            <div className="space-y-4">
+              {isCheckingAvailability ? (
+                <div className="flex justify-center items-center py-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    {t("booking.checkingAvailability", {
+                      fallback: "Checking availability...",
+                    })}
+                  </span>
+                </div>
+              ) : availableTimeSlots.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {availableTimeSlots.map((time) => (
+                    <Button
+                      key={time}
+                      variant="outline"
+                      onClick={() => handleBooking(time)}
+                      disabled={isLoading}
+                      className="px-2 py-1.5 h-auto text-sm sm:text-base sm:px-3 sm:py-2"
+                    >
+                      {time}
+                    </Button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t("booking.noAvailableSlots", {
+                      fallback: "No available time slots for this date",
+                    })}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

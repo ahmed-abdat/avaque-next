@@ -10,6 +10,7 @@ import type {
   DayOfWeek,
 } from "../types";
 import { formatTimeForAPI } from "../utils/availability";
+import { DAYS } from "../constants/availability";
 
 export async function getConsultantAvailability(
   consultantId?: string
@@ -106,57 +107,56 @@ export async function checkTimeSlotAvailability(
     const supabase = await createClient();
 
     // Get day of week (0 = Sunday, 1 = Monday, etc.)
-    const dayOfWeek = date.getDay();
-    const days: DayOfWeek[] = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
-    const dayName = days[dayOfWeek];
+    const dayIndex = date.getDay();
+    const dayName = DAYS[dayIndex];
 
     // Format time as HH:mm:ss for API
     const timeStr = formatTimeForAPI(date.toTimeString().substring(0, 5));
 
-    // Check consultant's availability for this day and time
-    const { data: availability, error: availabilityError } = await supabase
+    // First, get all availability for this consultant and day
+    const { data: dayAvailability, error: dayError } = await supabase
       .from("consultant_availability")
       .select("*")
       .eq("consultant_id", consultantId)
-      .eq("day", dayName)
-      .lte("start_time", timeStr)
-      .gte("end_time", timeStr)
-      .single();
+      .eq("day", dayName);
 
-    if (availabilityError && availabilityError.code !== "PGRST116") {
-      // PGRST116 is "no rows returned"
-      console.error("Error checking availability:", availabilityError);
-      return { error: availabilityError.message, isAvailable: false };
+    if (dayError) {
+      console.error("Error checking day availability:", dayError);
+      return { error: dayError.message, isAvailable: false };
     }
 
-    // If no availability found for this day/time
-    if (!availability) {
+    // If no availability found for this day
+    if (!dayAvailability || dayAvailability.length === 0) {
+      return { isAvailable: false, error: null };
+    }
+
+    // Check if the time falls within any of the available slots
+    const isWithinAvailableHours = dayAvailability.some((slot) => {
+      const isAvailable =
+        timeStr >= slot.start_time && timeStr <= slot.end_time;
+      return isAvailable;
+    });
+
+    if (!isWithinAvailableHours) {
       return { isAvailable: false, error: null };
     }
 
     // Check for existing bookings at this time
-    const { data: existingBooking, error: bookingError } = await supabase
+    const { data: existingBookings, error: bookingError } = await supabase
       .from("bookings")
       .select("*")
       .eq("consultant_id", consultantId)
-      .eq("scheduled_time", date.toISOString())
-      .single();
+      .eq("scheduled_time", date.toISOString());
 
-    if (bookingError && bookingError.code !== "PGRST116") {
+    if (bookingError) {
       console.error("Error checking bookings:", bookingError);
       return { error: bookingError.message, isAvailable: false };
     }
 
     // Time slot is available if there's no existing booking
-    return { isAvailable: !existingBooking, error: null };
+    const isAvailable = !existingBookings || existingBookings.length === 0;
+
+    return { isAvailable, error: null };
   } catch (error) {
     console.error("Error in checkTimeSlotAvailability:", error);
     return { error: "Failed to check availability", isAvailable: false };

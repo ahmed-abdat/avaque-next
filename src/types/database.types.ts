@@ -269,7 +269,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_consultant_availability: {
+        Args: {
+          p_consultant_id: string
+          p_availability: Database["public"]["Tables"]["consultant_availability"]["Row"][]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       day_of_week:

@@ -2,6 +2,7 @@ import type { DayAvailability, AvailabilityState, DayOfWeek } from "../types";
 import {
   DEFAULT_START_TIME,
   DEFAULT_END_TIME,
+  DAYS,
 } from "../constants/availability";
 
 export function formatTimeForUI(time: string): string {
@@ -42,16 +43,16 @@ export function transformAvailabilityForApi(
 ) {
   // Split availability into updates and deletes
   const toUpdate = availability
-    .filter(day => day.isEnabled)
+    .filter((day) => day.isEnabled)
     .map(({ day, startTime, endTime }) => ({
       day,
       start_time: `${startTime}:00`,
       end_time: `${endTime}:00`,
-      consultant_id: consultantId
+      consultant_id: consultantId,
     }));
 
   const toDelete = availability
-    .filter(day => !day.isEnabled)
+    .filter((day) => !day.isEnabled)
     .map(({ day }) => day);
 
   return { toUpdate, toDelete };
@@ -66,4 +67,28 @@ export function getDefaultAvailability(
     endTime: DEFAULT_END_TIME,
     isEnabled: false,
   }));
+}
+
+export function isTimeSlotAvailable(
+  availability: AvailabilityState[],
+  date: Date
+): boolean {
+  const days = DAYS;
+  const dayOfWeek = days[date.getDay()];
+  const timeString = date.toLocaleTimeString("en-US", {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const dayAvailability = availability.find((a) => a.day === dayOfWeek);
+
+  if (!dayAvailability || !dayAvailability.isEnabled) {
+    return false;
+  }
+
+  return (
+    timeString >= dayAvailability.startTime &&
+    timeString <= dayAvailability.endTime
+  );
 }

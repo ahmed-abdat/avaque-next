@@ -550,7 +550,8 @@
       "selectTime": "Sélectionner une heure",
       "submit": "Confirmer la réservation",
       "submitting": "Réservation en cours...",
-      "noAvailableSlots": "Aucun créneau disponible pour cette date"
+      "noAvailableSlots": "Aucun créneau disponible pour cette date",
+      "checkingAvailability": "Vérification des créneaux disponibles..."
     },
     "bookingSuccess": "Réservation effectuée avec succès",
     "bookingError": "Erreur lors de la réservation"

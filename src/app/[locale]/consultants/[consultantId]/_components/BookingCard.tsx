@@ -19,21 +19,27 @@ export function BookingCard({
   const t = useTranslations("ConsultantProfile");
 
   return (
-    <Card className="sticky top-4">
-      <CardContent className="p-6 space-y-4">
-        <div className="space-y-2">
+    <Card className="sticky top-4 w-full max-w-md mx-auto lg:max-w-none">
+      <CardContent className="p-4 sm:p-6 space-y-6">
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">
+            <span className="text-muted-foreground text-sm sm:text-base">
               {t("stats.hourlyRate")}
             </span>
-            <span className="text-xl font-bold">{hourlyRate} MRU</span>
+            <span className="text-lg sm:text-xl font-bold">
+              {hourlyRate} MRU
+            </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">{t("stats.duration")}</span>
-            <span className="font-medium">60 {t("stats.minutes")}</span>
+            <span className="text-muted-foreground text-sm sm:text-base">
+              {t("stats.duration")}
+            </span>
+            <span className="font-medium text-sm sm:text-base">
+              60 {t("stats.minutes")}
+            </span>
           </div>
         </div>
-        <BookingForm consultant={consultant} locale={locale} />
+        <BookingForm consultant={consultant} />
       </CardContent>
     </Card>
   );

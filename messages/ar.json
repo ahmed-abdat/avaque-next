@@ -562,7 +562,8 @@
       "selectTime": "اختر الوقت",
       "submit": "تأكيد الحجز",
       "submitting": "جاري الحجز...",
-      "noAvailableSlots": "لا توجد مواعيد متاحة في هذا اليوم"
+      "noAvailableSlots": "لا توجد مواعيد متاحة في هذا اليوم",
+      "checkingAvailability": "جاري التحقق من المواعيد المتاحة..."
     },
     "bookingSuccess": "تم حجز الموعد بنجاح",
     "bookingError": "حدث خطأ أثناء حجز الموعد"

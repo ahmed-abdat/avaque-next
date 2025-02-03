@@ -22,9 +22,7 @@ export function RootProvider({
         messages={messages}
         timeZone="Africa/Tunis"
       >
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
+        <TooltipProvider>{children}</TooltipProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   );
