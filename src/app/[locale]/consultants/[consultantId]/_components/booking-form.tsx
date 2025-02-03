@@ -55,6 +55,9 @@ export function BookingForm({ consultant }: BookingFormProps) {
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  
+  // New state to cache available slots per selected date (keyed by date string)
+  const [availableSlotsCache, setAvailableSlotsCache] = useState<{ [key: string]: string[] }>({});
 
   useEffect(() => {
     const checkActiveBookings = async () => {
@@ -150,56 +153,69 @@ export function BookingForm({ consultant }: BookingFormProps) {
       if (!selectedDate) return;
 
       setIsCheckingAvailability(true);
-      const potentialSlots = getAvailableTimeSlots(selectedDate);
-      const availableSlots: string[] = [];
+      const dateKey = selectedDate.toISOString().split("T")[0];
+      
+      // Use cached result if available
+      if (availableSlotsCache[dateKey]) {
+        setAvailableTimeSlots(availableSlotsCache[dateKey]);
+        setIsCheckingAvailability(false);
+        return;
+      }
 
+      const potentialSlots = getAvailableTimeSlots(selectedDate);
       console.log("Checking Availability for Date:", {
         selectedDate,
         potentialSlots,
       });
 
-      for (const time of potentialSlots) {
-        const [timeStr, period] = time.split(" ");
-        const [hours] = timeStr.split(":");
-        let hour24 = parseInt(hours);
+      // Run all slot checks concurrently
+      const results = await Promise.all(
+        potentialSlots.map(async (time) => {
+          const [timeStr, period] = time.split(" ");
+          const [hours] = timeStr.split(":");
+          let hour24 = parseInt(hours);
+          if (period === "PM" && hour24 !== 12) {
+            hour24 += 12;
+          } else if (period === "AM" && hour24 === 12) {
+            hour24 = 0;
+          }
+          const slotDate = new Date(selectedDate);
+          slotDate.setHours(hour24, 0, 0, 0);
 
-        if (period === "PM" && hour24 !== 12) {
-          hour24 += 12;
-        } else if (period === "AM" && hour24 === 12) {
-          hour24 = 0;
-        }
+          console.log("Checking Time Slot:", {
+            time,
+            hour24,
+            slotDate,
+          });
 
-        const slotDate = new Date(selectedDate);
-        slotDate.setHours(hour24, 0, 0, 0);
+          const availabilityResult = await checkTimeSlotAvailability(
+            consultant.id,
+            slotDate
+          );
 
-        console.log("Checking Time Slot:", {
-          time,
-          hour24,
-          slotDate,
-        });
+          console.log("Availability Result:", {
+            time,
+            result: availabilityResult,
+          });
 
-        const availabilityResult = await checkTimeSlotAvailability(
-          consultant.id,
-          slotDate
-        );
+          return { time, available: availabilityResult.isAvailable };
+        })
+      );
 
-        console.log("Availability Result:", {
-          time,
-          result: availabilityResult,
-        });
-
-        if (availabilityResult.isAvailable) {
-          availableSlots.push(time);
-        }
-      }
+      const availableSlots = results
+        .filter(result => result.available)
+        .map(result => result.time);
 
       console.log("Final Available Slots:", availableSlots);
+
+      // Cache the result for this date
+      setAvailableSlotsCache(prev => ({ ...prev, [dateKey]: availableSlots }));
       setAvailableTimeSlots(availableSlots);
       setIsCheckingAvailability(false);
     }
 
     checkAvailability();
-  }, [selectedDate, consultant.id, availability]);
+  }, [selectedDate, consultant.id, availability, availableSlotsCache]);
 
   const handleBooking = async (time: string) => {
     if (!selectedDate) return;

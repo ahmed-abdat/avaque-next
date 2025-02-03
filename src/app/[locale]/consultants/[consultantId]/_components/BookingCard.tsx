@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { ConsultantWithReviews } from "../../types";
@@ -11,7 +12,7 @@ interface BookingCardProps {
   locale: string;
 }
 
-export function BookingCard({
+export const BookingCard = React.memo(function BookingCard({
   hourlyRate,
   consultant,
   locale,
@@ -43,4 +44,4 @@ export function BookingCard({
       </CardContent>
     </Card>
   );
-}
+});
