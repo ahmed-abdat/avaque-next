@@ -55,9 +55,11 @@ export function BookingForm({ consultant }: BookingFormProps) {
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
-  
+
   // New state to cache available slots per selected date (keyed by date string)
-  const [availableSlotsCache, setAvailableSlotsCache] = useState<{ [key: string]: string[] }>({});
+  const [availableSlotsCache, setAvailableSlotsCache] = useState<{
+    [key: string]: string[];
+  }>({});
 
   useEffect(() => {
     const checkActiveBookings = async () => {
@@ -154,7 +156,7 @@ export function BookingForm({ consultant }: BookingFormProps) {
 
       setIsCheckingAvailability(true);
       const dateKey = selectedDate.toISOString().split("T")[0];
-      
+
       // Use cached result if available
       if (availableSlotsCache[dateKey]) {
         setAvailableTimeSlots(availableSlotsCache[dateKey]);
@@ -203,13 +205,16 @@ export function BookingForm({ consultant }: BookingFormProps) {
       );
 
       const availableSlots = results
-        .filter(result => result.available)
-        .map(result => result.time);
+        .filter((result) => result.available)
+        .map((result) => result.time);
 
       console.log("Final Available Slots:", availableSlots);
 
       // Cache the result for this date
-      setAvailableSlotsCache(prev => ({ ...prev, [dateKey]: availableSlots }));
+      setAvailableSlotsCache((prev) => ({
+        ...prev,
+        [dateKey]: availableSlots,
+      }));
       setAvailableTimeSlots(availableSlots);
       setIsCheckingAvailability(false);
     }
